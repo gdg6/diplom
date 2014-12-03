@@ -4,6 +4,15 @@
 #include <net-snmp/net-snmp-includes.h>
 //~ g++ -std=gnu++11 -Wall -o "%e" "%f" -lnetsnmp -Ofast -lpthread -pthread -lglut -lGL -lGLU -lOpenCL
 
+//~  % make snmpdemoapp
+//~ cc -I/usr/local/include -g   -c snmpdemoapp.c -o snmpdemoapp.o
+//~ cc -o snmpdemoapp snmpdemoapp.o -lsnmp
+//after 
+//~ % ./snmpdemoapp
+//~ system.sysDescr.0 = HP-UX net-snmp B.10.20 A 9000/715
+//~ value #1 is a string: HP-UX net-snmp B.10.20 A 9000/715
+
+
 //~ Используем SNMP_V_3
 #define DEMO_USE_SNMP_VERSION_3
 
@@ -121,4 +130,53 @@ int main(int argc, char ** argv)
     * SUCCESS: Print the result variables
 	*/
    
+	   //~ Давайте печатать переменнуюPDU , чтобы терминал, использующий print_variable дня:
+		for(vars = response->variables; vars; vars = vars->next_variable) {
+		   print_variable(vars->name, vars->name_length, vars);
+		}
+		
+		//~ Тогда для ударов , позволяет получить информацию и управлять ей себя ( проверки, чтобы убедиться , что этотипа мы ожидаем (строка ) впервые ) 
+		/* manipulate the information ourselves */
+		 for(vars = response->variables; vars; vars = vars->next_variable) {
+		   int count=1;
+		   if (vars->type == ASN_OCTET_STR) {
+			 char *sp = (char * )malloc(1 + vars->val_len);
+			 memcpy(sp, vars->val.string, vars->val_len);
+			 sp[vars->val_len] = '\0';
+			 printf("value #%d is a string: %s\n", count++, sp);
+			 free(sp);
+		   }
+		   else
+			 printf("value #%d is NOT a string! Ack!\n", count++);
+		 }
+		//~ Наконец , распечатайте описание ошибки в случае, если был один :
+		 } else {
+		 /*
+		  * FAILURE: print what went wrong!
+		  */
+		
+		 if (status == STAT_SUCCESS) {
+			 
+		   fprintf(stderr, "Error in packet\nReason: %s\n",
+				   snmp_errstring(response->errstat));
+		 } else {
+		   snmp_sess_perror("snmpget", ss);
+		}
+   }
+   //~ И последнее, но не менее важно, БЕСПЛАТНЫЙ ответ, как это сейчас наша задача сделать так. Выход чисто по телефону snmp_close () , а также:
+      /*
+    * Clean up:
+    *  1) free the response.
+    *  2) close the session.
+    */
+   if (response)
+     snmp_free_pdu(response);
+   snmp_close(ss);
+    
+   /* windows32 specific cleanup (is a noop on unix) */
+   SOCK_CLEANUP;
+   
+
+   
+	return 0;
 }
