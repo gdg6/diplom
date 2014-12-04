@@ -15,3 +15,23 @@ FATAL:  database "snmp_admin" does not exist
 FATAL:  role "template1" does not exist
 ERROR:  role "snmp_admin" already exists
 STATEMENT:  CREATE USER snmp_admin WITH PASSWORD 'auq1lk4dk' CREATEDB  CREATEUSER;
+FATAL:  database "gdg6" does not exist
+FATAL:  role "snmp_admi" does not exist
+ERROR:  syntax error at or near "table" at character 6
+STATEMENT:  show table;
+ERROR:  syntax error at or near "use" at character 1
+STATEMENT:  use snmp_db;
+ERROR:  syntax error at or near "using" at character 1
+STATEMENT:  using snmp_db;
+ERROR:  syntax error at or near "table" at character 6
+STATEMENT:  show table;
+ERROR:  unrecognized configuration parameter "tables"
+STATEMENT:  show tables;
+ERROR:  syntax error at or near "table" at character 15
+STATEMENT:  show snmp_db  table;
+ERROR:  unrecognized configuration parameter "snmp_db"
+STATEMENT:  show snmp_db;
+ERROR:  syntax error at or near "TABLE" at character 6
+STATEMENT:  show TABLE;
+ERROR:  syntax error at or near ";" at character 5
+STATEMENT:  show;
