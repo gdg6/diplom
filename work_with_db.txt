@@ -1,3 +1,0 @@
-psql -p 5432 -h localhost template1  #зайти в бд 
-CREATE USER snmp_admin WITH PASSWORD 'auq1lk4dk' CREATEDB  CREATEUSER;  #cоздать пользователя
-psql -p 5432 -h localhost snmp_db -U snmp_admin  # войти из под пользователя в бд.
