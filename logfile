@@ -1,0 +1,17 @@
+LOG:  database system was shut down at 2014-12-04 13:37:34 MSK
+LOG:  database system is ready to accept connections
+LOG:  autovacuum launcher started
+FATAL:  database "gdg6" does not exist
+FATAL:  database "db/" does not exist
+FATAL:  database "/db" does not exist
+FATAL:  database "/mnt/storage1/users/g/gd/gdg6/Desktop/Диплом/db/" does not exist
+FATAL:  database "gdg6" does not exist
+FATAL:  database "gdg6" does not exist
+FATAL:  database "gdg6" does not exist
+FATAL:  database "gdg6" does not exist
+FATAL:  database "gdg6" does not exist
+FATAL:  role "snmp_agent" does not exist
+FATAL:  database "snmp_admin" does not exist
+FATAL:  role "template1" does not exist
+ERROR:  role "snmp_admin" already exists
+STATEMENT:  CREATE USER snmp_admin WITH PASSWORD 'auq1lk4dk' CREATEDB  CREATEUSER;
