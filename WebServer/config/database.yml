@@ -15,10 +15,10 @@
 # gem 'pg'
 #
 default: &default
-  adapter: postgresql
+  adapter: sqlite3
   encoding: unicode
-  username: snmp_admin
-  password: auq1lk4dk
+#  username: snmp_admin
+#  password: auq1lk4dk
   # For details on connection pooling, see rails configuration guide
   # http://guides.rubyonrails.org/configuring.html#database-pooling
   pool: 5

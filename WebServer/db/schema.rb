@@ -13,9 +13,6 @@
 
 ActiveRecord::Schema.define(version: 20141204105201) do
 
-  # These are extensions that must be enabled in order to support this database
-  enable_extension "plpgsql"
-
   create_table "users", force: true do |t|
     t.string   "login"
     t.string   "crypted_password"
