@@ -5,6 +5,8 @@
 const char *snmp_v3_passphrase = "password";
 const char *snmp_v3_privpass = "password";
 
+//~ gcc -Wall -o "%e" "%f" -lnetsnmp
+
 int main(int argc, char* argv[]) {
 	struct snmp_session session, *ss;
 	struct snmp_pdu *pdu;
