@@ -1,9 +1,19 @@
 class User < ActiveRecord::Base
-  #authenticates_with_sorcery!
+  ROLES=["Пользователь", "Администратор"]
 
-  validates :password, length: { minimum: 6 }
-  validates :password, confirmation: true
-  validates :password_confirmation, presence: true
 
   validates :login, uniqueness: true
+  validates :password, length: {minimum: 6, allow_blank: true}
+  validates :role, presence: true, inclusion: {in: 0...ROLES.size}
+  
+  before_validation :set_default_role
+
+  def set_default_role
+    self.role||=0
+  end
+  
+  def admin?
+    role==1
+  end
+  
 end

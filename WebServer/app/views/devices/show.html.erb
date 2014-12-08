@@ -1,0 +1,44 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Name:</strong>
+  <%= @device.name %>
+</p>
+
+<p>
+  <strong>Description:</strong>
+  <%= @device.description %>
+</p>
+
+<p>
+  <strong>Room:</strong>
+  <%= @device.room %>
+</p>
+
+<p>
+  <strong>Mac:</strong>
+  <%= @device.mac %>
+</p>
+
+<p>
+  <strong>Serial number:</strong>
+  <%= @device.serial_number %>
+</p>
+
+<p>
+  <strong>Model:</strong>
+  <%= @device.model %>
+</p>
+
+<p>
+  <strong>Port:</strong>
+  <%= @device.port %>
+</p>
+
+<p>
+  <strong>Mib:</strong>
+  <%= @device.mib_id %>
+</p>
+
+<%= link_to 'Edit', edit_device_path(@device) %> |
+<%= link_to 'Back', devices_path %>

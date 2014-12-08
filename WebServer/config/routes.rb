@@ -1,4 +1,10 @@
 Rails.application.routes.draw do
+  resources :reports
+
+  resources :mibs
+
+  resources :devices
+
   resources :users
 
   root :to=>"users#index"
