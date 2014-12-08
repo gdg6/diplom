@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <diagram program="umlet" version="13.0">
-  <zoom_level>10</zoom_level>
+  <zoom_level>7</zoom_level>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>80</x>
-      <y>330</y>
-      <w>210</w>
-      <h>160</h>
+      <x>84</x>
+      <y>308</y>
+      <w>147</w>
+      <h>112</h>
     </coordinates>
     <panel_attributes>USER
 --
@@ -22,10 +22,10 @@ role : int
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>330</x>
-      <y>330</y>
-      <w>170</w>
-      <h>190</h>
+      <x>259</x>
+      <y>308</y>
+      <w>119</w>
+      <h>133</h>
     </coordinates>
     <panel_attributes>DEVICE
 --
@@ -37,7 +37,7 @@ mac : string
 serial_number : string
 model : string
 port_number : integer 
-
+mib_id : int, index
 
 </panel_attributes>
     <additional_attributes/>
@@ -45,10 +45,10 @@ port_number : integer
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>320</x>
-      <y>70</y>
-      <w>170</w>
-      <h>120</h>
+      <x>252</x>
+      <y>126</y>
+      <w>119</w>
+      <h>84</h>
     </coordinates>
     <panel_attributes>DATA_BASE
 --
@@ -58,10 +58,10 @@ port_number : integer
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>10</x>
-      <y>120</y>
-      <w>190</w>
-      <h>30</h>
+      <x>35</x>
+      <y>161</y>
+      <w>133</w>
+      <h>21</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
     <additional_attributes>10.0;10.0;170.0;10.0</additional_attributes>
@@ -69,10 +69,10 @@ port_number : integer
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>170</x>
-      <y>180</y>
-      <w>200</w>
-      <h>170</h>
+      <x>147</x>
+      <y>203</y>
+      <w>140</w>
+      <h>119</h>
     </coordinates>
     <panel_attributes>lt=&lt;-</panel_attributes>
     <additional_attributes>180.0;10.0;180.0;90.0;10.0;90.0;10.0;150.0</additional_attributes>
@@ -80,10 +80,10 @@ port_number : integer
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>0</x>
-      <y>0</y>
-      <w>190</w>
-      <h>30</h>
+      <x>28</x>
+      <y>77</y>
+      <w>133</w>
+      <h>21</h>
     </coordinates>
     <panel_attributes>lt=&lt;-</panel_attributes>
     <additional_attributes>10.0;10.0;170.0;10.0</additional_attributes>
@@ -91,10 +91,10 @@ port_number : integer
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>390</x>
-      <y>180</y>
-      <w>30</w>
-      <h>170</h>
+      <x>301</x>
+      <y>203</y>
+      <w>21</w>
+      <h>119</h>
     </coordinates>
     <panel_attributes>lt=&lt;-</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;150.0</additional_attributes>
@@ -102,15 +102,69 @@ port_number : integer
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>570</x>
-      <y>320</y>
-      <w>170</w>
-      <h>120</h>
+      <x>546</x>
+      <y>308</y>
+      <w>119</w>
+      <h>84</h>
     </coordinates>
     <panel_attributes>MIB
 --
 file_name_mib : string
+
 </panel_attributes>
     <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>371</x>
+      <y>329</y>
+      <w>189</w>
+      <h>28</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+m1=*
+m2=1</panel_attributes>
+    <additional_attributes>10.0;10.0;250.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>546</x>
+      <y>399</y>
+      <w>119</w>
+      <h>84</h>
+    </coordinates>
+    <panel_attributes>REPORTS
+--
+device_id; integer
+context : text
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>371</x>
+      <y>427</y>
+      <w>189</w>
+      <h>28</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+m1=1
+m2=*</panel_attributes>
+    <additional_attributes>10.0;10.0;250.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>49</x>
+      <y>175</y>
+      <w>133</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;170.0;10.0</additional_attributes>
   </element>
 </diagram>

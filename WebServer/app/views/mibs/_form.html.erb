@@ -1,0 +1,21 @@
+<%= form_for(@mib) do |f| %>
+  <% if @mib.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@mib.errors.count, "error") %> prohibited this mib from being saved:</h2>
+
+      <ul>
+      <% @mib.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :file_name_mib %><br>
+    <%= f.text_field :file_name_mib %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

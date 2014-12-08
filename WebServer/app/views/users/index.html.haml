@@ -1,0 +1,14 @@
+.page-header
+  %h1 Пользователи
+.list-group
+  -@users.each do |user|
+    .list-group-item
+      .pull-right
+        =link_to edit_user_path(user), class: 'btn btn-primary btn-sm' do
+          =fa_icon 'edit'
+        =link_to user, method: :delete, data: {confirm: t('helpers.sure')}, class: 'btn btn-danger btn-sm' do
+          =fa_icon 'trash-o'
+      %h4=user.login
+      .text-muted=user.login
+      .clearfix
+

@@ -1,0 +1,12 @@
+=form_for @user do |f|
+  .form-group
+    =f.label :login
+    =f.text_field :login, class: 'form-control'
+  .form-group
+    =f.label :password
+    =f.password_field :password, class: 'form-control'
+  .form-group
+    =f.label :password_confirmation
+    =f.password_field :password_confirmation, class: 'form-control'
+  .form-actions
+    = f.submit nil, class: 'btn btn-primary'
