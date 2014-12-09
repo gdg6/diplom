@@ -4,6 +4,33 @@
 
 const char *snmp_v3_passphrase = "password";
 const char *snmp_v3_privpass = "password";
+// config_api.h по всей видимости работатет с mib-aми  - configure
+
+//mib_api.h - init mib - read and parsing :
+
+// net-snmp-config.h = legacy defines. различные define для работы snmp
+
+// net-snmp-features.h - в зависимости от выставленных defines подрубает различгые библиотеки
+
+// net-snmp-includes.h - подрубает как стандартные библиотеки так и snmp
+
+// output_api.h - содержит процедуры логирования(loggin) и вывода сообщений с дебагом
+
+//pdu_api.h   - содержит процедуры связанные с SNMP PDU (protocol data unit)
+
+// session_api.h - содержит процедуры связанные с сессией - создание сессии, отправка и чтение ответов и много другое. в библиотеке все прокомментировано.
+
+//snmpv3_api.h - подключение различных библеотек + библеотека для шифровантя md5
+
+//types.h - содержит описание таких структур как snmp_pdu, snmp_session  и т.п.
+
+//utilites.h - содержит только подключаемые библиотеки (утилиты из net-snmp/librry)
+
+// varbind.h - cодержит такие функции как snmp_free_var print_value . Содержит процедуры имеющие отношение к связанным переменным и значениям к примеру: 
+//netsnmp_variable_list *  snmp_pdu_add_variable(....);
+
+
+//version.h - просто содержит метод для возрата версии. в примеру char * netsnmp_get_version(void);
 
 //~ gcc -Wall -o "%e" "%f" -lnetsnmp
 
