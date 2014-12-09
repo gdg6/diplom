@@ -8,5 +8,7 @@
   .form-group
     =f.label :password_confirmation
     =f.password_field :password_confirmation, class: 'form-control'
+  .form-group
+    =f.text_field :role
   .form-actions
     = f.submit nil, class: 'btn btn-primary'
