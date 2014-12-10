@@ -71,8 +71,6 @@ public:
                   snmp_log(LOG_ERR, "Error generating a key (Ku) from the supplied privacy pass phrase. \n");
                  status = ERR_OPEN;
           }
-
-
    }
 
    int openSession() {
