@@ -17,3 +17,7 @@ to another SNMP manager system or passed to an external application.
 
 snmpd - an extensible agent for responding to SNMP queries for management information. This included support for wide range of MIB information modules, and can
 be extended using dynamivally loaded modules, external scripts and commands, and both the SNMP  multiplexing (SMUX) and Agent Extensibility (AgentX) protocols.
+
+//======================= перевод =========================
+
+snmptranslate - конертер между числовыми и текстовыми представлениями уникальных индетификаторов в MIB, а так же он отображает различное содержимое

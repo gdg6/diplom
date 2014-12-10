@@ -55,7 +55,8 @@ int main(int argc, char ** argv)
     * Initialize a "session" that defines who we're going to talk to
     */
    snmp_sess_init( &session );
-   char peername[] = "test.net-snmp.org";                   /* set up defaults */
+   char peername[] = "localhost";                   /* set up defaults */
+   //char peername[] = "test.net-snmp.org";                   /* set up defaults */   
    session.peername = peername;
    
    /* set up the authentication parameters for talking to the server */
@@ -67,7 +68,7 @@ int main(int argc, char ** argv)
    session.version=SNMP_VERSION_3;
         
    /* set the SNMPv3 user name */
-   session.securityName = strdup("MD5User");
+   session.securityName = strdup("snmpuse");
    session.securityNameLen = strlen(session.securityName);
    
    /* set the security level to authenticated, but not encrypted */
