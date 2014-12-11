@@ -63,13 +63,22 @@ public:
 };
 
 
+class SnmpSqlite{
+  SnmpSqlite * snmp_sqlite;
+public:
+  
+
+
+
+};
+
 int callback( void * data, int argc, char ** argv, char ** azColName)
 {
     int i = 0;
     std::cerr << ((const char * ) data) << ":" ;
     while(i < argc )
    {
-       std::cout << azColName[i] << " = " << (argv[i] ? argv[i] : "NULL");
+       std::cout << azColName[i] << " = " << (argv[i] ? argv[i] : "NULL") << " ";
        i++;
     }
     std::cout << std::endl;
@@ -80,16 +89,16 @@ int callback( void * data, int argc, char ** argv, char ** azColName)
 #include <string.h>
 int main()
 {
-   const char * name_db = "../WebServer/snmp_db";
+   const char * name_db = "snmp_db";
    int (*my_callback)(void *, int, char **, char **) = & callback;
    ModelSqlite3 *  m = new ModelSqlite3(name_db);
    std::cout << m -> getStatus() << std::endl;
    char * sql = "create table company (\
-                ID int primary key not null AUTO_INCREMENT, \
-                name text not null);";
+                `ID` INTEGER PRIMARY KEY AUTOINCREMENT , \
+                `name` text not null);";
    m -> sqlExec(sql, "test");
    std:: cout << "status:" << m -> getStatus() << std::endl;
-   sql = "INSERT INTO COMPANY ( NAME) VALUES ('Paul'), ('KRISTINA');";
+   sql = "INSERT INTO COMPANY ( NAME) VALUES ('Paul'), ( 'KRISTINA');";
    m->sqlExec(sql, "test2");
    std::cout << "status: " << m->getStatus() << std::endl;
    sql = "select * from company";

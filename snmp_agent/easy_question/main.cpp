@@ -7,7 +7,7 @@
 
 
 #define INIT_NAME "snmpapp"
-#define PEERNAME "test.net-snmp.org"
+//#define PEERNAME "test.net-snmp.org"
 
 #define ERR_CREATE -1
 #define ERR_OPEN -2
@@ -17,13 +17,14 @@
 class SnmpAgent
 {
 private:   
-   struct snmp_session session, * ss;
+
    struct snmp_pdu * pdu;
    struct snmp_pdu * response;
    struct variable_list * vars;
+   struct snmp_session session, *ss;
    oid anOID[MAX_OID_LEN];
    size_t  anOID_len = MAX_OID_LEN;
-   
+ 
    int status;
    int status_obj;
    
@@ -32,21 +33,15 @@ public:
               const char * &  snmp_v3_passphrase,
               const char * & snmp_v3_privpass ) : status(0), status_obj(0)
     {
-        std::cout << address << std::endl;
-        std::cout << userName << std::endl;
-	std::cout << snmp_v3_passphrase << std::endl;
-	std::cout << snmp_v3_privpass << std::endl;
-	
-
-
 	init_snmp(INIT_NAME);
         snmp_sess_init(&session);
         session.peername = address;
-        session.version = SNMP_VERSION_3;
+        session.version = 2// SNMP_VERSION_3;
         session.securityName =  strdup(userName);
         session.securityNameLen = strlen(session.securityName);
         session.securityLevel = SNMP_SEC_LEVEL_AUTHNOPRIV;
-        /* set the authentication method to MD5 */
+       
+	 /* set the authentication method to MD5 */
         session.securityAuthProto = usmHMACMD5AuthProtocol;
         session.securityAuthProtoLen = sizeof(usmHMACMD5AuthProtocol)
 								/sizeof(oid);
@@ -65,20 +60,21 @@ public:
                 status = ERR_OPEN;
         }
 
-        session.securityPrivProto = usmDESPrivProtocol;
+            
+
+      session.securityPrivProto = usmDESPrivProtocol;
         session.securityPrivProtoLen = USM_PRIV_PROTO_DES_LEN;
         session.securityPrivKeyLen = USM_PRIV_KU_LEN;
-        
-        if(!status)
-          if (generate_Ku(session.securityAuthProto,
-                          session.securityAuthProtoLen,
-                          (u_char *) snmp_v3_privpass, strlen(snmp_v3_privpass),
-                          session.securityPrivKey,
-                          &session.securityPrivKeyLen) != SNMPERR_SUCCESS) {
-                  snmp_perror(INIT_NAME);
-                  snmp_log(LOG_ERR, "Error generating a key (Ku) from the supplied privacy pass phrase. \n");
-                 status = ERR_OPEN;
-          }
+
+        if (generate_Ku(session.securityAuthProto,
+                        session.securityAuthProtoLen,
+                        (u_char *) snmp_v3_privpass, strlen(snmp_v3_privpass),
+                        session.securityPrivKey,
+                        &session.securityPrivKeyLen) != SNMPERR_SUCCESS) {
+                snmp_perror(INIT_NAME);
+                snmp_log(LOG_ERR, "Error generating a key (Ku) from the supplied privacy pass phrase. \n");
+                exit(1);
+        }
    }
 
    int openSession() {
@@ -94,16 +90,14 @@ public:
    snmp_pdu *  sendResponce(const char * input)
    {
       pdu = snmp_pdu_create(SNMP_MSG_GET);
-      read_objid(input, anOID, &anOID_len);
+      read_objid(".1.3.6.1.2.1.1.1.0", anOID, &anOID_len);
       snmp_add_null_var(pdu, anOID, anOID_len);
-      /*
+     /*
       * Send the Request out.
-      */
-     
+      */     
      status = snmp_synch_response(ss, pdu, &response);
-
-          snmp_perror("ups");
-     
+     snmp_perror("ups"); 
+ 
      return response;
    }
 
