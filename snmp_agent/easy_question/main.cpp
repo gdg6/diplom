@@ -91,7 +91,11 @@ public:
       /*
       * Send the Request out.
       */
+     
      status = snmp_synch_response(ss, pdu, &response);
+
+          snmp_perror("ups");
+     
      return response;
    }
 
@@ -143,7 +147,11 @@ public:
 
 int main()
 {
- SnmpAgent *  agent  = new SnmpAgent("localhost", "snmpuser", "password", "password");
+ 
+  const char * passphrase = "password";
+  const char * privpass = "password";
+  SnmpAgent *  agent  = new SnmpAgent("localhost", "snmpuser",
+               passphrase, privpass);
  if(agent->getStatus() != 0) {
   std::cout << "fail status" << std::endl;
   return -2;
