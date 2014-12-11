@@ -12,6 +12,7 @@
 #define ERR_CREATE -1
 #define ERR_OPEN -2
 
+//snmpget -v 3 -a md5 -A password -x des -X password -u snmpuser -l priv localhost .1.3.6.1.2.1.1.3.0
 
 class SnmpAgent
 {
@@ -28,9 +29,16 @@ private:
    
 public: 
     SnmpAgent(char * address, char * userName, 
-              const char * snmp_v3_passphrase,
-              const char * snmp_v3_privpass ) : status(0), status_obj(0)
+              const char * &  snmp_v3_passphrase,
+              const char * & snmp_v3_privpass ) : status(0), status_obj(0)
     {
+        std::cout << address << std::endl;
+        std::cout << userName << std::endl;
+	std::cout << snmp_v3_passphrase << std::endl;
+	std::cout << snmp_v3_privpass << std::endl;
+	
+
+
 	init_snmp(INIT_NAME);
         snmp_sess_init(&session);
         session.peername = address;
@@ -140,8 +148,6 @@ public:
     snmp_close(ss);
     SOCK_CLEANUP; 
    }
-
-
 };
 
 
@@ -161,7 +167,7 @@ int main()
    return -3;
  }
  struct snmp_pdu * response = NULL;
- response =  agent -> sendResponce(".1.3.6.1.2.1.1.1.0");
+ response =  agent -> sendResponce(".1.3.6.1.2.1.1.3.0");
  if(!response) {
     std::cout << "ok response" << std::endl;
     agent -> printResponse(response);
