@@ -58,17 +58,6 @@ mib_id : int, index
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>35</x>
-      <y>161</y>
-      <w>133</w>
-      <h>21</h>
-    </coordinates>
-    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
-    <additional_attributes>10.0;10.0;170.0;10.0</additional_attributes>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
       <x>147</x>
       <y>203</y>
       <w>140</w>
@@ -76,17 +65,6 @@ mib_id : int, index
     </coordinates>
     <panel_attributes>lt=&lt;-</panel_attributes>
     <additional_attributes>180.0;10.0;180.0;90.0;10.0;90.0;10.0;150.0</additional_attributes>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>28</x>
-      <y>77</y>
-      <w>133</w>
-      <h>21</h>
-    </coordinates>
-    <panel_attributes>lt=&lt;-</panel_attributes>
-    <additional_attributes>10.0;10.0;170.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
@@ -157,14 +135,29 @@ m2=*</panel_attributes>
     <additional_attributes>10.0;10.0;250.0;10.0</additional_attributes>
   </element>
   <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>266</x>
+      <y>553</y>
+      <w>105</w>
+      <h>77</h>
+    </coordinates>
+    <panel_attributes>OID
+--
+Key_oid</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
     <id>Relation</id>
     <coordinates>
-      <x>49</x>
-      <y>175</y>
-      <w>133</w>
-      <h>21</h>
+      <x>308</x>
+      <y>434</y>
+      <w>21</w>
+      <h>133</h>
     </coordinates>
-    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
-    <additional_attributes>10.0;10.0;170.0;10.0</additional_attributes>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+m1=1
+m2=*</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;170.0</additional_attributes>
   </element>
 </diagram>
