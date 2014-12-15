@@ -1,12 +1,14 @@
 // Обертка для работы с SQLITE3
 // Разработан для дипломной работы  
 
+#ifndef __SQLITE3
+#define __SQLITE3
 
 #include <sqlite3.h>
 #include <iostream>
+#include "sqlService.cpp"
 
-
-class ModelSqlite3 {
+class Sqlite3IO  : public  SqlService {
 private:
     sqlite3 * db;
     int rc;
@@ -35,7 +37,7 @@ private:
 public:  
     //необходимо будет сделать обработку ошибки и желательно иметь разный доступ к бд. 
     // см мануал
-    ModelSqlite3(const char * name_db)
+    Sqlite3IO(const char * name_db)
     {
 	rc = sqlite3_open(name_db, & db);
     }
@@ -55,10 +57,12 @@ public:
       return rc;
     }
 
-   ~ModelSqlite3()
+   ~Sqlite3IO()
    {
      if (db) sqlite3_close(db);
    }
 
 };
 
+
+#endif

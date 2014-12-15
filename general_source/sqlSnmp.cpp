@@ -44,25 +44,40 @@ public:
 		std::cout << sql;
 	}
 	
+	void createTable(char * table_name, char *fields[], int size) {
+		std::string sql = "CREATE TABLE ";
+		sql += table_name; sql += " (";
+		int i = 0;
+		for(;i < size - 1; i++) {
+			sql += fields[i];
+			sql += ", "; 
+		}
+		sql += fields[i];
+		sql += ");";
+		std::cout << sql.c_str();
+	}
+	
 };
 
 
 
 #endif
 
-//~ SqlService * factory(int type, const char * nameDatabase) {
-  //~ return new Sqlite3IO(nameDatabase);
-//~ }
-//~ 
-//~ 
-//~ int main()
-//~ {
-	//~ const char name_db [] = "snmp_db";
-	//~ std::shared_ptr<SqlService> sql = std::shared_ptr<SqlService>(factory(1, name_db));
-	//~ SqlSnmp s(sql); 
+SqlService * factory(int type, const char * nameDatabase) {
+  return new Sqlite3IO(nameDatabase);
+}
+
+
+int main()
+{
+	const char name_db [] = "snmp_db";
+	std::shared_ptr<SqlService> sql = std::shared_ptr<SqlService>(factory(1, name_db));
+	SqlSnmp s(sql); 
 	//~ s.writeLog("hello");
 	//~ s.insertInto("Transport", "ID, NAME", "1, 'vagon'");
 	//~ s.select("tran", "name", "WHERE id == 1", "ORDER BY id", true);
-	//~ return 0;
-//~ }
+	char *t[] ={"ID INTEGER PRIMARY KEY AUTOINCREMENT","NAME text not null"};
+	s.createTable("trololo", t, 2);
+	return 0;
+}
 
