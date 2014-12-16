@@ -35,3 +35,8 @@ int main()
    return 0;
 }
 
+	//~ char *users_table = "users";
+    //~ char *users_field[COUNT_USER_FIELD] = {"id INTEGER PRIMARY KEY AUTOINCREMENT","login text not null", "PASSWORD text", "role INTEGER"};
+
+    //~ char * reports_table = "reports";
+    //~ char * reports_field[COUNT_REPORT_FIELD] = {"id INTEGER PRIMARY KEY AUTOINCREMENT","device_id INTEGER not null", "context text"};

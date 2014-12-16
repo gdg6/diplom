@@ -69,7 +69,6 @@ public:
 	void AuthorizationUser()
 	{
 		std::cout << "Enter name";
-		
 	}
 	
 	void insertReport(int device_id, std::string context)
@@ -87,6 +86,8 @@ public:
 int main()
 {
     App p;
-
+    p.insertReport(2, "hello");
+    p.insertReport(3, "test3");
+    p.insertReport(4, "test4");
 	return 0;
 }

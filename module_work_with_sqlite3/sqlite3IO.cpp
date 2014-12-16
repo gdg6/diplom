@@ -39,7 +39,7 @@ public:
     // см мануал
     Sqlite3IO(const char * name_db)
     {
-	rc = sqlite3_open(name_db, & db);
+		rc = sqlite3_open(name_db, & db);
     }
 
     int sqlExec(const char * sql, char * description)

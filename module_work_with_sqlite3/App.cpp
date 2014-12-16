@@ -14,7 +14,7 @@
 class App {
 private:
 
-	const char * db_name = "../snmp_db";
+	const char * db_name = "snmp_db";
 // ============== USERS ===============
     std::string sql_user_create_table = "CREATE TABLE \'users\' (\'id\' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, \'login\' varchar(255), \'password_digest\' varchar(255), \'role\' integer, \'created_at\' datetime, \'updated_a\' datetime);";
 
