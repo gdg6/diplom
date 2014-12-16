@@ -1,0 +1,55 @@
+$border-radius-base: 0;
+$border-radius-large: 0;
+$border-radius-small: 0;
+
+$padding-base-vertical: 10px;
+$padding-base-horizontal: 15px;
+$padding-large-vertical: 16px;
+$padding-large-horizontal: 20px;
+
+$body-bg: #f2f2f2;
+
+@import 'bootstrap';
+
+.field_with_errors {
+  @extend .has-error;
+}
+
+.alert.alert-notice {
+  @extend .alert;
+  @extend .alert-success;
+}
+
+.form-actions {
+  padding-top: $padding-base-vertical;
+}
+
+.narrow {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.radio, .radio-inline {
+  label {
+    font-weight: normal;
+  }
+}
+
+.btn-toolbar {
+  padding: $padding-base-vertical 0;
+}
+
+.media {
+  background: #fff;
+  padding: $padding-base-vertical $padding-base-horizontal;
+}
+
+blockquote {
+  background: #fff;
+}
+
+.youtube {
+  height: 400px;
+  width: 100%;
+}
+

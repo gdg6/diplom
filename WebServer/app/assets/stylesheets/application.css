@@ -10,6 +10,29 @@
  * defined in the other CSS/SCSS files in this directory. It is generally better to create a new
  * file per style scope.
  *
- *= require_tree .
  *= require_self
+ *= require font-awesome
+ *= require main
+ *= require_tree .
  */
+
+.trololo{
+    position: absolute;
+    border-radius: 5px;
+    border: 2px;
+    border-style: solid;
+    /*height: 300px;*/
+    max-height:  70%;;
+    max-width: 70%;
+    margin-right: 50px;
+    margin-left: 200px;
+    z-index: 999999;
+
+}
+
+.trololo  h4{
+    padding: 4px;
+    height: 450px;
+    width: 930px;
+    /*text-overflow: clip;*/
+}

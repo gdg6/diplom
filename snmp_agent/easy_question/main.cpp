@@ -36,8 +36,8 @@ public:
 	init_snmp(INIT_NAME);
         snmp_sess_init(&session);
         session.peername = address;
-        session.version = 2// SNMP_VERSION_3;
-        session.securityName =  strdup(userName);
+        session.version =  SNMP_VERSION_3;
+        session.securityName =  strdup("snmpuser");
         session.securityNameLen = strlen(session.securityName);
         session.securityLevel = SNMP_SEC_LEVEL_AUTHNOPRIV;
        
