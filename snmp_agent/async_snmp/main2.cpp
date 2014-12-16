@@ -1,8 +1,5 @@
 #include <net-snmp/net-snmp-config.h>
 #include <net-snmp/net-snmp-includes.h>
-#include <iostream>
-#include <memory>
-#include <thread>
 
  /* change the word "define" to "undef" to try the (insecure) SNMPv1 version */
  #define DEMO_USE_SNMP_VERSION_3
@@ -12,23 +9,18 @@
  const char *our_v3_passphrase = "password";
  #endif
 
-char peername[] = "localhost";
+int main(int argc, char const *argv[])
+{
+   struct snmp_session session, *ss;
+   struct snmp_pdu *pdu;
+   struct snmp_pdu *response;
+           
+   oid anOID[MAX_OID_LEN];
+   size_t anOID_len = MAX_OID_LEN;
+   
+   struct variable_list *vars;
+   int status;
 
- class SnmpSessionDevice
- {
- 	  struct snmp_session session, *ss;
-    struct snmp_pdu *pdu;
-    struct snmp_pdu *response;
-    oid anOID[MAX_OID_LEN];
-    size_t anOID_len = MAX_OID_LEN;
-    struct variable_list *vars;
-    int status;
-
-    std::string currentAnswer;
-
-
- public:
- 	 SnmpSessionDevice(){
 /*
     * Initialize the SNMP library
     */
@@ -38,7 +30,7 @@ char peername[] = "localhost";
     * Initialize a "session" that defines who we're going to talk to
     */
    snmp_sess_init( &session );                   /* set up defaults */
-   session.peername = peername;
+   session.peername = "localhost";
    
    /* set up the authentication parameters for talking to the server */
    
@@ -68,6 +60,7 @@ char peername[] = "localhost";
                    (u_char *) our_v3_passphrase, strlen(our_v3_passphrase),
                    session.securityAuthKey,
                    &session.securityAuthKeyLen) != SNMPERR_SUCCESS) {
+       snmp_perror(argv[0]);
        snmp_log(LOG_ERR,
                 "Error generating Ku from authentication pass phrase. \n");
        exit(1);
@@ -75,37 +68,34 @@ char peername[] = "localhost";
    
 
     /* windows32 specific initialization (is a noop on unix) */
-    SOCK_STARTUP;
-   }
-
-   void openSession(){
-  	  ss = snmp_open(&session);
-
-  	  if (!ss) {
-  	    snmp_perror("ack");
-  	    snmp_log(LOG_ERR, "something horrible happened!!!\n");
-  	    exit(2);
-  	  }
-    }
-
-   std::shared_ptr<std::string>  responseToDevice(char * oid) {
-   currentAnswer = "";
+   SOCK_STARTUP;
+   
    /*
+    * Open the session
+    */
+   ss = snmp_open(&session);
+
+   if (!ss) {
+       snmp_perror("ack");
+       snmp_log(LOG_ERR, "something horrible happened!!!\n");
+       exit(2);
+   }
+ /*
     * Create the PDU for the data for our request.
     *   1) We're going to GET the system.sysDescr.0 node.
     */
    pdu = snmp_pdu_create(SNMP_MSG_GET);
 
-   read_objid(oid, anOID, &anOID_len);
+   read_objid(".1.3.6.1.2.1.1.1.0", anOID, &anOID_len);
    
-// #if OTHER_METHODS
-//    get_node("sysDescr.0", anOID, &anOID_len);
-//    read_objid("system.sysDescr.0", anOID, &anOID_len);
-// #endif
+#if OTHER_METHODS
+   get_node("sysDescr.0", anOID, &anOID_len);
+   read_objid("system.sysDescr.0", anOID, &anOID_len);
+#endif
 
    snmp_add_null_var(pdu, anOID, anOID_len);
 
-  /*
+/*
     * Send the Request out.
     */
    status = snmp_synch_response(ss, pdu, &response);
@@ -119,16 +109,19 @@ char peername[] = "localhost";
       * SUCCESS: Print the result variables
       */
 
-    for(vars = response->variables; vars; vars = vars->next_variable)
-     print_variable(vars->name, vars->name_length, vars);
+      for(vars = response->variables; vars; vars = vars->next_variable)
+       print_variable(vars->name, vars->name_length, vars);
        
 
         /* manipulate the information ourselves */
      for(vars = response->variables; vars; vars = vars->next_variable) {
        int count=1;
        if (vars->type == ASN_OCTET_STR) {
-         currentAnswer += (char*)vars->val.string;
-         std::cout << currentAnswer;
+         char *sp = (char *)malloc(1 + vars->val_len);
+         memcpy(sp, vars->val.string, vars->val_len);
+         sp[vars->val_len] = '\0';
+         printf("value #%d is a string: %s\n", count++, sp);
+         free(sp);
        }
        else
          printf("value #%d is NOT a string! Ack!\n", count++);
@@ -140,48 +133,25 @@ char peername[] = "localhost";
       */
     
      if (status == STAT_SUCCESS)
-       fprintf(stderr, "Error in packet\nReason: %s\n", snmp_errstring(response->errstat));
+       fprintf(stderr, "Error in packet\nReason: %s\n",
+               snmp_errstring(response->errstat));
      else
        snmp_sess_perror("snmpget", ss);
+    
    }
-   	   if (response) {
-	      snmp_free_pdu(response);
-   	   	response = NULL;
-   	   }
 
-    return std::shared_ptr<std::string>(new std::string(currentAnswer.c_str()));
- }
+      /*
+    * Clean up:
+    *  1) free the response.
+    *  2) close the session.
+    */
+   if (response)
+     snmp_free_pdu(response);
+   snmp_close(ss);
+    
+   /* windows32 specific cleanup (is a noop on unix) */
+   SOCK_CLEANUP;
+   
 
-
- 	~ SnmpSessionDevice()
- 	{
-       /*
-	    * Clean up:
-	    *  1) free the response.
-	    *  2) close the session.
-	    */
-	   if (response)
-	     snmp_free_pdu(response);
-	   snmp_close(ss);
-	    
-	   /* windows32 specific cleanup (is a noop on unix) */
-	   SOCK_CLEANUP;
- 	}
- 	
- };
-
- int main(int argc, char const *argv[])
- {
- 	/* code */
- 	SnmpSessionDevice s;
- 	s.openSession();
-  char  oid[] = ".1.3.6.1.2.1.1.1.0";
-  std::shared_ptr<std::string> str;
-  for(int i = 0; i < 5; i++) {
-
- 	  str = s.responseToDevice(oid);
-    std::cout << str << std::endl;
-  }
- 	return 0;
- }
-
+	return 0;
+}

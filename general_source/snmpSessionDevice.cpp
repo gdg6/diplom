@@ -1,3 +1,6 @@
+#ifndef __SNMP_SESSION_DEVICE__
+#define __SNMP_SESSION_DEVICE__
+
 #include <net-snmp/net-snmp-config.h>
 #include <net-snmp/net-snmp-includes.h>
 #include <iostream>
@@ -170,18 +173,7 @@ char peername[] = "localhost";
  	
  };
 
- int main(int argc, char const *argv[])
- {
- 	/* code */
- 	SnmpSessionDevice s;
- 	s.openSession();
-  char  oid[] = ".1.3.6.1.2.1.1.1.0";
-  std::shared_ptr<std::string> str;
-  for(int i = 0; i < 5; i++) {
+#endif
 
- 	  str = s.responseToDevice(oid);
-    std::cout << str << std::endl;
-  }
- 	return 0;
- }
+
 
