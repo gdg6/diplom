@@ -44,7 +44,7 @@ int main(int argc, char* argv[]) {
    
 	struct variable_list *vars;
 	int status;
-
+        printf("argv = %s\n", argv[0]);
 	init_snmp(argv[0]);
 	snmp_sess_init(&session);
 	session.peername = "localhost";

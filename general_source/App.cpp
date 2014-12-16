@@ -94,10 +94,9 @@ int main()
     char  oid[] = ".1.3.6.1.2.1.1.1.0";
     std::shared_ptr<std::string> str;
     for(int i = 0; i < 5; i++) {
-
  	  str = s.responseToDevice(oid);
-      std::cout << str << std::endl;
-
+          std::cout << str << std::endl;
+//          p.insertReport(1, str);
     }
 	return 0;
 }

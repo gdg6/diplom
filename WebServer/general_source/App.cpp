@@ -2,6 +2,7 @@
 #include "sqlSnmp.cpp"
 #include "sqlite3IO.cpp"
 #include "pgSql.cpp"
+#include "snmpSessionDevice.cpp"
 #include <memory>
 #include <thread>
 #include <string>
@@ -69,6 +70,7 @@ public:
 	void AuthorizationUser()
 	{
 		std::cout << "Enter name";
+		
 	}
 	
 	void insertReport(int device_id, std::string context)
@@ -82,12 +84,20 @@ public:
 	
 };
 
-
+#include <unistd.h>
 int main()
 {
     App p;
-    p.insertReport(2, "hello");
-    p.insertReport(3, "test3");
-    p.insertReport(4, "test4");
+ 	/* code */
+ 	SnmpSessionDevice s;
+ 	s.openSession();
+    char  oid[] = ".1.3.6.1.2.1.1.1.0";
+    std::shared_ptr<std::string> str;
+    for(;;) {
+ 	  str = s.responseToDevice(oid);
+          std::cout << str << std::endl;
+         p.insertReport(1, *str.get());
+          sleep(5);
+    }
 	return 0;
 }
