@@ -13,12 +13,6 @@
 
 ActiveRecord::Schema.define(version: 20141208135403) do
 
-  create_table "company", primary_key: "ID", force: true do |t|
-    t.text "name", null: false
-  end
-
-  add_index "company", ["ID"], name: "sqlite_autoindex_company_1", unique: true
-
   create_table "devices", force: true do |t|
     t.string   "name"
     t.string   "description",   limit: 1024
@@ -26,7 +20,10 @@ ActiveRecord::Schema.define(version: 20141208135403) do
     t.string   "mac"
     t.string   "serial_number"
     t.string   "model",         limit: 1024
+    t.string   "peername"
     t.integer  "port"
+    t.string   "login"
+    t.string   "password"
     t.integer  "mib_id"
     t.datetime "created_at"
     t.datetime "updated_at"

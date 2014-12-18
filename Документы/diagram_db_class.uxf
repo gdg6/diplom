@@ -4,8 +4,8 @@
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>84</x>
-      <y>308</y>
+      <x>77</x>
+      <y>322</y>
       <w>147</w>
       <h>112</h>
     </coordinates>
@@ -22,10 +22,10 @@ role : int
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>259</x>
-      <y>308</y>
+      <x>252</x>
+      <y>322</y>
       <w>119</w>
-      <h>133</h>
+      <h>168</h>
     </coordinates>
     <panel_attributes>DEVICE
 --
@@ -36,7 +36,11 @@ room: string
 mac : string
 serial_number : string
 model : string
-port_number : integer 
+port_number : integer
+//== authorizaction ==
+login : string
+password : string
+// == mib ==
 mib_id : int, index
 
 </panel_attributes>
@@ -45,8 +49,8 @@ mib_id : int, index
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>252</x>
-      <y>126</y>
+      <x>245</x>
+      <y>140</y>
       <w>119</w>
       <h>84</h>
     </coordinates>
@@ -58,8 +62,8 @@ mib_id : int, index
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>147</x>
-      <y>203</y>
+      <x>140</x>
+      <y>217</y>
       <w>140</w>
       <h>119</h>
     </coordinates>
@@ -69,8 +73,8 @@ mib_id : int, index
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>301</x>
-      <y>203</y>
+      <x>294</x>
+      <y>217</y>
       <w>21</w>
       <h>119</h>
     </coordinates>
@@ -80,8 +84,8 @@ mib_id : int, index
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>546</x>
-      <y>308</y>
+      <x>539</x>
+      <y>322</y>
       <w>119</w>
       <h>84</h>
     </coordinates>
@@ -95,8 +99,8 @@ file_name_mib : string
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>371</x>
-      <y>329</y>
+      <x>364</x>
+      <y>343</y>
       <w>189</w>
       <h>28</h>
     </coordinates>
@@ -108,8 +112,8 @@ m2=1</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>546</x>
-      <y>399</y>
+      <x>539</x>
+      <y>413</y>
       <w>119</w>
       <h>84</h>
     </coordinates>
@@ -124,8 +128,8 @@ context : text
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>371</x>
-      <y>427</y>
+      <x>364</x>
+      <y>441</y>
       <w>189</w>
       <h>28</h>
     </coordinates>
@@ -137,8 +141,8 @@ m2=*</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>266</x>
-      <y>553</y>
+      <x>259</x>
+      <y>567</y>
       <w>105</w>
       <h>77</h>
     </coordinates>
@@ -150,14 +154,14 @@ Key_oid</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>308</x>
-      <y>434</y>
+      <x>301</x>
+      <y>483</y>
       <w>21</w>
-      <h>133</h>
+      <h>98</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;-
 m1=1
 m2=*</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;170.0</additional_attributes>
+    <additional_attributes>10.0;10.0;10.0;120.0</additional_attributes>
   </element>
 </diagram>

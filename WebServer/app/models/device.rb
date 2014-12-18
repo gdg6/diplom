@@ -5,5 +5,8 @@ class Device < ActiveRecord::Base
   validates :room, :presence => true, :length => {:maximum => 25}
   validates :mac, :presence => true, :uniqueness => true
   validates :model, :presence => true
+  validates :peername, :presence => true
   validates :port, :presence => true
+  validates :login, :presence => true
+  validates :password, :presence => true
 end
