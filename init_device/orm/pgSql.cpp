@@ -16,8 +16,15 @@ public:
     int sqlExec(const char * sql, char * description, int (*callback)(void*, int, char **, char **)) {
 	  return 0;
 	}
+
     int getStatus(){
 	  return 0;
+	}
+
+	// в базовом классе необходимо пименить стратегию что бы возращять указатель на разные типа дб
+	sqlite3 * getDb()
+	{
+		return NULL;
 	}
 };
 

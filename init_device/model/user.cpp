@@ -2,7 +2,6 @@
 #define __USER__
 
 #include <string>
-#include <iostream>
 
 class User {
 private:

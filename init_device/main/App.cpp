@@ -35,9 +35,9 @@ private:
 	void initDB()
 	{
 #ifdef __SQLITE3__
-	std::shared_ptr<SqlService> service = std::shared_ptr<SqlService>(new Sqlite3IO(db_name));
+		std::shared_ptr<SqlService> service = std::shared_ptr<SqlService>(new Sqlite3IO(db_name));
 #else 
-	std::shared_ptr<SqlService> service = std::shared_ptr<SqlService>(new PgSql(db_name));
+		std::shared_ptr<SqlService> service = std::shared_ptr<SqlService>(new PgSql(db_name));
 #endif
 		sqlService = std::shared_ptr<SqlSnmp>(new SqlSnmp(service));
 		std::cout << "initDB: ok" << std::endl;

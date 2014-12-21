@@ -44,7 +44,7 @@ public:
 
     int sqlExec(const char * sql, char * description)
     {
-      return sql_exec(sql, description, this->callback);
+      return sql_exec(sql, description, this -> callback);
     }    
 
     int sqlExec(const char * sql, char * description, int (*callback)(void*, int, char **, char **))

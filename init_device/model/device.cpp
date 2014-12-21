@@ -1,6 +1,8 @@
 #ifndef __DEVICE__
 #define __DEVICE__
 
+#include <string>
+
 class Device {
 private:
 	int id;
@@ -31,9 +33,19 @@ public:
 		return id;
 	}
 
-	void setid(int id)
+	void setId(int id)
 	{
 		this->id = id;
+	}
+	
+	std::string getName()
+	{
+		return name;
+	}
+	
+	void setName(std::string name)
+	{
+		this-> name = name;
 	}
 	
 	std::string getLogin()
@@ -41,6 +53,16 @@ public:
 		return login;
 	}
 	
+	void setPeername(std::string peername)
+	{
+		this->peername = peername;
+	}
+
+	std::string getPeername()
+	{
+		return peername;
+	}
+
 	void setLogin(std::string login)
 	{
 		this -> login = login;
@@ -68,8 +90,5 @@ public:
 	
 };
 
-
-
 #endif
-
 

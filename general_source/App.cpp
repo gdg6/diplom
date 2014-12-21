@@ -3,6 +3,7 @@
 #include "sqlite3IO.cpp"
 #include "pgSql.cpp"
 #include "snmpSessionDevice.cpp"
+#include "current_time.cpp"
 #include <memory>
 #include <thread>
 #include <string>
