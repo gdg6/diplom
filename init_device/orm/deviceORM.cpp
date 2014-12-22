@@ -13,8 +13,8 @@
 
 class DeviceORM  : public ORM
 {
-	//~ std::string sql_select_by_id = "SELECT id, name, description, mac, serial_number, model, peername, port, login, password, mid_id FROM devices WHERE Id = ?";
-	std::string sql_select_by_id = "SELECT Name FROM devices WHERE Id = ?";
+	std::string sql_select_by_id = "SELECT Name, Description, Room, Mac, Serial_number, Model,  Peername, Port, Login, Password, Mib_id FROM devices WHERE Id = ?";
+	std::string sql_select_all = "SELECT * FROM devices;";
 	int rc; //status for db;
 	
 #ifdef __SQLITE3__
@@ -22,28 +22,6 @@ class DeviceORM  : public ORM
 #else
 
 #endif
-
-	//for output,  maybe in future deleted
-    static int callback( void * data, int argc, char ** argv, char ** azColName)
-    {
-       int i = 0;
-       std::cerr << ((const char * ) data) << ":" ;
-       while(i < argc )
-      {
-         std::cout << azColName[i] << " = " << (argv[i] ? argv[i] : "NULL");
-         i++;
-      }
-      std::cout << std::endl;
-      return 0;
-    }
-   
-    int sql_exec(const char * sql, char * description, int (*callback)(void *, int, char **, char **))
-    {
-      char * errMsg = 0;
-      rc = sqlite3_exec(db, sql, callback, (void * ) description, & errMsg);
-      if(rc != SQLITE_OK) std::cout << errMsg << std::endl;
-      return rc;
-    }  
 	
 public:
 	DeviceORM(const char * name_db)
@@ -55,9 +33,37 @@ public:
 #endif
 	}
 	
-	std::shared_ptr<std::list<Device>> getAll()
+	std::shared_ptr<std::vector<std::shared_ptr<Device>>> getAll()
 	{
-		std::shared_ptr<std::list<Device>> list = std::shared_ptr<std::list<Device>>(new std::list<Device>());
+
+		std::shared_ptr<std::vector<std::shared_ptr<Device>>> list(new std::vector<std::shared_ptr<Device>>());
+#ifdef __SQLITE3__
+		sqlite3_stmt *stmt;
+		
+		int rc = sqlite3_prepare_v2(db, sql_select_all.c_str(), -1, &stmt, 0);
+		if (rc != SQLITE_OK) {
+			throw std::string (sqlite3_errmsg(db));
+		}
+		std::shared_ptr<Device> device;
+		while((rc = sqlite3_step(stmt) ==  100)) { // до тех пор пока запрос возращяет результат
+			device = std::shared_ptr<Device>(new Device);
+			device -> setId(atoi((const char *)sqlite3_column_text(stmt, 0)));
+			device -> setName( std::string((const char *)sqlite3_column_text(stmt, 1)));
+			device -> setDescrition( std::string((const char *)sqlite3_column_text(stmt, 2)));
+			device -> setRoom( std::string((const char *)sqlite3_column_text(stmt, 3)));
+			device -> setMac( std::string((const char *)sqlite3_column_text(stmt, 4)));
+			device -> setSerialNumber( std::string((const char *)sqlite3_column_text(stmt, 5)));
+			device -> setModel(std::string((const char *)sqlite3_column_text(stmt, 6)));
+			device -> setPeername( std::string((const char *)sqlite3_column_text(stmt, 7)));
+			device -> setPortNumber( atoi((const char *)sqlite3_column_text(stmt, 8)));
+			device -> setLogin( std::string((const char *)sqlite3_column_text(stmt, 9)));
+			device -> setPassword( std::string((const char *)sqlite3_column_text(stmt, 10)));
+			device -> setMibPk( atoi((const char *)sqlite3_column_text(stmt, 11)));
+			list->push_back(device);
+		}
+#else
+
+#endif
 		return list;
 	}
 	
@@ -70,30 +76,49 @@ public:
 		sqlite3_stmt *stmt;
 
 		int rc = sqlite3_prepare_v2(db, sql_select_by_id.c_str(), -1, &stmt, NULL);
-		if (rc != SQLITE_OK)
+		if (rc != SQLITE_OK){
+			device->setStatus(device ->INIT_BAD);
 			throw std::string(sqlite3_errmsg(db));
-
+		}
 		rc = sqlite3_bind_int(stmt, 1, id);    // Using parameters ("?") is not
 		if (rc != SQLITE_OK) {                 // really necessary, but recommended
 			std::string errmsg(sqlite3_errmsg(db)); // (especially for strings) to avoid
 			sqlite3_finalize(stmt);            // formatting problems and SQL
+			device->setStatus(device ->INIT_BAD);
 			throw errmsg;                      // injection attacks.
+			return device;
 		}
 
-		rc = sqlite3_step(stmt);
+		std::cout << "step" << (rc = sqlite3_step(stmt)) << std::endl;
 		if (rc != SQLITE_ROW && rc != SQLITE_DONE) {
 			std::string errmsg(sqlite3_errmsg(db));
 			sqlite3_finalize(stmt);
+			device->setStatus(device ->INIT_BAD);
 			throw errmsg;
+			return device;
 		}
 		if (rc == SQLITE_DONE) {
 			sqlite3_finalize(stmt);
+		    device->setStatus(device ->INIT_BAD);
 			throw std::string("customer not found");
+			return device;
 		}
-		
-		device -> setId(id);
-		device -> setName( std::string((const char *)sqlite3_column_text(stmt, 0)));
-		
+	
+		if(device->getStatus() == device->INIT_SUCCESS) 
+		{
+			device -> setId(id);
+			device -> setName( std::string((const char *)sqlite3_column_text(stmt, 0)));
+			device -> setDescrition( std::string((const char *)sqlite3_column_text(stmt, 1)));
+			device -> setRoom( std::string((const char *)sqlite3_column_text(stmt, 2)));
+			device -> setMac( std::string((const char *)sqlite3_column_text(stmt, 3)));
+			device -> setSerialNumber( std::string((const char *)sqlite3_column_text(stmt, 4)));
+			device -> setModel(std::string((const char *)sqlite3_column_text(stmt, 5)));
+			device -> setPeername( std::string((const char *)sqlite3_column_text(stmt, 6)));
+			device -> setPortNumber( atoi((const char *)sqlite3_column_text(stmt, 7)));
+			device -> setLogin( std::string((const char *)sqlite3_column_text(stmt, 8)));
+			device -> setPassword( std::string((const char *)sqlite3_column_text(stmt, 9)));
+			device -> setMibPk( atoi((const char *)sqlite3_column_text(stmt, 10)));
+		}
 
 		sqlite3_finalize(stmt);
 #else
@@ -101,14 +126,34 @@ public:
 #endif
 		return device;
 	}
+	~DeviceORM()
+	{
+		sqlite3_close(db);
+	}
 };
 
 #endif
 
+
 int main()
 {
 	DeviceORM d("../../snmp_db");
-	std::shared_ptr<Device> device = d.getByPK(1);
-	std::cout << device->getName();
+	std::shared_ptr<std::vector<std::shared_ptr<Device>>> devices = d.getAll();
+	for(unsigned int i = 0; i < devices->size(); i ++) {
+		std::shared_ptr<Device> device = devices->at(i);
+		std::cout << "Id: " <<  device->getId() << std::endl;
+		std::cout << "Name: " << device->getName() << std::endl;
+		std::cout << "Description: " << device->getDescription() << std::endl;
+		std::cout << "Room: " << device->getRoom() << std::endl;
+		std::cout << "Mac: " << device->getMac() << std::endl;
+		std::cout << "SerialNumber: " << device->getSerialNumber() << std::endl;
+		std::cout << "Peername: " << device->getPeername() << std::endl;
+		std::cout << "PortNumber: " << device->getPortNumber() << std::endl;
+		std::cout << "Login: " << device->getLogin() << std::endl;
+		std::cout << "Password: " << device->getPassword() << std::endl;
+		std::cout << "Mib_id: " << device->getMibPk() << std::endl;
+		std::cout << "status " << (device->getStatus() == Device::INIT_SUCCESS) << std::endl;
+		std::cout << "###########################################" << std::endl;
+	}
 	return 0;
 }

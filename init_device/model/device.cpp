@@ -14,6 +14,7 @@ private:
 	std::string model;
 	std::string peername;
 	int port_number;
+		
 	//authorization
 	std::string login;
 	std::string password;
@@ -24,7 +25,9 @@ private:
 	int status;
 
 public: 
-	Device() 
+	enum {INIT_BAD, INIT_SUCCESS};
+	
+	Device() : status(INIT_SUCCESS)
 	{
 	}
 
@@ -48,9 +51,59 @@ public:
 		this-> name = name;
 	}
 	
-	std::string getLogin()
+	std::string getDescription()
 	{
-		return login;
+		return description;
+	}
+	
+	void setDescrition(std::string description)
+	{
+		this -> description = description;
+	}
+		
+	std::string getRoom()
+	{
+		return room;
+	}
+	
+	void setRoom(std::string room)
+	{
+		this -> room = room;
+	}
+		
+	std::string getMac()
+	{
+		return mac;
+	}
+	
+	void setMac(std::string mac)
+	{
+		this -> mac = mac; 
+	}
+	
+	std::string getSerialNumber()
+	{
+		return serial_number;
+	}
+	
+	void setSerialNumber(std::string serial_number)
+	{
+		this -> serial_number = serial_number;
+	}
+			
+	std::string getModel()
+	{
+		return model;
+	}
+
+	void setModel(std::string model)
+	{
+		this->model = model;
+	}
+		
+	std::string getPeername()
+	{
+		return peername;
 	}
 	
 	void setPeername(std::string peername)
@@ -58,9 +111,19 @@ public:
 		this->peername = peername;
 	}
 
-	std::string getPeername()
+	int getPortNumber()
 	{
-		return peername;
+		return port_number;
+	}
+	
+	void setPortNumber(int port_number)
+	{
+		this -> port_number = port_number;
+	}	
+
+	std::string getLogin()
+	{
+		return login;
 	}
 
 	void setLogin(std::string login)
@@ -76,6 +139,16 @@ public:
 	void setPassword(std::string password) 
 	{
 		this -> password = password;
+	}
+	
+	int getMibPk()
+	{
+		return mib_id;
+	}
+
+	void setMibPk(int mib_id)
+	{
+		this->mib_id = mib_id;
 	}
 
 	int getStatus()

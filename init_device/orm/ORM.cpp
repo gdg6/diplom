@@ -1,7 +1,7 @@
 #ifndef __ORM__
 #define __ORM__
 
-#include <list>
+#include <vector>
 #include <sqlite3.h>
 #include <memory>
 #include <thread>
@@ -17,7 +17,7 @@ public:
     //~ virtual int getStatus() = 0;
     
 	template <typename T>
-	std::shared_ptr<std::list<T>> getAll(){};
+	std::shared_ptr<std::vector<std::shared_ptr<T>>> getAll(){};
 	
 	template <typename T>
 	T getByPK(int id){};
