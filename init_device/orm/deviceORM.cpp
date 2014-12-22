@@ -3,13 +3,6 @@
 
 #include "ORM.cpp"
 #include "../model/device.cpp"
-#include <memory>
-#include <thread>
-#include <string>
-#include <string.h> // for strcpy
-#include <iostream>
-
-#define __SQLITE3__
 
 class DeviceORM  : public ORM
 {
@@ -24,14 +17,17 @@ class DeviceORM  : public ORM
 #endif
 	
 public:
-	DeviceORM(const char * name_db)
-	{
-#ifdef __SQLITE3__
-		rc = sqlite3_open(name_db, & db);
-#else
 
-#endif
+
+#ifdef __SQLITE3__
+	DeviceORM(sqlite3 * db) : rc(0)
+	{
+		this -> db = db;
 	}
+#else
+    //pg
+#endif
+	
 	
 	std::shared_ptr<std::vector<std::shared_ptr<Device>>> getAll()
 	{
@@ -89,7 +85,7 @@ public:
 			return device;
 		}
 
-		std::cout << "step" << (rc = sqlite3_step(stmt)) << std::endl;
+		rc = sqlite3_step(stmt);
 		if (rc != SQLITE_ROW && rc != SQLITE_DONE) {
 			std::string errmsg(sqlite3_errmsg(db));
 			sqlite3_finalize(stmt);
@@ -128,16 +124,19 @@ public:
 	}
 	~DeviceORM()
 	{
-		sqlite3_close(db);
+		
 	}
 };
 
 #endif
 
+#include <iostream>
 
 int main()
 {
-	DeviceORM d("../../snmp_db");
+	sqlite3 * db;
+	sqlite3_open("../../snmp_db", &db);
+	DeviceORM d(db);
 	std::shared_ptr<std::vector<std::shared_ptr<Device>>> devices = d.getAll();
 	for(unsigned int i = 0; i < devices->size(); i ++) {
 		std::shared_ptr<Device> device = devices->at(i);

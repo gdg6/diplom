@@ -7,6 +7,8 @@
 #include <thread>
 #include <string>
 
+#define __SQLITE3__
+
 //Создание технологии ORM для работы с sqlite3 and PostgressSQL
 
 class ORM {
@@ -20,7 +22,7 @@ public:
 	std::shared_ptr<std::vector<std::shared_ptr<T>>> getAll(){};
 	
 	template <typename T>
-	T getByPK(int id){};
+	std::shared_ptr<T> getByPK(int id){};
 	
 	//~ virtual void deleteByPK(int id) = 0;
 };
