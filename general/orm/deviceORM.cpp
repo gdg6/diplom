@@ -6,8 +6,10 @@
 
 class DeviceORM  : public ORM
 {
+    std::string sql_create_table = "CREATE TABLE \'devices\' (\'id\' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, \'name\' varchar(255), \'description\' varchar(1024), \'room\' varchar(25), \'mac\' varchar(255), \'serial_number\' varchar(255), \'model\' varchar(1024), \'port\' integer, \'login\' varchar(255), \'password\' varchar(255), \'mib_id\' integer, \'created_at\' datetime, \'updated_at\' datetime);";
 	std::string sql_select_by_id = "SELECT Name, Description, Room, Mac, Serial_number, Model,  Peername, Port, Login, Password, Mib_id FROM devices WHERE Id = ?";
 	std::string sql_select_all = "SELECT * FROM devices;";
+	
 	int rc; //status for db;
 	
 #ifdef __SQLITE3__
@@ -124,30 +126,30 @@ public:
 };
 
 #endif
-
-#include <iostream>
-
-int main()
-{
-	sqlite3 * db;
-	sqlite3_open("../../snmp_db", &db);
-	DeviceORM d(db);
-	std::shared_ptr<std::vector<std::shared_ptr<Device>>> devices = d.getAll();
-	for(unsigned int i = 0; i < devices->size(); i ++) {
-		std::shared_ptr<Device> device = devices->at(i);
-		std::cout << "Id: " <<  device->getId() << std::endl;
-		std::cout << "Name: " << device->getName() << std::endl;
-		std::cout << "Description: " << device->getDescription() << std::endl;
-		std::cout << "Room: " << device->getRoom() << std::endl;
-		std::cout << "Mac: " << device->getMac() << std::endl;
-		std::cout << "SerialNumber: " << device->getSerialNumber() << std::endl;
-		std::cout << "Peername: " << device->getPeername() << std::endl;
-		std::cout << "PortNumber: " << device->getPortNumber() << std::endl;
-		std::cout << "Login: " << device->getLogin() << std::endl;
-		std::cout << "Password: " << device->getPassword() << std::endl;
-		std::cout << "Mib_id: " << device->getMibPk() << std::endl;
-		std::cout << "status " << (device->getStatus() == Device::INIT_SUCCESS) << std::endl;
-		std::cout << "###########################################" << std::endl;
-	}
-	return 0;
-}
+//~ 
+//~ #include <iostream>
+//~ 
+//~ int main()
+//~ {
+	//~ sqlite3 * db;
+	//~ sqlite3_open("../../snmp_db", &db);
+	//~ DeviceORM d(db);
+	//~ std::shared_ptr<std::vector<std::shared_ptr<Device>>> devices = d.getAll();
+	//~ for(unsigned int i = 0; i < devices->size(); i ++) {
+		//~ std::shared_ptr<Device> device = devices->at(i);
+		//~ std::cout << "Id: " <<  device->getId() << std::endl;
+		//~ std::cout << "Name: " << device->getName() << std::endl;
+		//~ std::cout << "Description: " << device->getDescription() << std::endl;
+		//~ std::cout << "Room: " << device->getRoom() << std::endl;
+		//~ std::cout << "Mac: " << device->getMac() << std::endl;
+		//~ std::cout << "SerialNumber: " << device->getSerialNumber() << std::endl;
+		//~ std::cout << "Peername: " << device->getPeername() << std::endl;
+		//~ std::cout << "PortNumber: " << device->getPortNumber() << std::endl;
+		//~ std::cout << "Login: " << device->getLogin() << std::endl;
+		//~ std::cout << "Password: " << device->getPassword() << std::endl;
+		//~ std::cout << "Mib_id: " << device->getMibPk() << std::endl;
+		//~ std::cout << "status " << (device->getStatus() == Device::INIT_SUCCESS) << std::endl;
+		//~ std::cout << "###########################################" << std::endl;
+	//~ }
+	//~ return 0;
+//~ }

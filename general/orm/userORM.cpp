@@ -9,6 +9,8 @@
 class UserORM : public ORM
 {
 private:
+
+    std::string sql_create_table = "CREATE TABLE \'users\' (\'id\' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, \'login\' varchar(255), \'password_digest\' varchar(255), \'role\' integer, \'created_at\' datetime, \'updated_a\' datetime);";
 	std::string sql_select_by_login = "SELECT id, login, password_digest, role FROM users WHERE login = ?";
 #ifdef __SQLITE3__
 	sqlite3 * db;

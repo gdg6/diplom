@@ -8,7 +8,7 @@ class ReportORM : ORM
 private:
 	sqlite3 * db;
 	int rc;
-	
+	std::string sql_create_table = "CREATE TABLE \'reports\' (\'id\' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, \'device_id\' integer, \'type\', \'context\' text, \'created_at\' datetime, \'updated_at\' datetime);";
 	std::string sql_insert = "INSERT INTO \'reports\'  (\'device_id\', \'type\', \'context\', \'created_at\', \'updated_at\') VALUES (?, ?, ?, ?, ?);";
 	
 public:
@@ -50,15 +50,3 @@ public:
 
 #endif
 
-
-
-int main()
-{
-	sqlite3 * db;
-	sqlite3_open("../snmp_db", & db);
-
-	ReportORM reportORM(db);
-	std::cout << 	reportORM.insertReport(2, "type", "test context");
-	sqlite3_close(db);
-	return 0;
-}

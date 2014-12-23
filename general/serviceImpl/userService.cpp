@@ -1,3 +1,5 @@
+#ifndef __USER_SERVICE__
+#define __USER_SERVICE__
 
 #include "../orm/userORM.cpp"
 #include "bcrypt.h"
@@ -61,4 +63,4 @@ public:
 	
 };
 
-
+#endif
