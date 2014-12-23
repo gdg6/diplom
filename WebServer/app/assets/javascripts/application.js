@@ -12,5 +12,8 @@
 //
 //= require jquery
 //= require jquery_ujs
+//= require jquery.maskedinput.min
+//= require bootstrap
+//= require jquery.tokeninput
 //= require turbolinks
 //= require_tree .

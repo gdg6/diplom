@@ -9,8 +9,7 @@
 class UserORM : public ORM
 {
 private:
-	//~ std::string sql_select_by_login = "SELECT id, login, password_digest, role FROM users WHERE login = 'Denis';";
-	std::string sql_select_by_login = "SELECT id, login, password_digest, role FROM users WHERE id = ?";
+	std::string sql_select_by_login = "SELECT id, login, password_digest, role FROM users WHERE login = ?";
 #ifdef __SQLITE3__
 	sqlite3 * db;
 	int rc;
@@ -51,16 +50,16 @@ public:
 		
 		if (rc != SQLITE_OK)
 		{
-			std::cout << sqlite3_errmsg(db);
+			user->setStatus(ORM::BAD_INIT);
 			return user;
 		}
-//~ 
+
 		rc = sqlite3_bind_text(stmt, 1, login.c_str(), login.length(), SQLITE_STATIC);    // Using parameters ("?") is not
-		//~ rc = sqlite3_bind_int(stmt, 1, 1);    // Using parameters ("?") is not
 		if (rc != SQLITE_OK) 
 		{                 	
 							   // really necessary, but recommended
-			std::cout << sqlite3_errmsg(db);   // (especially for strings) to avoid
+			user->setStatus(ORM::BAD_INIT);
+			//~ std::cout << sqlite3_errmsg(db);   // (especially for strings) to avoid
 			sqlite3_finalize(stmt);            // formatting problems and SQL
 			return user;       				   // injection attacks.
 		}
@@ -68,20 +67,21 @@ public:
 		rc = sqlite3_step(stmt);
 		if (rc != SQLITE_ROW && rc != SQLITE_DONE) 
 		{
-			std::cout << sqlite3_errmsg(db);
 			sqlite3_finalize(stmt);
+			user->setStatus(ORM::BAD_INIT);
 			return user;
 		}
 		
 		if (rc == SQLITE_DONE) 
 		{
-			std::cout << sqlite3_errmsg(db);
+			user->setStatus(ORM::NOT_FOUND);
 			sqlite3_finalize(stmt);
 			return user;
 		}
 		
 		if(rc == SQLITE_ROW) 
 		{
+			user -> setStatus(ORM::SUCCESS_INIT);
 			user -> setId(atoi((const char *)sqlite3_column_text(stmt, 0)));
 			user -> setLogin(std::string ((const char *)sqlite3_column_text(stmt, 1)));
 			user -> setPassword(std::string ((const char *)sqlite3_column_text(stmt, 2)));
@@ -98,15 +98,18 @@ public:
 
 #endif
 
-#include <iostream>
-int main()
-{
-	sqlite3 * db;
-	sqlite3_open("../snmp_db", & db);
-	UserORM userORM(db);
-	std::shared_ptr<User>  user = userORM.getByLogin(std::string("Denis"));
-	std::cout << user->getLogin() << std::endl;
-	std::cout << user->getPassword() << std::endl;
-	sqlite3_close(db);
-	return 0;
-}
+//~ #include <iostream>
+//~ int main()
+//~ {
+	//~ sqlite3 * db;
+	//~ sqlite3_open("../snmp_db", & db);
+	//~ UserORM userORM(db);
+	//~ std::shared_ptr<User>  user = userORM.getByLogin(std::string("Denis"));
+	//~ std::cout << user->getId() << std::endl;
+	//~ std::cout << user->getLogin() << std::endl;
+	//~ std::cout << user->getPassword() << std::endl;
+	//~ std::cout << user->getRole() << std::endl;
+	//~ 
+	//~ sqlite3_close(db);
+	//~ return 0;
+//~ }

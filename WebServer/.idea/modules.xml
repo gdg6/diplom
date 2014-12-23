@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/WebServer.iml" filepath="$PROJECT_DIR$/.idea/WebServer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../filmbase2014-master/.idea/filmbase2014-master.iml" filepath="$PROJECT_DIR$/../../filmbase2014-master/.idea/filmbase2014-master.iml" />
     </modules>
   </component>
 </project>

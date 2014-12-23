@@ -28,8 +28,9 @@ class UsersController < ApplicationController
 
     respond_to do |format|
       if @user.save
-        format.html { redirect_to @user, notice: 'User was successfully created.' }
-        format.json { render :show, status: :created, location: @user }
+        # format.html { redirect_to @user, notice: 'User was successfully created.' }
+        # format.json { render :show, status: :created, location: @user }
+        format.html{ redirect_to root_path, notice: "Регистрация прошла успешно"}
       else
         format.html { render :new }
         format.json { render json: @user.errors, status: :unprocessable_entity }

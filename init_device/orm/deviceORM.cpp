@@ -74,29 +74,24 @@ public:
 		int rc = sqlite3_prepare_v2(db, sql_select_by_id.c_str(), -1, &stmt, NULL);
 		if (rc != SQLITE_OK){
 			device->setStatus(device ->INIT_BAD);
-			throw std::string(sqlite3_errmsg(db));
+			return device;
 		}
 		rc = sqlite3_bind_int(stmt, 1, id);    // Using parameters ("?") is not
 		if (rc != SQLITE_OK) {                 // really necessary, but recommended
-			std::string errmsg(sqlite3_errmsg(db)); // (especially for strings) to avoid
 			sqlite3_finalize(stmt);            // formatting problems and SQL
 			device->setStatus(device ->INIT_BAD);
-			throw errmsg;                      // injection attacks.
-			return device;
+			return device;            // injection attacks.
 		}
 
 		rc = sqlite3_step(stmt);
 		if (rc != SQLITE_ROW && rc != SQLITE_DONE) {
-			std::string errmsg(sqlite3_errmsg(db));
 			sqlite3_finalize(stmt);
 			device->setStatus(device ->INIT_BAD);
-			throw errmsg;
 			return device;
 		}
 		if (rc == SQLITE_DONE) {
 			sqlite3_finalize(stmt);
 		    device->setStatus(device ->INIT_BAD);
-			throw std::string("customer not found");
 			return device;
 		}
 	

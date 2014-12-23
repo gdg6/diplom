@@ -10,6 +10,7 @@ private:
 	std::string password;
 	int role;
 	int active;
+	int status; //for ORM
 public:
 
 	enum {AUTHORIZED_USER, NO_AUTHORIZED_USER_ACTIVE};
@@ -74,6 +75,16 @@ public:
 	void setActive(int active)
 	{
 		this -> active = active;
+	}
+	
+	void setStatus(int status)
+	{
+		this -> status = status;
+	}
+	
+	int getStatus()
+	{
+		return status;
 	}
 	
 	inline bool operator == (User &user) const

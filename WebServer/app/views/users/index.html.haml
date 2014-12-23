@@ -6,9 +6,10 @@
       .pull-right
         =link_to edit_user_path(user), class: 'btn btn-primary btn-sm' do
           =fa_icon 'edit'
-        =link_to user, method: :delete, data: {confirm: t('helpers.sure')}, class: 'btn btn-danger btn-sm' do
+        =link_to user, method: :delete, data: {confirm: "Вы уверены?"}, class: 'btn btn-danger btn-sm' do
           =fa_icon 'trash-o'
       %h4=user.login
       .text-muted=user.login
       .clearfix
 
+=link_to 'New User', new_user_path

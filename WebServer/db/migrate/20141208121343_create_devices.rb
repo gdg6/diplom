@@ -7,7 +7,7 @@ class CreateDevices < ActiveRecord::Migration
       t.string  :mac, :unique => true, :nil => false
       t.string  :serial_number, :unique => true
       t.string  :model, :limit => 1024
-      t.string  :peername, :nil=>false;
+      t.string  :peername, :nil => false;
       t.integer :port, :nil => false
       t.string  :login, :nil => false
       t.string  :password, :nil => false

@@ -1,8 +1,5 @@
 
-#include "sqlSnmp.cpp"
-#include "sqlite3IO.cpp"
-#include "pgSql.cpp"
-#include "snmpSessionDevice.cpp"
+
 #include <memory>
 #include <thread>
 #include <string>
@@ -24,7 +21,7 @@ private:
 
 
 // ============== REPORTS ============
-	std::string sql_reports_create_table = "CREATE TABLE \'reports\' (\'id\' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, \'device_id\' integer, \'context\' text, \'created_at\' datetime, \'updated_at\' datetime);";
+	std::string sql_reports_create_table = "CREATE TABLE \'reports\' (\'id\' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, \'device_id\' integer, \'type\', \'context\' text, \'created_at\' datetime, \'updated_at\' datetime);";
 
 // ============== MIBS ===============
     std::string sql_mib_create_table = "CREATE TABLE \'mibs\' (\'id\' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, \'file_name_mib\' varchar(255), \'created_at\' datetime, \'updated_at\' datetime);";
