@@ -19,7 +19,7 @@ char peername[] = "localhost";
 
  class SnmpSessionDevice
  {
- 	  struct snmp_session session, *ss;
+ 	struct snmp_session session, *ss;
     struct snmp_pdu *pdu;
     struct snmp_pdu *response;
     oid anOID[MAX_OID_LEN];
@@ -32,10 +32,10 @@ char peername[] = "localhost";
 
  public:
  	 SnmpSessionDevice(){
-/*
-    * Initialize the SNMP library
-    */
-   init_snmp("snmpapp");
+	/*
+     * Initialize the SNMP library
+     */
+     init_snmp("snmpapp");
 
     /*
     * Initialize a "session" that defines who we're going to talk to
@@ -175,5 +175,10 @@ char peername[] = "localhost";
 
 #endif
 
-
+int main()
+{
+SnmpSessionDevice snmp;
+snmp.openSession();
+snmp.responseToDevice(".1.3.6.1.4.1.2021.10.1.3.1");
+}
 
