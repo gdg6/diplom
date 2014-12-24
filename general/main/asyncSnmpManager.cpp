@@ -30,59 +30,15 @@ class AsyncSnmpManager{
 	
 	std::shared_ptr<std::vector<std::shared_ptr<sessSnmpDev>>> hosts;	
 	int active_hosts;
-	
-/*
- * simple printing of returned data
- */
-int print_result (int status, struct snmp_session *sp, struct snmp_pdu *pdu)
-{
-  char buf[1024];
-  struct variable_list *vp;
-  int ix;
-  struct timeval now;
-  struct timezone tz;
-  struct tm *tm;
-
-  gettimeofday(&now, &tz);
-  tm = localtime(&now.tv_sec);
-  fprintf(stdout, "%.2d:%.2d:%.2d.%.6d ", tm->tm_hour, tm->tm_min, tm->tm_sec,
-            (int)now.tv_usec);
-  switch (status) {
-	  case STAT_SUCCESS:
-			vp = pdu->variables;
-			if (pdu->errstat == SNMP_ERR_NOERROR) {
-			  while (vp) {
-					snprint_variable(buf, sizeof(buf), vp->name, vp->name_length, vp);
-					fprintf(stdout, "%s: %s\n", sp->peername, buf);
-					vp = vp->next_variable;
-			  }
-			}
-			else {
-			  for (ix = 1; vp && ix != pdu->errindex; vp = vp->next_variable, ix++)
-				;
-			  if (vp) snprint_objid(buf, sizeof(buf), vp->name, vp->name_length);
-			  else strcpy(buf, "(none)");
-			  fprintf(stdout, "%s: %s: %s\n",
-				sp->peername, buf, snmp_errstring(pdu->errstat));
-			}
-			return 1;
-	  case STAT_TIMEOUT:
-			fprintf(stdout, "%s: Timeout\n", sp->peername);
-			return 0;
-	  case STAT_ERROR:
-			snmp_perror(sp->peername);
-			return 0;
-  }
-  return 0;
-}
-	
-	
 
 
  void initSessions()
  {
 	 std::shared_ptr<Device> device;
 	 std::shared_ptr<std::vector<std::shared_ptr<Device>>> list = deviceService.getAll();
+	 
+	 hosts  = std::move(new std::vector<std::shared_ptr<sessSnmpDev>>);
+	 
 	 /*
 	  * Initialize the SNMP library
 	  */
@@ -132,6 +88,51 @@ int print_result (int status, struct snmp_session *sp, struct snmp_pdu *pdu)
     SOCK_STARTUP;
  }
  
+ /*
+ * simple printing of returned data
+ */
+int print_result (int status, struct snmp_session *sp, struct snmp_pdu *pdu)
+{
+  char buf[1024];
+  struct variable_list *vp;
+  int ix;
+  struct timeval now;
+  struct timezone tz;
+  struct tm *tm;
+
+  gettimeofday(&now, &tz);
+  tm = localtime(&now.tv_sec);
+  fprintf(stdout, "%.2d:%.2d:%.2d.%.6d ", tm->tm_hour, tm->tm_min, tm->tm_sec,
+            (int)now.tv_usec);
+  switch (status) {
+	  case STAT_SUCCESS:
+			vp = pdu->variables;
+			if (pdu->errstat == SNMP_ERR_NOERROR) {
+			  while (vp) {
+					snprint_variable(buf, sizeof(buf), vp->name, vp->name_length, vp);
+					fprintf(stdout, "%s: %s\n", sp->peername, buf);
+					vp = vp->next_variable;
+			  }
+			}
+			else {
+			  for (ix = 1; vp && ix != pdu->errindex; vp = vp->next_variable, ix++)
+				;
+			  if (vp) snprint_objid(buf, sizeof(buf), vp->name, vp->name_length);
+			  else strcpy(buf, "(none)");
+			  fprintf(stdout, "%s: %s: %s\n",
+				sp->peername, buf, snmp_errstring(pdu->errstat));
+			}
+			return 1;
+	  case STAT_TIMEOUT:
+			fprintf(stdout, "%s: Timeout\n", sp->peername);
+			return 0;
+	  case STAT_ERROR:
+			snmp_perror(sp->peername);
+			return 0;
+  }
+  return 0;
+}
+	
  
 public: 
 
