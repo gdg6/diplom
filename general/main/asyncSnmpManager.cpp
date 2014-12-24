@@ -25,7 +25,7 @@ public:
     const char * command;  //oid
     size_t commandLen;  //oid
     oid anOID[MAX_OID_LEN];
-    size_t anOID_len = MAX_OID_LEN;
+    size_t  anOID_len = MAX_OID_LEN;
     struct variable_list *vars;
     int status;
     int id;
@@ -53,7 +53,7 @@ class AsyncSnmpManager {
 			  //~ host->current_oid++;			/* send next GET (if any) */
 			  if (host -> command) {
 				req = snmp_pdu_create(SNMP_MSG_GET);
-				snmp_add_null_var(host -> pdu, host -> anOID, host -> commandLen);
+				snmp_add_null_var(req, host -> anOID, host -> anOID_len);
 				if (snmp_send(host -> ss, req))
 					return 1;
 				else {
@@ -85,8 +85,8 @@ class AsyncSnmpManager {
 		  std::shared_ptr<SessSnmpDev> sessSnmpDev(new SessSnmpDev);
 		  sessSnmpDev -> id = device -> getId();
 		  sessSnmpDev -> reportService =  reportService.get();
-		  sessSnmpDev -> command = ONE_MINUTE_LOAD;
-		  sessSnmpDev -> commandLen = strlen(ONE_MINUTE_LOAD);
+		  sessSnmpDev -> command = ".1.3.6.1.2.1.1.3.0";
+		  sessSnmpDev -> commandLen = strlen(".1.3.6.1.2.1.1.3.0");
 					 
 		 /*
 		  * Initialize a "session" that defines who we're going to talk to
@@ -131,7 +131,8 @@ class AsyncSnmpManager {
 		  }
 
 		  sessSnmpDev -> pdu = snmp_pdu_create(SNMP_MSG_GET);	/* send the first GET */
-		  snmp_add_null_var(sessSnmpDev->pdu, sessSnmpDev->anOID, sessSnmpDev->commandLen);
+		  read_objid(sessSnmpDev->command, sessSnmpDev->anOID, &(sessSnmpDev ->  anOID_len ));
+		  snmp_add_null_var(sessSnmpDev->pdu, sessSnmpDev->anOID, sessSnmpDev -> anOID_len);
 		  if (snmp_send(sessSnmpDev->ss, sessSnmpDev->pdu)) 
 		  {
 		    hosts -> push_back(sessSnmpDev);
@@ -187,7 +188,7 @@ class AsyncSnmpManager {
 				  while (vp) {
 						snprint_variable(buf, sizeof(buf), vp->name, vp->name_length, vp);
 						reportService->insertReport(id, type, std::string(buf));      
-						fprintf(stdout, "%s: %s\n", sp->peername, buf);
+					//	fprintf(stdout, "%s: %s\n", sp->peername, buf);
 						vp = vp->next_variable;
 				  }
 				}
