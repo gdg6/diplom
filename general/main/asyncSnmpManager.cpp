@@ -10,6 +10,9 @@
 #include <memory>
 #include <thread>
 
+#define MSG_TIMEOUT "Timeout"
+#define MSG_SEND "snmp_send"
+
 const char *our_v3_passphrase = "password";
 
 class SessSnmpDev {
@@ -24,12 +27,13 @@ public:
     struct variable_list *vars;
     int status;
     int id;
-    ReportService * reportService; 
+    ReportService * reportService;
+
 };
 
 class AsyncSnmpManager{
 
-	ReportService reportService;
+	std::shared_ptr<ReportService> reportService;
 	DeviceService deviceService;
 
 	std::shared_ptr<std::vector<std::shared_ptr<SessSnmpDev>>> hosts;
@@ -60,11 +64,7 @@ class AsyncSnmpManager{
 		}
 		else
 		print_result(STAT_TIMEOUT, host->ss, pdu, host -> reportService, host->id, host->command);
-//~ 
-		//~ /* something went wrong (or end of variables) 
-		//~ * this host not active any more
-		//~ */
-		//~ active_hosts--;
+
 	return 1;
 	}
 
@@ -86,7 +86,7 @@ class AsyncSnmpManager{
 		std::shared_ptr<Device> device = list -> at(i);
 		std::shared_ptr<SessSnmpDev> sessSnmpDev(new SessSnmpDev);
 		sessSnmpDev -> id = device -> getId();
-		sessSnmpDev -> reportService = & reportService;
+		sessSnmpDev -> reportService =  reportService.get();
 		sessSnmpDev -> command = ".1.3.6.1.4.1.2021.10.1.3.1";
 		sessSnmpDev -> commandLen = strlen(".1.3.6.1.4.1.2021.10.1.3.1");
 				 
@@ -134,23 +134,50 @@ class AsyncSnmpManager{
   	    snmp_log(LOG_ERR, "something horrible happened!!!\n");
   	    continue;
   	  }
-		hosts -> push_back(sessSnmpDev);
-		active_hosts++;
 		
 		
 		sessSnmpDev -> pdu = snmp_pdu_create(SNMP_MSG_GET);	/* send the first GET */
 		snmp_add_null_var(sessSnmpDev->pdu, sessSnmpDev->anOID, sessSnmpDev->commandLen);
-		if (snmp_send(sessSnmpDev->ss, sessSnmpDev->pdu))
+		if (snmp_send(sessSnmpDev->ss, sessSnmpDev->pdu)) 
+		{
+		  hosts -> push_back(sessSnmpDev);
 		  active_hosts++;
+		}
 		else {
 		  snmp_perror("snmp_send");
+		  reportService->insertReport(device->getId(), MSG_SEND, MSG_TIMEOUT);
 		  snmp_free_pdu(sessSnmpDev->pdu);
 		}
 	 }
-	
+
     /* windows32 specific initialization (is a noop on unix) */
     SOCK_STARTUP;
  }
+
+  void selectRun()
+  {
+	  while (active_hosts) 
+	  {
+		int fds = 0, block = 1;
+		fd_set fdset;
+		struct timeval timeout;
+
+		FD_ZERO(&fdset);
+		snmp_select_info(&fds, &fdset, &timeout, &block);
+		fds = select(fds, &fdset, NULL, NULL, block ? NULL : &timeout);
+		if (fds < 0) {
+			perror("select failed");
+			exit(1);
+		}
+		if (fds){
+			snmp_read(&fdset);
+		}
+		else
+		{
+			snmp_timeout();
+		}
+	  }
+  }
 
  /*
  * simple printing of returned data
@@ -165,6 +192,7 @@ static int print_result (int status, struct snmp_session *sp, struct snmp_pdu *p
 
   gettimeofday(&now, &tz);
   tm = localtime(&now.tv_sec);
+
   fprintf(stdout, "%.2d:%.2d:%.2d.%.6d ", tm->tm_hour, tm->tm_min, tm->tm_sec,
   
             (int)now.tv_usec);
@@ -176,14 +204,13 @@ static int print_result (int status, struct snmp_session *sp, struct snmp_pdu *p
 					snprint_variable(buf, sizeof(buf), vp->name, vp->name_length, vp);
 					
 					fprintf(stdout, "%s: %s\n", sp->peername, buf);
-					reportService->insertReport(id, type, std::string(buf));       fprintf(stdout, "%s: %s\n", sp->peername, buf);
-					
+					reportService->insertReport(id, type, std::string(buf));      
+					fprintf(stdout, "%s: %s\n", sp->peername, buf);
 					vp = vp->next_variable;
 			  }
 			}
 			else {
-			  for (int ix = 1; vp && ix != pdu->errindex; vp = vp->next_variable, ix++)
-				;
+			  for (int ix = 1; vp && ix != pdu->errindex; vp = vp->next_variable, ix++);
 			  if (vp) snprint_objid(buf, sizeof(buf), vp->name, vp->name_length);
 			  else strcpy(buf, "(none)");
 			  fprintf(stdout, "%s: %s: %s\n",
@@ -192,6 +219,7 @@ static int print_result (int status, struct snmp_session *sp, struct snmp_pdu *p
 			return 1;
 	  case STAT_TIMEOUT:
 			fprintf(stdout, "%s: Timeout\n", sp->peername);
+			reportService -> insertReport(id, "error", "Timeout");
 			return 0;
 	  case STAT_ERROR:
 			snmp_perror(sp->peername);
@@ -203,14 +231,15 @@ static int print_result (int status, struct snmp_session *sp, struct snmp_pdu *p
 
 public:
 
-	AsyncSnmpManager(sqlite3 * db) : reportService(db), deviceService(db), active_hosts(0)
+	AsyncSnmpManager(sqlite3 * db) : deviceService(db), active_hosts(0)
 	{
-		
+		reportService = std::shared_ptr<ReportService>(new ReportService(db));
 	}
 	
 	int Run()
 	{
 		initSessions();
+		selectRun();
 		return 0;
 	}
 	
