@@ -100,12 +100,6 @@ char peername[] = "localhost";
    pdu = snmp_pdu_create(SNMP_MSG_GET);
 
    read_objid(oid, anOID, &anOID_len);
-   
-// #if OTHER_METHODS
-//    get_node("sysDescr.0", anOID, &anOID_len);
-//    read_objid("system.sysDescr.0", anOID, &anOID_len);
-// #endif
-
    snmp_add_null_var(pdu, anOID, anOID_len);
 
   /*
@@ -129,7 +123,7 @@ char peername[] = "localhost";
         /* manipulate the information ourselves */
      for(vars = response->variables; vars; vars = vars->next_variable) {
        int count=1;
-       if (vars->type == ASN_OCTET_STR) {
+       if (vars -> type == ASN_OCTET_STR) {
          currentAnswer += (char*)vars->val.string;
          std::cout << currentAnswer;
        }
