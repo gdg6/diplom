@@ -37,7 +37,7 @@ ActiveRecord::Schema.define(version: 20141208135403) do
 
   create_table "reports", force: true do |t|
     t.integer  "device_id"
-    t.string   "type"
+    t.string   "r_type"
     t.text     "context"
     t.datetime "created_at"
     t.datetime "updated_at"

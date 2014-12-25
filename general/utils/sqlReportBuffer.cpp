@@ -31,7 +31,7 @@ public:
 		if(!type.length()) return;
 		if(!context.length() || context.length() > 1024) return;
 		if(!sqlBuffer.getCountSql()) {
-			currentSql = "INSERT INTO reports (\'device_id\', \'type\', \'context\', \'created_at\', \'updated_at\') VALUES ";
+			currentSql = "INSERT INTO reports (\'device_id\', \'r_type\', \'context\', \'created_at\', \'updated_at\') VALUES ";
 			currentSql += "(";
 		} else {
 			currentSql += ", (";

@@ -1,0 +1,39 @@
+%p#notice= notice
+/ =link_to_back
+%p
+.list-group-item
+  %label= "Имя"
+  %h4= @device.name
+  %label= "Описание"
+  %h4= @device.description
+  %label= "Комната"
+  %h4= @device.room
+  %label= "Мак"
+  %h4= @device.mac
+  %label= "Серийный номер"
+  %h4= @device.serial_number
+  %label= "Модель"
+  %h4= @device.model
+  %label= "Порт"
+  %h4= @device.port
+  %label= "Миб" 
+  %h4= @device.mib_id
+  .pull-left
+    =link_to edit_device_path(@device), class: 'btn btn-primary btn-sm' do
+      =fa_icon 'edit'
+    =link_to @device, method: :delete, data: {confirm: "Вы уверены?"}, class: 'btn btn-danger btn-sm' do
+      =fa_icon 'trash-o'
+  .clearfix
+
+%p
+%label= "Отчеты:"
+.list-group
+  -@reports.each do |report|
+    .list-group-item
+      %label= "Тип"
+      %h4= "#{report.r_type}"
+      %label= "Описание" 
+      %h4= report.context
+
+
+=paginate @reports

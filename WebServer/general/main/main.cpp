@@ -6,7 +6,7 @@
 int main(int argc, char *argv[])
 {
 	sqlite3 * db;
-	sqlite3_open("../../snmp_db", &db);
+	std::cout << "open_db: " << sqlite3_open("../../snmp_db", &db) << std::endl;
 	App app(db);
 	app.Run();
 	

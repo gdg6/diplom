@@ -1,6 +1,6 @@
 class DevicesController < ApplicationController
   before_action :set_device, only: [:show, :edit, :update, :destroy]
-
+  attr_reader :reports
   # GET /devices
   # GET /devices.json
   def index
@@ -10,6 +10,8 @@ class DevicesController < ApplicationController
   # GET /devices/1
   # GET /devices/1.json
   def show
+    #~ @reports = Report.where(:device_id=>params[:id]).load
+    @reports = Report.where(:device_id=>params[:id]).page(params[:page]).load
   end
 
   # GET /devices/new

@@ -17,6 +17,10 @@ class UsersController < ApplicationController
     @user = User.new
   end
 
+  def authorization
+  	@user = User.new
+  end
+
   # GET /users/1/edit
   def edit
   end
