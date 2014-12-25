@@ -155,15 +155,21 @@ class AsyncSnmpManager {
 		   int fds = 0, block = 1;
 		   fd_set fdset;
 		   struct timeval timeout;
-
+		   timeout.tv_sec = 5;
+		   timeout.tv_usec = 0;
 		   FD_ZERO(&fdset);
 		   snmp_select_info(&fds, &fdset, &timeout, &block);
-		   fds = select(fds, &fdset, NULL, NULL, block ? NULL : &timeout);
+		  // fds = select(fds, &fdset, NULL, NULL, block ? NULL : &timeout);
+		 // timeout.tv_sec = 5;   
+		 // timeout.tv_usec = 0;
+		  fds = select(fds+1, &fdset, NULL, NULL, &timeout);
+		  
 		   if (fds < 0) {
 			  perror("select failed");
 			  return; //no crash programm
 		   }
 		   if (fds) {
+			std::cout << "I here" << std::endl;
 			snmp_read(&fdset);
 		   }
 			else
