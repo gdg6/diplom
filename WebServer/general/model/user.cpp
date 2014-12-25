@@ -2,7 +2,6 @@
 #define __USER__
 
 #include <string>
-#include <iostream>
 
 class User {
 private:
@@ -11,8 +10,11 @@ private:
 	std::string password;
 	int role;
 	int active;
+	int status; //for ORM
 public:
-    User(int id, char * login, char * password, int role) : active(0)
+
+	enum {AUTHORIZED_USER, NO_AUTHORIZED_USER_ACTIVE};
+    User(int id, char * login, char * password, int role) : active(NO_AUTHORIZED_USER_ACTIVE)
     {
 		this -> id = id;
 		this -> login = login;
@@ -20,9 +22,19 @@ public:
 		this -> role = role;
 	} 
 	
+	User() : active(NO_AUTHORIZED_USER_ACTIVE)
+	{
+	
+	}
+	
 	int getId()
 	{
 		return id;
+	}
+	
+	void setId(int id)
+	{
+		this -> id  = id;
 	}
 	
 	std::string getPassword()
@@ -30,9 +42,19 @@ public:
 		return password;
 	}
 	
+	void setPassword(std::string password)
+	{
+		this ->password = password;
+	}
+	
 	std::string getLogin()
 	{
 		return login;
+	}
+	
+	void setLogin(std::string login)
+	{
+		this -> login = login;
 	}
 	
 	int getRole()
@@ -40,9 +62,29 @@ public:
 		return role;
 	}
 	
+	void setRole(int role) 
+	{
+		this -> role = role;
+	}
+	
 	int isActive()
 	{
 	   return !!active;
+	}
+	
+	void setActive(int active)
+	{
+		this -> active = active;
+	}
+	
+	void setStatus(int status)
+	{
+		this -> status = status;
+	}
+	
+	int getStatus()
+	{
+		return status;
 	}
 	
 	inline bool operator == (User &user) const

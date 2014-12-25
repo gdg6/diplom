@@ -4,7 +4,6 @@
 #ifndef __SQLITE3
 #define __SQLITE3
 
-#include <sqlite3.h>
 #include <iostream>
 #include "sqlService.cpp"
 
@@ -39,7 +38,7 @@ public:
     // см мануал
     Sqlite3IO(const char * name_db)
     {
-		rc = sqlite3_open(name_db, & db);
+		  rc = sqlite3_open(name_db, & db);
     }
 
     int sqlExec(const char * sql, char * description)
@@ -49,7 +48,7 @@ public:
 
     int sqlExec(const char * sql, char * description, int (*callback)(void*, int, char **, char **))
     {
-	      return sql_exec(sql, description, callback);
+	    return sql_exec(sql, description, callback);
     }
 
     int getStatus()
@@ -57,12 +56,25 @@ public:
       return rc;
     }
 
+    sqlite3 * getDb()
+    {
+      return db;
+    }
+
    ~Sqlite3IO()
    {
      if (db) sqlite3_close(db);
    }
 
+
 };
 
 
 #endif
+
+int main()
+{
+	Sqlite3IO sqlite3IO("../../snmp_db");
+	char sql [] = "select * from devices;";
+	sqlite3IO.sqlExec(sql, "ww");
+}

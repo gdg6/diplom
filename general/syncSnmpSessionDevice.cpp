@@ -171,8 +171,8 @@ char peername[] = "localhost";
 
 int main()
 {
-SnmpSessionDevice snmp;
-snmp.openSession();
-snmp.responseToDevice(".1.3.6.1.4.1.2021.10.1.3.1");
+	SnmpSessionDevice snmp;
+	snmp.openSession();
+	snmp.responseToDevice(".1.3.6.1.4.1.2021.10.1.3.1");
 }
 

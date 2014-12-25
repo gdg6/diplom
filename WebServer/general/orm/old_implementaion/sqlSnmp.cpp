@@ -81,31 +81,14 @@ public:
 	
 	void sqlExec(std::string sql, int (*callback)(void*, int, char **, char **)) 
 	{
-		sqlService -> sqlExec(sql.c_str(), SQL);
+		sqlService -> sqlExec(sql.c_str(), SQL, callback);
+	}
+
+	sqlite3 * getDb()
+	{
+		return sqlService->getDb();
 	}
 };
 
-
-
 #endif
-
-//~ SqlService * factory(int type, const char * nameDatabase) {
-  //~ return new Sqlite3IO(nameDatabase);
-//~ }
-
-
-//~ int main()
-//~ {
-	//~ const char name_db [] = "snmp_db";
-	//~ std::shared_ptr<SqlService> sql = std::shared_ptr<SqlService>(factory(1, name_db));
-	//~ SqlSnmp s(sql); 
-	//~ s.writeLog("hello");
-	//~ s.insertInto("Transport", "ID, NAME", "1, 'vagon'");
-	//~ s.select("tran", "name", "WHERE id == 1", "ORDER BY id", true);
-	//~ char *t[] ={"ID INTEGER PRIMARY KEY AUTOINCREMENT","NAME text not null", "PASSWORD text"};
-	//~ s.createTable("USER", t, 3);
-	//~ s.insertInto("USER", "NAME, PASSWORD", "'DENIS', '123456'", NULL);
-	//~ s.select("USER", NULL, NULL, NULL, false, NULL);
-	//~ return 0;
-//~ }
 
