@@ -1,6 +1,8 @@
 
 #include "App.cpp"
 
+//~ PRAGMA journal_mode=WAL - for async SQLITE
+
 int main(int argc, char *argv[])
 {
 	sqlite3 * db;
