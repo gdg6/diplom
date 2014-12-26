@@ -1,0 +1,27 @@
+.narrow
+  .page-header
+    %h1 Просмотр статистики
+  =form_tag search_path do 
+    .form-group
+      =label_tag :name
+      =select_tag :device_id, options_for_select(search_select()),class: 'form-control'
+    .form-group
+      = label_tag :type
+      = select_tag :type, options_for_select(search_select()),class: 'form-control'
+    .form-group
+      .col-sm-10
+        .pull-left
+          = label_tag :start_time
+          = select_tag :start_day_time, options_for_select(day_select)#,class: 'form-control'
+          = select_tag :start_month_time, options_for_select(month_select)#,class: 'form-control'
+          = select_tag :start_year_time, options_for_select(year_select)#,class: 'form-control'
+        .pull-right
+          = label_tag :end_time
+          = select_tag :end_day_time, options_for_select(day_select)#,class: 'form-control'
+          = select_tag :end_month_time, options_for_select(month_select)#,class: 'form-control'
+          = select_tag :end_year_time, options_for_select(year_select)#,class: 'form-control'
+    .clearfix
+    .form-actions
+      =submit_tag 'Найти', class: 'btn btn-primary btn-md'
+  -if !@device.nil?
+    =render 'result'

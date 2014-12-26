@@ -67,4 +67,8 @@ Rails.application.routes.draw do
   get 'login'=>'sessions#new', as: :login
   post 'login'=>'sessions#create'
   get 'logout'=>'sessions#destroy', as: :logout
+  
+  get 'search_statistic' => 'statistics#new', as: :search
+  post 'search_statistic' => 'statistics#create'
+  
 end
