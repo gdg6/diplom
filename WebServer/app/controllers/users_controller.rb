@@ -1,6 +1,7 @@
 class UsersController < ApplicationController
   before_action :set_user, only: [:show, :edit, :update, :destroy]
-
+  before_action :check_auth
+  before_action :check_edit
   # GET /users
   # GET /users.json
   def index
@@ -17,10 +18,6 @@ class UsersController < ApplicationController
     @user = User.new
   end
 
-  def authorization
-  	@user = User.new
-  end
-
   # GET /users/1/edit
   def edit
   end
@@ -29,15 +26,11 @@ class UsersController < ApplicationController
   # POST /users.json
   def create
     @user = User.new(user_params)
-
     respond_to do |format|
       if @user.save
-        # format.html { redirect_to @user, notice: 'User was successfully created.' }
-        # format.json { render :show, status: :created, location: @user }
         format.html{ redirect_to root_path, notice: "Регистрация прошла успешно"}
       else
         format.html { render :new }
-        format.json { render json: @user.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -47,11 +40,11 @@ class UsersController < ApplicationController
   def update
     respond_to do |format|
       if @user.update(user_params)
-        format.html { redirect_to @user, notice: 'User was successfully updated.' }
-        format.json { render :show, status: :ok, location: @user }
+        format.html { redirect_to root_path, notice: 'User was successfully updated.' }
+        #~ format.json { render :show, status: :ok, location: @user }
       else
         format.html { render :edit }
-        format.json { render json: @user.errors, status: :unprocessable_entity }
+        #~ format.json { render json: @user.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -76,4 +69,8 @@ class UsersController < ApplicationController
     def user_params
       params.require(:user).permit(:login, :password, :password_confirmation, :role)
     end
+    
+  def check_edit
+    render_error(root_path) unless User.edit?(@current_user)
+  end
 end

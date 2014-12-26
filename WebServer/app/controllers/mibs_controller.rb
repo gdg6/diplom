@@ -1,6 +1,7 @@
 class MibsController < ApplicationController
   before_action :set_mib, only: [:show, :edit, :update, :destroy]
-
+  before_action :check_auth
+  before_action :check_edit
   # GET /mibs
   # GET /mibs.json
   def index
@@ -70,5 +71,9 @@ class MibsController < ApplicationController
     # Never trust parameters from the scary internet, only allow the white list through.
     def mib_params
       params.require(:mib).permit(:file_name_mib)
+    end
+    
+    def check_edit
+      render_error(root_path) unless User.edit?(@current_user)
     end
 end

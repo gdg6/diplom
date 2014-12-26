@@ -2,6 +2,8 @@
 / =link_to_back
 %p
 .list-group-item
+  .pull-right
+    .draw-shapes{id: 'placeholder', class: 'table-form '}
   %label= "Имя"
   %h4= @device.name
   %label= "Описание"
@@ -23,10 +25,11 @@
       =fa_icon 'edit'
     =link_to @device, method: :delete, data: {confirm: "Вы уверены?"}, class: 'btn btn-danger btn-sm' do
       =fa_icon 'trash-o'
+
   .clearfix
 
 %p
-%label= "Отчеты:"
+%label= "Отчеты (#{@count}):"
 .list-group
   -@reports.each do |report|
     .list-group-item

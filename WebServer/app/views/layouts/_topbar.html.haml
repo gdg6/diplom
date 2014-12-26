@@ -5,3 +5,7 @@
       %li{class: ('active' if controller_name=='devices')}=link_to "Устройства", devices_path
       %li{class: ('active' if controller_name=='mibs')}=link_to "Мибы", mibs_path
       %li{class: ('active' if controller_name=='users')}=link_to "Пользователи", users_path
+    %ul.nav.navbar-nav.navbar-right
+      %li{class: (controller_name=='logout' ? 'active' : '')}=link_to "Выход", :logout 
+
+	    

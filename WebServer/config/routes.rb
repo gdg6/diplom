@@ -8,7 +8,7 @@ Rails.application.routes.draw do
   resources :users
 
   # root :to=>"users#index"
-  root :to => "users#authorization"
+  root :to => "devices#index"
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
@@ -63,4 +63,8 @@ Rails.application.routes.draw do
   #     # (app/controllers/admin/products_controller.rb)
   #     resources :products
   #   end
+  
+  get 'login'=>'sessions#new', as: :login
+  post 'login'=>'sessions#create'
+  get 'logout'=>'sessions#destroy', as: :logout
 end

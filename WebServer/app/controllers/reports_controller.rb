@@ -1,6 +1,7 @@
 class ReportsController < ApplicationController
   before_action :set_report, only: [:show, :edit, :update, :destroy]
-
+  before_action :check_auth
+  before_action :check_edit#, except: [:new, :create]
   # GET /reports
   # GET /reports.json
   def index
@@ -71,4 +72,8 @@ class ReportsController < ApplicationController
     def report_params
       params.require(:report).permit(:device_id, :type, :context)
     end
+    
+  def check_edit
+    render_error(root_path) unless User.edit?(@current_user)
+  end
 end

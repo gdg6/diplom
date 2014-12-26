@@ -1,3 +1,19 @@
 // Place all the styles related to the Devices controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
+
+
+.display{
+	width: 100px;
+	heigth: 100px;
+	border: 2px;
+}
+
+.table-form {
+	border-style: double; /* Стиль линии вокруг параграфа */
+    padding: 5px; /* Поля вокруг текста */
+    margin-top: 5%;
+    width: 300px;
+    height: 200px;
+    position: relative;
+}

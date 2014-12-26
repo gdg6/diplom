@@ -1,6 +1,8 @@
 class DevicesController < ApplicationController
   before_action :set_device, only: [:show, :edit, :update, :destroy]
-  attr_reader :reports
+  before_action :check_auth
+  before_action :check_edit
+  attr_reader :reports, :count
   # GET /devices
   # GET /devices.json
   def index
@@ -10,8 +12,8 @@ class DevicesController < ApplicationController
   # GET /devices/1
   # GET /devices/1.json
   def show
-    #~ @reports = Report.where(:device_id=>params[:id]).load
     @reports = Report.where(:device_id=>params[:id]).page(params[:page]).load
+    @count = Report.where(:device_id=>params[:id]).count
   end
 
   # GET /devices/new
@@ -73,4 +75,8 @@ class DevicesController < ApplicationController
     def device_params
       params.require(:device).permit(:name, :description, :room, :mac, :serial_number, :model, :peername, :port, :login, :password, :mib_id)
     end
+    
+  def check_edit
+    render_error(root_path) unless User.edit?(@current_user)
+  end
 end
