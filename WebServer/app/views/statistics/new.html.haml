@@ -1,27 +1,45 @@
 .narrow
   .page-header
-    %h1 Просмотр статистики
+    %h1
+      %i
+        %b Просмотр статистики
   =form_tag search_path do 
     .form-group
-      =label_tag :name
+      %h4
+        %i
+          %b Название устройства
       =select_tag :device_id, options_for_select(search_select()),class: 'form-control'
     .form-group
-      = label_tag :type
-      = select_tag :type, options_for_select(search_select()),class: 'form-control'
+      %h4
+        %i
+          %b Тип запроса
+      = select_tag :type, options_for_select(type_select()),class: 'form-control'
     .form-group
-      .col-sm-10
+      %h4
+        %i
+          %b Период отчетности
+      .col-sm-12
         .pull-left
-          = label_tag :start_time
-          = select_tag :start_day_time, options_for_select(day_select)#,class: 'form-control'
-          = select_tag :start_month_time, options_for_select(month_select)#,class: 'form-control'
-          = select_tag :start_year_time, options_for_select(year_select)#,class: 'form-control'
+          = label_tag "С"
+          = select_tag :start_day_time, options_for_select(day_select),class: 'btn btn-default'
+          = select_tag :start_month_time, options_for_select(month_select),class: 'btn btn-default'
+          = select_tag :start_year_time, options_for_select(year_select),class: 'btn btn-default'
         .pull-right
-          = label_tag :end_time
-          = select_tag :end_day_time, options_for_select(day_select)#,class: 'form-control'
-          = select_tag :end_month_time, options_for_select(month_select)#,class: 'form-control'
-          = select_tag :end_year_time, options_for_select(year_select)#,class: 'form-control'
+          = label_tag "По"
+          = select_tag :end_day_time, options_for_select(day_select),class: 'btn btn-default'
+          = select_tag :end_month_time, options_for_select(month_select),class: 'btn btn-default'
+          = select_tag :end_year_time, options_for_select(year_select),class: 'btn btn-default'
+
+    .form-group{style: "margin-top: 10%;"}
+      %h4
+        %i
+          %b Способ отображения
+      =select_tag :view_id, options_for_select(  [["График", 1],[ "Список",2]]),class: 'form-control'
+      
     .clearfix
     .form-actions
       =submit_tag 'Найти', class: 'btn btn-primary btn-md'
+  %p    
+  %p    
   -if !@device.nil?
     =render 'result'

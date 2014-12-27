@@ -92,7 +92,7 @@ class AsyncSnmpManager {
 		  std::shared_ptr<SessSnmpDev> sessSnmpDev(new SessSnmpDev);
 		  sessSnmpDev -> id = device -> getId();
 		  sessSnmpDev -> sqlReportBuffer =  sqlReportBuffer.get();
-		  sessSnmpDev -> command = ".1.3.6.1.2.1.1.3.0";
+		  sessSnmpDev -> command = "1.3.6.1.4.1.2021.4.11.0";
 		  //~ sessSnmpDev -> commandLen = strlen(".1.3.6.1.2.1.1.3.0");
 					 
 		 /*

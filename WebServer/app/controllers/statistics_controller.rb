@@ -2,35 +2,38 @@ class StatisticsController < ApplicationController
   #~ before_action :check_auth
   #~ before_action :check_edit
   attr_reader :page, :results
-  before_action :load_search_object
+  # before_action :load_search_object
   attr_reader :device
 
-  # GET /devices/new
   def new
-	@device = nil
+	  @device = nil
+    if(!params[:r_type].nil? )
+      if(!params[:device_id].nil?)
+          @view_id = params[:view_id].to_i # if nil then 0
+          @device = Device.where(:id=>params[:device_id].to_i).first
+          @results = [] if @view_id.nil?
+          @results = Report.where("device_id = ? AND r_type = ?", params[:device_id].to_i, params[:r_type].to_s).load if @view_id.to_i == 1
+          @results = Report.where("device_id = ? AND r_type = ?", params[:device_id].to_i, params[:r_type].to_s).page(params[:page]).load if @view_id.to_i == 2
+      end
+    end
   end
 
-  # POST /devices
-  # POST /devices.json
+  # я не дообрабатывал все исключения
   def create
-    raise params.to_s
-	if((id = params[:device_id]) <= 0 || (@device = Device.where(:id=>id)).nil?) 
-		page = nil
-		@results = []
-		redirect_to statistic_path, notice: 'Нет такого устройства'
-	end
-	
-	r_type = params[:type]
-	if(r_type.nil? )
-		redirect_to statistic_path, notice: 'Не задан тип ответа'
-	end
-	start_time = params[:start_time]
-	end_time = params[:end_time]
-	
-	if(start_time.nil? && !end_time.nil?)
-		@results = Report.where("device_id = ? AND r_type = ? AND created_at < ? ")
-	end
-	@results = Report.where("device_id = ? AND r_type = ? AND ").load
+      id = 0
+      r_type = "" 
+  	if((id = params[:device_id]).to_i <= 0 || (@device = Device.where(:id=>id).load).nil?) 
+  		page = nil
+  		@results = []
+  		redirect_to statistic_path, notice: 'Нет такого устройства'
+  	end
+  	
+  	r_type = params[:type]
+  	if(r_type.nil? )
+  		redirect_to statistic_path, notice: 'Не задан тип ответа'
+  	end
+
+    redirect_to  :action=>'new',  device_id: id, r_type: r_type, view_id: params[:view_id]
   end
 
   # DELETE /devices/1
@@ -49,7 +52,11 @@ class StatisticsController < ApplicationController
     render_error(root_path) unless User.edit?(@current_user)
   end
   
+  def statistic_params
+     params.require(:statistic).permit(:device_id, :r_type)
+  end
+
   def  load_search_object
-	@device = Device.new
+	  @device = Device.new
   end
 end

@@ -15,6 +15,8 @@
 //= require jquery.maskedinput.min
 //= require bootstrap
 //= require flot/jquery.flot.js
+//= require flot/jquery.flot.time.js
+//= require flot/jquery.flot.selection.js
 //= require jquery.tokeninput
 //= require turbolinks
 //= require_tree .

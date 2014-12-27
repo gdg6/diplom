@@ -1,0 +1,21 @@
+ru:
+  app:
+    device: Устройство
+    mib: Миб
+    user: Пользователь
+  activerecord:
+    models:
+      user: Пользователь
+    attributes:
+      mib:
+        file_name_mib: Название файла
+    statistic:
+      name: Название устройства
+      type: Тип запроса
+  views:
+    pagination:
+      first: ⇤
+      last: ⇥
+      previous: ←
+      next: →
+      truncate: …

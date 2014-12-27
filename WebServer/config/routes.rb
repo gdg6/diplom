@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  resources :oids
+
   resources :reports
 
   resources :mibs

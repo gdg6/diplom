@@ -1,5 +1,29 @@
 - if @results.nil?
   =label_tag "Записей нет"
 - else
-  .list-group-item
-     .draw-shapes{id: 'placeholder', class: 'table-form '}
+  - if @view_id.to_i == 1
+    .list-group-item
+      =label_tag "результат поиска(#{@results.size})"
+      .draw-shapes{id: 'placeholder', class: 'table-form'}
+      .draw-shapes{id: 'overview', class: 'table-form '}
+      .list-group{style: 'display:none', id: 'data-result-search'}
+        - @results.each do |point|
+          .list-group-item{class: 'point'}
+            %input{name: "value", value: "#{point.context.split("INTEGER: ")[1].to_i}"}
+            %input{name: "date", value: "#{point.created_at.to_i}"}
+  - elsif @view_id.to_i == 2
+    .list-group
+      - @results.each do |p|
+        .list-group-item
+          %i
+            %b Тип
+          %i= p.r_type 
+          %p
+          %i
+            %b Время:
+          %i= p.updated_at 
+          %p
+          %i
+            %b Содержание:
+          %i= p.context
+    = paginate @results

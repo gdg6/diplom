@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141208135403) do
+ActiveRecord::Schema.define(version: 20141226203933) do
 
   create_table "devices", force: true do |t|
     t.string   "name"
@@ -31,6 +31,13 @@ ActiveRecord::Schema.define(version: 20141208135403) do
 
   create_table "mibs", force: true do |t|
     t.string   "file_name_mib"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "oids", force: true do |t|
+    t.string   "oid"
+    t.string   "translate"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

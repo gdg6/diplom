@@ -12,7 +12,7 @@
   <% end %>
 
   <div class="field">
-    <%= f.label :file_name_mib %><br>
+    <%= f.label Mib.human_attribute_name(:file_name_mib) %><br>
     <%= f.text_field :file_name_mib %>
   </div>
   <div class="actions">

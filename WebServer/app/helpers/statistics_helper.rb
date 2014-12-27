@@ -5,6 +5,12 @@ module StatisticsHelper
 	Device.all.each{|d| res << [d.name, d.id]}	
     return res
   end
+
+  def type_select()
+  	res = []
+  	Oid.all.each{|t| res << [t.translate, t.oid]}
+  	return res
+  end
   
   def day_select()
 	res = []

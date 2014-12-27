@@ -1,0 +1,16 @@
+= form_for @oid do |f|
+  - if @oid.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@oid.errors.count, "error")} prohibited this oid from being saved:"
+      %ul
+        - @oid.errors.full_messages.each do |msg|
+          %li= msg
+
+  .field
+    = f.label :oid
+    = f.text_field :oid
+  .field
+    = f.label :translate
+    = f.text_field :translate
+  .actions
+    = f.submit 'Save'

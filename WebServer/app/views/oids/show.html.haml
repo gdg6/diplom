@@ -1,0 +1,12 @@
+%p#notice= notice
+
+%p
+  %b Oid:
+  = @oid.oid
+%p
+  %b Translate:
+  = @oid.translate
+
+= link_to 'Edit', edit_oid_path(@oid)
+\|
+= link_to 'Back', oids_path
