@@ -11,7 +11,8 @@
 #include <iostream>
 #include <memory>
 #include <thread>
-
+#include <time.h>
+#include <unistd.h>
 
 #define MSG_TIMEOUT "Timeout"
 #define MSG_SEND "snmp_send"
@@ -21,18 +22,13 @@
 
 class SessSnmpDev {
 public:
+    int id;
 	struct snmp_session session, *ss;
     struct snmp_pdu *pdu;
-    //~ struct snmp_pdu *response;
     const char * command;  //oid
-    //~ size_t commandLen;  //oid
     oid anOID[MAX_OID_LEN];
     size_t  anOID_len = MAX_OID_LEN;
-    //~ struct variable_list *vars;
-    //~ int status;
-    int id;
     SqlReportBuffer * sqlReportBuffer;
-    
 };
 
 class AsyncSnmpManager {
@@ -53,15 +49,17 @@ class AsyncSnmpManager {
 			struct snmp_pdu *pdu, void *magic)
 	{
 		SessSnmpDev * host = (SessSnmpDev*)magic;
+		
 		struct snmp_pdu *req;
 		if (operation == NETSNMP_CALLBACK_OP_RECEIVED_MESSAGE) {
 			if (print_result(STAT_SUCCESS, host->ss, pdu, host->sqlReportBuffer, host->id, host->command)) {
 			  //~ host->current_oid++;			/* send next GET (if any) */
-			  if (host -> command) {
+			  if ( host -> command ) {
 				req = snmp_pdu_create(SNMP_MSG_GET);
 				snmp_add_null_var(req, host -> anOID, host -> anOID_len);
-				if (snmp_send(host -> ss, req))
+				if (snmp_send(host -> ss, req)) {
 					return 1;
+				}
 				else {
 				  snmp_perror("snmp_send");
 				  snmp_free_pdu(req);
@@ -91,6 +89,7 @@ class AsyncSnmpManager {
 		  std::shared_ptr<Device> device = list -> at(i);
 		  std::shared_ptr<SessSnmpDev> sessSnmpDev(new SessSnmpDev);
 		  sessSnmpDev -> id = device -> getId();
+
 		  sessSnmpDev -> sqlReportBuffer =  sqlReportBuffer.get();
 		  sessSnmpDev -> command = "1.3.6.1.4.1.2021.4.11.0";
 		  //~ sessSnmpDev -> commandLen = strlen(".1.3.6.1.2.1.1.3.0");
@@ -168,14 +167,14 @@ class AsyncSnmpManager {
 		   int fds = 0, block = 1;
 		   fd_set fdset;
 		   struct timeval timeout;
-		   timeout.tv_sec = 5;
+		   timeout.tv_sec = 15;
 		   timeout.tv_usec = 0;
 		   FD_ZERO(&fdset);
 		   snmp_select_info(&fds, &fdset, &timeout, &block);
 		   fds = select(fds+1, &fdset, NULL, NULL, &timeout);
 		  
 		   if (fds < 0) {
-			  perror("select failed");
+			  //~ perror("select failed");
 			  return; //no crash programm
 		   }
 		   if (fds) {
@@ -233,7 +232,7 @@ public:
 	
 	void Run() {
 		initSessions();
-		std::cout << "init sessions: " << active_hosts << "devices" << std::endl;
+		//~ std::cout << "init sessions: " << active_hosts << " devices" << std::endl;
 		selectRun();
 	}
 	
@@ -258,17 +257,12 @@ public:
 
 };
 
+void * starterAsyncSnmpManager(void * db)
+{
+	AsyncSnmpManager manager((sqlite3 *)db);
+	manager.Run();
+	return NULL;
+}
+
 #endif
 
-//~ int main()
-//~ {
-	//~ sqlite3 * db;
-	//~ sqlite3_open("../snmp_db", &db);
-	//~ AsyncSnmpManager manager(db);
-	//~ manager.Run();
-	//~ std::cout << "active hosts: " << manager.getActiveHosts();
-	//~ sqlite3_close(db);
-	//~ std::cout << sizeof(AsyncSnmpManager) << std::endl;
-
-	//~ return 0;
-//~ }

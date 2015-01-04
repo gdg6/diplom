@@ -1,0 +1,11 @@
+MAN - show this page.
+
+LIST [table] [options]  - show data from tables.
+
+ADD [device | user | mib] - add element in table. 
+
+REBOOT  - reboot of deamon
+
+POWEROFF - poweroff of deamon
+
+SHOW [device | user | mib ] [id]- show concrate element

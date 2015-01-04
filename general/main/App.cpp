@@ -1,31 +1,29 @@
 #ifndef __APP__
-#define _APP__
+#define __APP__
 
 #include <memory>
 #include <thread>
 #include <string>
-
+#include <thread>
 #include "../serviceImpl/servicePack.h"
 #include "asyncSnmpManager.cpp"
-
-#define __SQLITE3__
-
+#include "serverThreadPool.cpp"
 
 class App {
 private:
+
+
+	sqlite3 * db;
 
 	int rc;
 	ReportService reportService;
 	DeviceService deviceService;
 	UserService userService;
+
 	
 	std::shared_ptr<AsyncSnmpManager> asyncSnmpManager;
 
-#ifdef __SQLITE3__
-	   sqlite3 * db;
-#else 
 
-#endif
 	
 	void initTables()
 	{
@@ -58,32 +56,28 @@ private:
 		
 		return r;
 	}
-	
-	int runManager()
-	{
 		
-		return 0;
-	}
-	
-	int initServer()
-	{
-		return 0;
-	}
 	
 public:
-	App(sqlite3 * db) : reportService(db), deviceService(db), userService(db), db(db)
+	App(sqlite3 * db) : db(db), reportService(db), deviceService(db), userService(db)
 	{
         initTables();
         if(initManager() != 0)
         {
-			std::cerr << "Can't be run SNMP manager!!!" << std::endl;
+			//~ std::cerr << "Can't be run SNMP manager!!!" << std::endl;
 			exit(1);
-		} 
+		}
 	}
 
 	void Run()
 	{
-		asyncSnmpManager -> Run();
+		pthread_t t1;
+		pthread_t t2;
+
+		pthread_create(&t1, NULL, starterThreadPoolServer, (void*)db);
+		pthread_create(&t2, NULL, starterAsyncSnmpManager, (void*)db);
+		pthread_join(t1, NULL);
+		pthread_join(t2, NULL);
 		
 	}
 	~App()

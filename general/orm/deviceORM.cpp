@@ -11,31 +11,20 @@ class DeviceORM  : public ORM
 	std::string sql_select_all = "SELECT * FROM devices;";
 	
 	int rc; //status for db;
-	
-#ifdef __SQLITE3__
-	  sqlite3 * db;
-#else
-
-#endif
+	sqlite3 * db;
 	
 public:
 
-
-#ifdef __SQLITE3__
 	DeviceORM(sqlite3 * db) : rc(0)
 	{
 		this -> db = db;
 	}
-#else
-    //pg
-#endif
 	
 	
 	std::shared_ptr<std::vector<std::shared_ptr<Device>>> getAll()
 	{
 
 		std::shared_ptr<std::vector<std::shared_ptr<Device>>> list(new std::vector<std::shared_ptr<Device>>());
-#ifdef __SQLITE3__
 		sqlite3_stmt *stmt;
 		
 		int rc = sqlite3_prepare_v2(db, sql_select_all.c_str(), -1, &stmt, 0);
@@ -59,9 +48,7 @@ public:
 			device -> setMibPk( atoi((const char *)sqlite3_column_text(stmt, 11)));
 			list->push_back(device);
 		}
-#else
 
-#endif
 		return list;
 	}
 	
@@ -70,7 +57,6 @@ public:
 	{
 
 		std::shared_ptr<Device> device = std::shared_ptr<Device>(new Device);
-#ifdef __SQLITE3__		
 		sqlite3_stmt *stmt;
 
 		int rc = sqlite3_prepare_v2(db, sql_select_by_id.c_str(), -1, &stmt, NULL);
@@ -114,9 +100,6 @@ public:
 		}
 
 		sqlite3_finalize(stmt);
-#else
-
-#endif
 		return device;
 	}
 	~DeviceORM()
@@ -126,30 +109,4 @@ public:
 };
 
 #endif
-//~ 
-//~ #include <iostream>
-//~ 
-//~ int main()
-//~ {
-	//~ sqlite3 * db;
-	//~ sqlite3_open("../../snmp_db", &db);
-	//~ DeviceORM d(db);
-	//~ std::shared_ptr<std::vector<std::shared_ptr<Device>>> devices = d.getAll();
-	//~ for(unsigned int i = 0; i < devices->size(); i ++) {
-		//~ std::shared_ptr<Device> device = devices->at(i);
-		//~ std::cout << "Id: " <<  device->getId() << std::endl;
-		//~ std::cout << "Name: " << device->getName() << std::endl;
-		//~ std::cout << "Description: " << device->getDescription() << std::endl;
-		//~ std::cout << "Room: " << device->getRoom() << std::endl;
-		//~ std::cout << "Mac: " << device->getMac() << std::endl;
-		//~ std::cout << "SerialNumber: " << device->getSerialNumber() << std::endl;
-		//~ std::cout << "Peername: " << device->getPeername() << std::endl;
-		//~ std::cout << "PortNumber: " << device->getPortNumber() << std::endl;
-		//~ std::cout << "Login: " << device->getLogin() << std::endl;
-		//~ std::cout << "Password: " << device->getPassword() << std::endl;
-		//~ std::cout << "Mib_id: " << device->getMibPk() << std::endl;
-		//~ std::cout << "status " << (device->getStatus() == Device::INIT_SUCCESS) << std::endl;
-		//~ std::cout << "###########################################" << std::endl;
-	//~ }
-	//~ return 0;
-//~ }
+
