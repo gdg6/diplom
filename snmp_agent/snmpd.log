@@ -1,9 +1,0 @@
-Created directory: /./net-snmp
-Created directory: /./net-snmp/mib_indexes
-Warning: no access control information configured.
-  (Config search path: /usr/local/etc/snmp:/usr/local/share/snmp:/usr/local/lib/snmp:/mnt/storage1/users/g/gd/gdg6/.snmp)
-  It's unlikely this agent can serve any useful purpose in this state.
-  Run "snmpconf -g basic_setup" to help you configure the snmpd.conf file for this agent.
-getaddrinfo: start Name or service not known
-Error opening specified endpoint "start"
-Server Exiting with code 1
