@@ -6,8 +6,6 @@
 #include <thread>
 #include <string>
 
-
-
 class DeviceService 
 {
 private:
@@ -32,8 +30,5 @@ public:
 
 
 #endif
-
-
-#define __SQLITE3__
 
 

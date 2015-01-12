@@ -9,11 +9,11 @@
 
 #define __SQLITE3__
 
-//Создание технологии ORM для работы с sqlite3 and PostgressSQL
+//Создание технологии ORM для работы с sqlite3
 
 class ORM {
 public:
-	enum{BAD_INIT, SUCCESS_INIT, NOT_FOUND};
+	enum{BAD_INIT, SUCCESS_INIT, NOT_FOUND, BAD_SOCKET};
     //~ virtual int sqlExec(const char * sql, char * description) = 0;
     //~ virtual int sqlExec(const char * sql, char * description, int (*callback)(void*, int, char **, char **)) = 0;
     //~ virtual int getStatus() = 0;

@@ -11,7 +11,7 @@
 
 //~ PRAGMA journal_mode=WAL - for async SQLITE
 
-#define __NO_PRODUCTION__
+//~ #define __NO_PRODUCTION__
 
 int main(int argc, char *argv[])
 {
@@ -22,12 +22,12 @@ int main(int argc, char *argv[])
         /* Fork off the parent process */
         pid = fork();
         if (pid < 0) {
-                exit(EXIT_FAILURE);
+           exit(EXIT_FAILURE);
         }
         /* If we got a good PID, then
            we can exit the parent process. */
         if (pid > 0) {
-                exit(EXIT_SUCCESS);
+           exit(EXIT_SUCCESS);
         }
 
         /* Change the file mode mask */

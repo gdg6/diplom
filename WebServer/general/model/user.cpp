@@ -13,7 +13,7 @@ private:
 	int status; //for ORM
 public:
 
-	enum {AUTHORIZED_USER, NO_AUTHORIZED_USER_ACTIVE};
+	enum {AUTHORIZED_USER, NO_AUTHORIZED_USER_ACTIVE, BAD_SOCKET};
     User(int id, char * login, char * password, int role) : active(NO_AUTHORIZED_USER_ACTIVE)
     {
 		this -> id = id;
@@ -69,7 +69,7 @@ public:
 	
 	int isActive()
 	{
-	   return !!active;
+	   return active == User::AUTHORIZED_USER;
 	}
 	
 	void setActive(int active)

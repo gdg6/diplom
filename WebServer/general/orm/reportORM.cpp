@@ -2,7 +2,7 @@
 #define __REPORT_ORM__
 
 #include "ORM.cpp"
-#include <iostream>
+
 class ReportORM : ORM
 {
 private:
@@ -64,4 +64,3 @@ public:
 };
 
 #endif
-
