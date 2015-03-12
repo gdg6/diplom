@@ -2,6 +2,7 @@
 #define __SERVICE_PACK
 
 #include "mibService.cpp"
+#include "oidService.cpp"
 #include "userService.cpp"
 #include "reportService.cpp"
 #include "deviceService.cpp"

@@ -6,13 +6,25 @@
 class Oid
 {
 private: 
+	int id;
 	std::string oid;
-	std::string synonym;
+	std::string translate;
 	bool active; // can be send to device ? 
+	int status;  // for init db 
 
 public:
+	enum {INIT_BAD, INIT_SUCCESS};
+	
 	Oid() {
 
+	}
+
+	void setId(int id) {
+		this -> id = id;
+	}
+
+	int getId() {
+		return id;
 	}
 
 	void setOid(std::string oid) {
@@ -23,20 +35,28 @@ public:
 		return oid;
 	}
 
-	vod setSynonym(std::string synonym) {
-		this -> synonym = synonym;
+	void setTranslate(std::string translate) {
+		this -> translate = translate;
 	}
 
-	std::string getSynonym() {
-		return synonym;
+	std::string getTranslate() {
+		return translate;
 	}
 
 	void setActive(bool active) {
-		this -> active -> active;
+		this -> active = active;
 	}
 
 	bool getActive() {
 		return active;
+	}
+
+	void setStatus(int status) {
+		this -> status = status;
+	}
+
+	int getStatus() {
+		return status;
 	}
 
 	~Oid() {

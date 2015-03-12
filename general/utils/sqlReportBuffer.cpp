@@ -3,7 +3,7 @@
 
 #include "SqlBuffer.cpp"
 #include <sqlite3.h>
-#include <mutex> 
+#include <mutex>
 //~ PRAGMA journal_mode=WAL - for async SQLITE
 
 class SqlReportBuffer {
@@ -12,8 +12,8 @@ private:
 	SqlBuffer sqlBuffer;
 	std::mutex mt;
 
-	static const char[] valid_chars = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM:1234567890-";
-	static const std::set<char> set_pattern (valid_chars,  valid_chars + sizeof(valid_chars) - 1);
+	const char  * valid_chars  = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM:1234567890-";
+	const std::set<char> set_pattern ;
 
 	bool ValidateContext(std::string context)
 	{
@@ -45,7 +45,12 @@ private:
 	
 public:
 	
-	void addInsert(int  & id, std::string  & type, std::string  & context)
+	SqlReportBuffer() : set_pattern (valid_chars,  valid_chars + sizeof(valid_chars) - 1)
+	{
+
+	}
+	
+	void addInsert(int  id, std::string  type, std::string  context)
 	{
 		std::unique_lock<std::mutex> lock(mt);
 		currentSql = "";

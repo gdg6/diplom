@@ -49,6 +49,8 @@ public:
 			list->push_back(device);
 		}
 
+		sqlite3_finalize(stmt);
+
 		return list;
 	}
 	
@@ -100,6 +102,7 @@ public:
 		}
 
 		sqlite3_finalize(stmt);
+		
 		return device;
 	}
 	

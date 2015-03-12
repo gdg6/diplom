@@ -10,7 +10,7 @@
 #include "App.cpp"
 
 //~ PRAGMA journal_mode=WAL - for async SQLITE
-
+//g++ -std=gnu++11 main.cpp ../utils/bcrypt/bcrypt.a -lnetsnmp -lsqlite3 -lpthread
 //~ #define __NO_PRODUCTION__
 
 int main(int argc, char *argv[])
