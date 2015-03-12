@@ -3,11 +3,13 @@
 
 #include "../orm/reportORM.cpp"
 
+#include <set>
+
 class ReportService
 {
 private:
 	ReportORM reportORM;
-	
+
 public:	
 	ReportService(sqlite3 * db) : reportORM(db)
 	{

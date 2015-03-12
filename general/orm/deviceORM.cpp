@@ -102,6 +102,7 @@ public:
 		sqlite3_finalize(stmt);
 		return device;
 	}
+	
 	~DeviceORM()
 	{
 		

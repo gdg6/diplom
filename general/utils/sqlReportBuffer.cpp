@@ -11,7 +11,29 @@ private:
 	std::string currentSql;
 	SqlBuffer sqlBuffer;
 	std::mutex mt;
-	
+
+	static const char[] valid_chars = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM:1234567890-";
+	static const std::set<char> set_pattern (valid_chars,  valid_chars + sizeof(valid_chars) - 1);
+
+	bool ValidateContext(std::string context)
+	{
+
+		if(context.length() > 255) {
+			return false;
+		}
+
+		std::set<char>::iterator it;		
+		
+		for(int i = 0; i < context.length(); i++) {
+			it = set_pattern.find(context[i]);
+			if(it == set_pattern.end()) {
+				return false;
+			}
+		}
+		
+		return true;
+	}
+
 	static const std::string currentDateTime() {
 		time_t     now = time(0);
 		struct tm  tstruct;
@@ -23,19 +45,33 @@ private:
 	
 public:
 	
-	void addInsert(int  id, std::string  type, std::string  context)
+	void addInsert(int  & id, std::string  & type, std::string  & context)
 	{
 		std::unique_lock<std::mutex> lock(mt);
 		currentSql = "";
-		if(id <=  0) return ;
-		if(!type.length()) return;
-		if(!context.length() || context.length() > 1024) return;
+		if(id <=  0) { 
+			return;
+		}
+
+		if(!type.length()) {
+			return;
+		}
+		
+		if(!context.length() || context.length() > 1024) {
+			return;
+		}
+		
+		if(! ValidateContext(context) ) {
+			return;
+		}
+		
 		if(!sqlBuffer.getCountSql()) {
 			currentSql = "INSERT INTO reports (\'device_id\', \'r_type\', \'context\', \'created_at\', \'updated_at\') VALUES ";
 			currentSql += "(";
 		} else {
 			currentSql += ", (";
 		}
+		
 		std::string c_t = currentDateTime();
 		currentSql += std::to_string(id) + ",\'" + type + "\', \'" + context + "\', \'" + c_t + "\', \'" + c_t +"\' )";
 		
