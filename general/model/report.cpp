@@ -1,6 +1,8 @@
 #ifndef __REPORT__
 #define __REPORT
 
+#include <string>
+
 class  Report
 {
 private:
