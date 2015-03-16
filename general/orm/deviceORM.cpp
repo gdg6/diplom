@@ -3,12 +3,14 @@
 
 #include "ORM.cpp"
 #include "../model/device.cpp"
+#include <iostream>
 
 class DeviceORM  : public ORM
 {
 	std::string sql_select_by_id = "SELECT Name, Description, Room, Mac, Serial_number, Model,  Peername, Port, Login, Password, Mib_id FROM devices WHERE Id = ?";
 	std::string sql_select_all = "SELECT * FROM devices;";
-	
+	std::string sql_insert = "INSERT INTO \'devices\' (\'name\', \'description\', \'room\', \'mac\', \'serial_number\', \'model\', \'peername\', \'port\', \'login\', \'password\', \'Mib_id\', \'created_at\', \'updated_at\') VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
 	int rc; //status for db;
 	sqlite3 * db;
 	
@@ -20,8 +22,8 @@ public:
 	}
 	
 	int insertDevice(Device device) {
-		sqlite3_stmt *stmt;
-		std::string time  = ORM::currentDateTime();
+		sqlite3_stmt * stmt;
+		std::string time  = currentDateTime();
 		int rc = sqlite3_prepare_v2(db, sql_insert.c_str(), -1, &stmt, NULL);
 		
 		if (rc != SQLITE_OK)
@@ -29,14 +31,23 @@ public:
 			sqlite3_finalize(stmt);
 			return rc;
 		}
-		
-		rc = sqlite3_bind_int(stmt, 1, device_id);    
-		rc = sqlite3_bind_text(stmt, 2, type.c_str(), type.length(), SQLITE_STATIC);    
-		rc = sqlite3_bind_text(stmt, 3, context.c_str(), context.length(), SQLITE_STATIC);    // Using parameters ("?") is not
-		rc = sqlite3_bind_text(stmt, 4, time.c_str(), time.length(), SQLITE_STATIC);    // Using parameters ("?") is not
-		rc = sqlite3_bind_text(stmt, 5, time.c_str(), time.length(), SQLITE_STATIC);    // Using parameters ("?") is not
+
+		rc |= sqlite3_bind_text(stmt, 1, device.getName().c_str(), device.getName().length(), SQLITE_STATIC);    
+		rc |= sqlite3_bind_text(stmt, 2, device.getDescription().c_str(), device.getDescription().length(), SQLITE_STATIC); 
+		rc |= sqlite3_bind_text(stmt, 3, device.getRoom().c_str(), device.getRoom().length(), SQLITE_STATIC); 
+		rc |= sqlite3_bind_text(stmt, 4, device.getMac().c_str(), device.getMac().length(), SQLITE_STATIC); 
+		rc |= sqlite3_bind_text(stmt, 5, device.getSerialNumber().c_str(), device.getSerialNumber().length(), SQLITE_STATIC); 
+		rc |= sqlite3_bind_text(stmt, 6, device.getModel().c_str(), device.getModel().length(), SQLITE_STATIC); 
+		rc |= sqlite3_bind_text(stmt, 7, device.getPeername().c_str(), device.getPeername().length(), SQLITE_STATIC); 
+		rc |= sqlite3_bind_int(stmt, 8, device.getPortNumber()); 
+		rc |= sqlite3_bind_text(stmt, 9, device.getLogin().c_str(), device.getLogin().length(), SQLITE_STATIC); 
+		rc |= sqlite3_bind_text(stmt, 10, device.getPassword().c_str(), device.getPassword().length(), SQLITE_STATIC); 
+		rc |= sqlite3_bind_int(stmt, 11, device.getMibPk()); 
+		rc |= sqlite3_bind_text(stmt, 12, time.c_str(), time.length(), SQLITE_STATIC); 
+		rc |= sqlite3_bind_text(stmt, 13, time.c_str(), time.length(), SQLITE_STATIC); 
+
 		if (rc != SQLITE_OK) 
-		{                 	
+		{                 
 			sqlite3_finalize(stmt);            // formatting problems and SQL
 			return rc;
 		}
@@ -44,7 +55,6 @@ public:
 		rc = sqlite3_step(stmt);
 		sqlite3_finalize(stmt);
 		return rc;
-		return 0;
 	}
 	
 	std::shared_ptr<std::vector<std::shared_ptr<Device>>> getAll()
@@ -140,3 +150,27 @@ public:
 
 #endif
 
+// int main()
+// {
+// 	Device  device;
+// 	device . setName("name");
+// 	device . setPassword("password");
+// 	device . setLogin("login");
+// 	device . setPeername("peername");
+// 	device . setModel("model");
+// 	device . setMac("mac");
+// 	device . setPortNumber(123);
+// 	device . setDescrition("description");
+// 	device . setSerialNumber("serial");
+// 	device . setRoom("room");
+// 	device . setMibPk(0);
+
+
+// 	sqlite3 * db;
+// 	sqlite3_open("../../WebServer/snmp_db", &db);
+// 	DeviceORM *  deviceORM = new DeviceORM(db);
+// 	deviceORM -> insertDevice(device);
+// 	sqlite3_close(db);
+// 	delete deviceORM;
+// 	return 0;
+// }

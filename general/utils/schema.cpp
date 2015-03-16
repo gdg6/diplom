@@ -9,6 +9,8 @@ private:
 
 	sqlite3 * db;
 
+	const std::string conf_async = "PRAGMA journal_mode=WAL;";
+
 	const std::string table_users = "CREATE TABLE \'users\' ( \
 		\'id\' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, \
 		\'login\' varchar(255), \
@@ -26,6 +28,7 @@ private:
     	\'mac\' varchar(255), \
     	\'serial_number\' varchar(255), \
     	\'model\' varchar(1024), \
+    	\'peername\' varchar(255), \
     	\'port\' integer, \
     	\'login\' varchar(255), \
     	\'password\' varchar(255), \
@@ -160,10 +163,24 @@ private:
 		createLog();
 	}
 
+	void configure() {
+		sqlite3_stmt *stmt;
+		int rc = sqlite3_prepare_v2(db, conf_async.c_str(), -1, &stmt, NULL);
+
+		if (rc != SQLITE_OK)
+		{
+			sqlite3_finalize(stmt);
+			return rc;
+		}
+		rc = sqlite3_step(stmt);
+		sqlite3_finalize(stmt);
+		return rc;
+	}
 public:
 
 	Schema(sqlite3 * db) {
 		this -> db = db;
+		configure();
 		initTables();
 	}
 

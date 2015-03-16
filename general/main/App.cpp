@@ -77,7 +77,3 @@ public:
 };
 
 #endif
-
-int main() {
-	return 0;
-}
