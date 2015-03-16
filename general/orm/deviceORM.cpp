@@ -6,7 +6,6 @@
 
 class DeviceORM  : public ORM
 {
-    std::string sql_create_table = "CREATE TABLE \'devices\' (\'id\' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, \'name\' varchar(255), \'description\' varchar(1024), \'room\' varchar(25), \'mac\' varchar(255), \'serial_number\' varchar(255), \'model\' varchar(1024), \'port\' integer, \'login\' varchar(255), \'password\' varchar(255), \'mib_id\' integer, \'created_at\' datetime, \'updated_at\' datetime);";
 	std::string sql_select_by_id = "SELECT Name, Description, Room, Mac, Serial_number, Model,  Peername, Port, Login, Password, Mib_id FROM devices WHERE Id = ?";
 	std::string sql_select_all = "SELECT * FROM devices;";
 	
@@ -20,6 +19,33 @@ public:
 		this -> db = db;
 	}
 	
+	int insertDevice(Device device) {
+		sqlite3_stmt *stmt;
+		std::string time  = ORM::currentDateTime();
+		int rc = sqlite3_prepare_v2(db, sql_insert.c_str(), -1, &stmt, NULL);
+		
+		if (rc != SQLITE_OK)
+		{
+			sqlite3_finalize(stmt);
+			return rc;
+		}
+		
+		rc = sqlite3_bind_int(stmt, 1, device_id);    
+		rc = sqlite3_bind_text(stmt, 2, type.c_str(), type.length(), SQLITE_STATIC);    
+		rc = sqlite3_bind_text(stmt, 3, context.c_str(), context.length(), SQLITE_STATIC);    // Using parameters ("?") is not
+		rc = sqlite3_bind_text(stmt, 4, time.c_str(), time.length(), SQLITE_STATIC);    // Using parameters ("?") is not
+		rc = sqlite3_bind_text(stmt, 5, time.c_str(), time.length(), SQLITE_STATIC);    // Using parameters ("?") is not
+		if (rc != SQLITE_OK) 
+		{                 	
+			sqlite3_finalize(stmt);            // formatting problems and SQL
+			return rc;
+		}
+ 
+		rc = sqlite3_step(stmt);
+		sqlite3_finalize(stmt);
+		return rc;
+		return 0;
+	}
 	
 	std::shared_ptr<std::vector<std::shared_ptr<Device>>> getAll()
 	{

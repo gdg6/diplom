@@ -8,7 +8,6 @@ class ReportORM : ORM
 private:
 	sqlite3 * db;
 	int rc;
-	std::string sql_create_table = "CREATE TABLE \'reports\' (\'id\' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, \'device_id\' integer, \'type\', \'context\' text, \'created_at\' datetime, \'updated_at\' datetime);";
 	std::string sql_insert = "INSERT INTO \'reports\'  (\'device_id\', \'r_type\', \'context\', \'created_at\', \'updated_at\') VALUES (?, ?, ?, ?, ?);";
 	
 public:

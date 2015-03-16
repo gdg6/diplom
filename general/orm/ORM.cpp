@@ -14,9 +14,6 @@
 class ORM {
 public:
 	enum{BAD_INIT, SUCCESS_INIT, NOT_FOUND, BAD_SOCKET};
-    //~ virtual int sqlExec(const char * sql, char * description) = 0;
-    //~ virtual int sqlExec(const char * sql, char * description, int (*callback)(void*, int, char **, char **)) = 0;
-    //~ virtual int getStatus() = 0;
     
 	template <typename T>
 	std::shared_ptr<std::vector<std::shared_ptr<T>>> getAll(){};
@@ -35,8 +32,6 @@ public:
 		return buf;
 	}
 
-	
-	//~ virtual void deleteByPK(int id) = 0;
 };
 
 #endif

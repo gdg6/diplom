@@ -10,6 +10,10 @@ private:
 	std::string context;
 public: 
 
+	const std::string ERROR = "ERROR"; 
+	const std::string WARNING = "WARNING";
+	const std::string EVENT = "EVENT";
+
 	void setId(int id) {
 		this -> id = id;
 	}
@@ -18,7 +22,7 @@ public:
 		return id;
 	}
 
-	void setType() {
+	void setType(std::string type) {
 		this ->type = type;
 	} 
 

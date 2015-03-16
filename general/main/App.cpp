@@ -6,6 +6,7 @@
 #include <string>
 #include <thread>
 #include "../serviceImpl/servicePack.h"
+#include "../utils/schema.cpp"
 #include "asyncSnmpManager.cpp"
 #include "serverThreadPool.cpp"
 
@@ -27,19 +28,7 @@ private:
 	
 	void initTables()
 	{
-		//~ //create users table
-		//~ sqlService -> sqlExec(sql_user_create_table);
-		//~ 
-		//~ //create devices table
-		//~ sqlService -> sqlExec(sql_devices_create_table); 
-		//~ 
-		//~ //create reports table
-		//~ sqlService -> sqlExec(sql_reports_create_table);
-		//~ 
-		//~ //create mibs table
-		//~ sqlService -> sqlExec(sql_mib_create_table);
-		//~ 
-		//~ std::cout << "initTalbe: ok" << std::endl;
+		delete (new Schema(db));
 	}
 	
 	int initManager()
@@ -89,3 +78,6 @@ public:
 
 #endif
 
+int main() {
+	return 0;
+}

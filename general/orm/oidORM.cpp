@@ -10,7 +10,6 @@
 class OidORM : public ORM
 {
 private:
-	std::string sql_create = "CREATE TABLE \'oids\' (\'id\' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, \'oid\' varchar(255), \'translate\' varchar(255), \'created_at\' datetime, \'updated_at\' datetime);";
 	std::string sql_select_by_id = "select Oid, Translate FROM oids WHERE Id = ?";
 	std::string sql_select_all  = "SELECT * FROM oids;";
 
