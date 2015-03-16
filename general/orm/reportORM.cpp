@@ -29,11 +29,11 @@ public:
 			return rc;
 		}
 		
-		rc = sqlite3_bind_int(stmt, 1, device_id);    
-		rc = sqlite3_bind_text(stmt, 2, type.c_str(), type.length(), SQLITE_STATIC);    
-		rc = sqlite3_bind_text(stmt, 3, context.c_str(), context.length(), SQLITE_STATIC);    // Using parameters ("?") is not
-		rc = sqlite3_bind_text(stmt, 4, time.c_str(), time.length(), SQLITE_STATIC);    // Using parameters ("?") is not
-		rc = sqlite3_bind_text(stmt, 5, time.c_str(), time.length(), SQLITE_STATIC);    // Using parameters ("?") is not
+		rc |= sqlite3_bind_int(stmt, 1, device_id);    
+		rc |= sqlite3_bind_text(stmt, 2, type.c_str(), type.length(), SQLITE_STATIC);    
+		rc |= sqlite3_bind_text(stmt, 3, context.c_str(), context.length(), SQLITE_STATIC);    // Using parameters ("?") is not
+		rc |= sqlite3_bind_text(stmt, 4, time.c_str(), time.length(), SQLITE_STATIC);    // Using parameters ("?") is not
+		rc |= sqlite3_bind_text(stmt, 5, time.c_str(), time.length(), SQLITE_STATIC);    // Using parameters ("?") is not
 		if (rc != SQLITE_OK) 
 		{                 	
 			sqlite3_finalize(stmt);            // formatting problems and SQL
