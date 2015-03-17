@@ -41,7 +41,7 @@ int main(int argc, char ** argv)
   // sess_handle = snmp_open(&session);
 
   // add_mibdir("."); 
-  mib_tree = read_mib("RFC2856.mib"); 
+  mib_tree = read_mib("rfc1907.mib"); 
   if(mib_tree == NULL) {
   	  std::cout << "null" << std::endl;
   	  return 0;
@@ -49,10 +49,14 @@ int main(int argc, char ** argv)
 
   current = mib_tree;
 
+  // for(;current != NULL; current = current -> child_list) {
   for(;current != NULL; current = current -> next_peer) {
+
   	  std::cout << "label: " <<  (mib_tree -> label) << std::endl;
   	  std::cout << "status:" << (mib_tree -> status) << std::endl;
   	  std::cout << "type:" << (mib_tree -> type) << std::endl;	
+
+  	  std::cout << "tc_index: " << (mib_tree -> tc_index) << std::endl;
 
   	  if(mib_tree -> hint != NULL) {
 	  	  std::cout << "hint:" << (mib_tree -> hint) << std::endl;
@@ -72,8 +76,20 @@ int main(int argc, char ** argv)
   	  	std::cout << "mib_tree-> module_list:" << *(mib_tree -> module_list) << std::endl;
   	  }
 
+  	  if(mib_tree -> units != NULL) {
+  	  	std::cout << "units: " << (mib_tree -> units) << std::endl;
+   	  }
+
   	  if(mib_tree -> augments != NULL) {
-  	  	std::cout << "augments:" << (mib_tree -> augments) << std::endl; 
+  	  	std::cout << "augments: " << (mib_tree -> augments) << std::endl; 
+  	  }
+  	  std::cout << "reported: " << (mib_tree -> reported) << std::endl;
+  	  if(mib_tree -> defaultValue != NULL) {
+  	  	std::cout << "defaultValue:" << (mib_tree -> defaultValue) << std::endl; 
+  	  }
+
+  	  if(mib_tree -> parseErrorString != NULL) {
+  	  	std::cout << "parseErrorString:" << (mib_tree -> parseErrorString) << std::endl; 
   	  }
   	  std::cout << "#####################\n";
   }
