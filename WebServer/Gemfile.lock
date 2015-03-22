@@ -49,6 +49,9 @@ GEM
       unf (>= 0.0.5, < 1.0.0)
     erubis (2.7.0)
     execjs (2.2.2)
+    ffi (1.9.8)
+    ffi-inliner (0.2.4)
+      ffi (>= 0.4.0)
     font-awesome-rails (4.2.0.0)
       railties (>= 3.2, < 5.0)
     haml (4.1.0.beta.1)
@@ -101,6 +104,11 @@ GEM
     multi_xml (0.5.5)
     net-http-digest_auth (1.4)
     net-http-persistent (2.9.4)
+    net-snmp (0.2.5)
+      ffi-inliner
+      nice-ffi
+    nice-ffi (0.4)
+      ffi (>= 0.5.0)
     nokogiri (1.6.5)
       mini_portile (~> 0.6.0)
     ntlm-http (0.1.1)
@@ -189,6 +197,7 @@ DEPENDENCIES
   jquery-rails
   kaminari
   mechanize
+  net-snmp (~> 0.2.5)
   paperclip
   rails (= 4.1.7)
   rails-i18n

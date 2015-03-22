@@ -1,0 +1,12 @@
+.narrow
+  .form-snmpget-request
+    .page-header
+      %h1 Отправка запроса устройству
+    =form_tag snmpget_request_path do
+      .form-group
+        =label_tag "Oid"
+        =text_field :oid,  nil, class: 'form-control'
+        %input{:type=>"hidden", :value=>params[:device_id], :name=>:device_id}
+      .form-actions
+        =submit_tag 'Отправить', class: 'btn btn-primary btn-md' 
+

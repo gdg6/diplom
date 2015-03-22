@@ -1,42 +1,67 @@
 %p#notice= notice
 / =link_to_back
 %p
-.list-group-item
-  %label= "Имя"
-  %h4= @device.name
-  %label= "Описание"
-  %h4= @device.description
-  %label= "Комната"
-  %h4= @device.room
-  %label= "Мак"
-  %h4= @device.mac
-  %label= "Серийный номер"
-  %h4= @device.serial_number
-  %label= "Модель"
-  %h4= @device.model
-  %label= "IP"
-  %h4= @device.peername
-  %label= "Порт"
-  %h4= @device.port
-  %label= "Миб" 
-  %h4= @device.mib_id
-  .pull-left
-    =link_to edit_device_path(@device), class: 'btn btn-primary btn-sm' do
+.list-group-item{style: "white-spase: nowrap;"}
+  .div{style: "float: left; margin-left: 0%;"}
+    %label= "Серийный номер"
+    %h4= @device.serial_number
+  .div{style: "float: left; margin-left: 10%;"}
+    %label= "Модель"
+    %h4= @device.model
+  .div{style: "float: left; margin-left: 10%;"}
+    %label= "IP"
+    %h4= @device.peername
+  .div{style: "float: left; margin-left: 10%;"}
+    %label= "Порт"
+    %h4= @device.port
+  .div{style: "float: left; margin-left: 10%;"}
+    %label= "Миб" 
+    %h4= @device.mib_id
+
+  .div{style: "margin-top: 10%;"}
+    .div{style: "float: left; margin-left: 0%;"}
+
+      %label= "Имя"
+      %h4= @device.name
+    .div{style: "float: left; margin-left: 10%;"}
+
+      %label= "Описание"
+      %h4= @device.description
+
+    .div{style: "float: left; margin-left: 10%;"}
+      %label= "Комната"
+      %h4= @device.room
+    .div{style: "float: left; margin-left: 10%;"}
+
+      %label= "Мак"
+      %h4= @device.mac
+  .clearfix
+  .pull-right{style: "margin-top: 5%;"}
+    =link_to "/snmpget_request/?device_id=#{@device.id}", style: "width: 90px;", class: 'btn btn-info btn-sm', title: "Отправка разового запроса" do
+      =fa_icon 'filter'
+    =link_to "/walk_raports/new?device_id=#{@device.id}", style: "width: 90px;", class: 'btn btn-success btn-sm', title: "Генерация отчета" do
+      =fa_icon 'print'
+    =link_to edit_device_path(@device), class: 'btn btn-primary btn-sm', title: "Редактировать устройство" do
       =fa_icon 'edit'
-    =link_to @device, method: :delete, data: {confirm: "Вы уверены?"}, class: 'btn btn-danger btn-sm' do
+    =link_to @device, method: :delete, data: {confirm: "Вы уверены?"}, class: 'btn btn-danger btn-sm', title: "Удалить устройство" do
       =fa_icon 'trash-o'
 
   .clearfix
 
 %p
-%label= "Отчеты (#{@count}):"
+%label= "Кол-во записей собранной статистики: (#{@count})"
+%p
+%label= "Кол-во сгенерированных отчетов(snmpwalk): #{@walk_raports.size}"
 .list-group
-  -@reports.each do |report|
+  - @walk_raports.each do|raport|
     .list-group-item
-      %label= "Тип"
-      %h4= "#{report.r_type}"
-      %label= "Описание" 
-      %h4= report.context
+      %label= "Путь:"
+      %h4= "#{raport.path}"
+      %lablel= "Дата создания:"
+      %h4= raport.created_at
+      .pull-right{style: "margin-top: -5%"}
+        =link_to "/walk_raports/#{raport.id}", style: "width: 90px;", class: 'btn btn-info btn-sm', title: "Просмотр отчета" do
+          =fa_icon 'eye'
+      .clearfix
 
-
-=paginate @reports
+/ =paginate @reports

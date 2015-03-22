@@ -2,7 +2,7 @@ class DevicesController < ApplicationController
   before_action :set_device, only: [:show, :edit, :update, :destroy]
   before_action :check_auth
   before_action :check_edit
-  attr_reader :reports, :count
+  attr_reader :reports, :count, :walk_raports
   # GET /devices
   # GET /devices.json
   def index
@@ -12,7 +12,8 @@ class DevicesController < ApplicationController
   # GET /devices/1
   # GET /devices/1.json
   def show
-    @reports = Report.where(:device_id=>params[:id]).page(params[:page]).load
+    # @reports = Report.where(:device_id=>params[:id]).page(params[:page]).load
+    @walk_raports = WalkRaport.where(:device_id=>@device.id)
     @count = Report.where(:device_id=>params[:id]).count
   end
 

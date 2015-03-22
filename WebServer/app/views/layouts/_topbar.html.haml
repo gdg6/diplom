@@ -6,6 +6,11 @@
       %li{class: ('active' if controller_name=='mibs')}=link_to "Мибы", mibs_path
       %li{class: ('active' if controller_name=='oids')}=link_to "Словарь комманд", oids_path
       %li{class: ('active' if controller_name=='users')}=link_to "Пользователи", users_path
+      %li{class: ('active' if controller_name=='walk_requests')}=link_to "Тип статистики", walk_requests_path
+      
+
+
+
     %ul.nav.navbar-nav.navbar-right
       %li{class: (controller_name=='logout' ? 'active' : '')}=link_to "Выход", :logout 
 

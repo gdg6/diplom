@@ -1,0 +1,9 @@
+%p#notice= notice
+
+%p
+  %b Request:
+  = @walk_request.request
+
+= link_to 'Edit', edit_walk_request_path(@walk_request)
+\|
+= link_to 'Back', walk_requests_path

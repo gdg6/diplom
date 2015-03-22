@@ -1,0 +1,21 @@
+%h1 Listing walk_requests
+
+%table
+  %thead
+    %tr
+      %th Request
+      %th
+      %th
+      %th
+      
+  %tbody
+    - @walk_requests.each do |walk_request|
+      %tr
+        %td= walk_request.request
+        %td= link_to 'Show', walk_request
+        %td= link_to 'Edit', edit_walk_request_path(walk_request)
+        %td= link_to 'Destroy', walk_request, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Wall request', new_walk_request_path

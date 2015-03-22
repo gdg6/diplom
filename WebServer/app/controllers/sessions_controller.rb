@@ -4,7 +4,7 @@ class SessionsController < ApplicationController
   end
 
   def create
-    @user=User.where(login: params[:login]).take
+    @user=User.where("login=?", params[:login]).take
     if @user && @user.authenticate(params[:password])
       session[:user_id]=@user.id
       redirect_to root_path, notice: 'Вход выполнен'

@@ -1,0 +1,16 @@
+.narrow
+  .page-header
+    %h1
+      %i
+        %b Генерация отчета
+  =form_tag walk_raports_path do 
+    .form-group
+      %h4
+        %i
+          %b Типа отчета
+      =select_tag :walk_request_id, options_for_select(snmpwall_type_select()), class: 'form-control'
+
+      %input{:type=>"hidden", :value=>params[:device_id], :name=>:device_id}
+      .form-actions
+        =submit_tag 'Создать', class: 'btn btn-primary btn-md' 
+

@@ -1,0 +1,23 @@
+%h1 Listing walk_raports
+
+%table
+  %thead
+    %tr
+      %th Path
+      %th Device
+      %th
+      %th
+      %th
+      
+  %tbody
+    - @walk_raports.each do |walk_raport|
+      %tr
+        %td= walk_raport.path
+        %td= walk_raport.device_id
+        %td= link_to 'Show', walk_raport
+        %td= link_to 'Edit', edit_walk_raport_path(wall_raport)
+        %td= link_to 'Destroy', walk_raport, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Walk raport', new_walk_raport_path

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141226203933) do
+ActiveRecord::Schema.define(version: 20150320234542) do
 
   create_table "devices", force: true do |t|
     t.string   "name"
@@ -54,6 +54,21 @@ ActiveRecord::Schema.define(version: 20141226203933) do
     t.string   "login"
     t.string   "password_digest"
     t.integer  "role"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "walk_raports", force: true do |t|
+    t.string   "path"
+    t.integer  "device_id",  null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "walk_raports", ["device_id"], name: "index_walk_raports_on_device_id"
+
+  create_table "walk_requests", force: true do |t|
+    t.string   "request"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
