@@ -6,6 +6,7 @@ class WalkRaportsController < ApplicationController
   before_action :check_auth
 
   attr_reader :device, :device_id, :snmpwalk_request, :snmpwalk_type_request, :result
+  attr_reader :errors
   # GET /walk_raports
   # GET /walk_raports.json
 
@@ -50,29 +51,42 @@ class WalkRaportsController < ApplicationController
     @result = ""
 
     if (device != nil && @snmpwalk_type_request != nil)
-      @result = getHeader()
-      session = Net::SNMP::Session.open(:peername => @device.peername, :version => '3', :security_level => Net::SNMP::Constants::SNMP_SEC_LEVEL_AUTHPRIV,
-       :auth_protocol => :md5, :priv_protocol => :des, :username => @device.login, :auth_password => @device.password, :priv_password => @device.password) do |session|  
-        session.walk(@snmpwalk_type_request.request) do |status, pdu|
+      @result = "####\nsnmpwalk -v 3 -a md5 -A #{device.password} -x des -X #{device.password} -u #{device.login} -l priv #{device.peername}:#{@device.port} #{@snmpwalk_type_request.request}\n####\n"
+      begin
+        session = Net::SNMP::Session.open(
+          :peername => @device.peername, 
+          :port=>@device.port, 
+          :version => '3', 
+          :security_level => Net::SNMP::Constants::SNMP_SEC_LEVEL_AUTHPRIV,
+          :auth_protocol => :md5,
+          :priv_protocol => :des, 
+          :username => @device.login, 
+          :auth_password => @device.password, 
+          :priv_password => @device.password) do |session|  
+          session.walk(@snmpwalk_type_request.request.to_s) do |status, pdu|
 
-          if !status.nil?
-            status.each{|key, value|  @result += "===\nkey: #{key.to_s}\nvalue: #{value.to_s}\n" }
-          else
-            @result = "something went wrong.  status is #{status} pdu #{pdu.to_s}"
+            if !status.nil?
+              status.each{|key, value|  @result += "===\nkey: #{key.to_s}\nvalue: #{value.to_s}\n" }
+            else
+              @result = "something went wrong.  status is #{status} pdu #{pdu.to_s}"
+            end
           end
         end
-      end
+        # Net::SNMP::Dispatcher.select(false)  #Setting timeout to false causes dispatcher to block until data is ready
 
-      session.close
-      # must be create dir for save raports
-      t = Time.new
-      file_path = "raports/#{@device.mac}_walk_#{t.year.to_s}-#{t.month.to_s}-#{t.day.to_s}_#{t.hour.to_s}:#{t.min.to_s}:#{t.sec.to_s}";
-      file = File.new(file_path, "w+")
-      file.puts(@result)
-      file.close
-      @walk_raport = WalkRaport.new({"path"=>file_path, "device_id"=>device.id})
-      if @walk_raport.save
-        return render :action=>:show, :device_id=>@device_id, :result=>@result
+        session.close
+        # must be create dir for save raports
+        t = Time.new
+        file_path = "raports/#{@device.mac}_walk_#{@snmpwalk_type_request.request}_#{t.year.to_s}-#{t.month.to_s}-#{t.day.to_s}_#{t.hour.to_s}:#{t.min.to_s}:#{t.sec.to_s}";
+        file = File.new(file_path, "w+")
+        file.puts(@result)
+        file.close
+        @walk_raport = WalkRaport.new({"path"=>file_path, "device_id"=>device.id})
+        if @walk_raport.save
+          return render :action=>:show, :device_id=>@device_id, :result=>@result
+        end
+        rescue     
+          return render :action=>:show, :device_id=>@device_id, :result=>"При генерации произошла ошибка"
       end
     end
     redirect_to devices_path
@@ -95,10 +109,13 @@ class WalkRaportsController < ApplicationController
   # DELETE /walk_raports/1
   # DELETE /walk_raports/1.json
   def destroy
+    @errors = nil
+    if File.exist?(@walk_raport.path)
+      File.delete(@walk_raport.path)
+    end
     @walk_raport.destroy
     respond_to do |format|
-      format.html { redirect_to walk_raports_url, notice: 'Walk raport was successfully destroyed.' }
-      format.json { head :no_content }
+      format.html { redirect_to "/devices/#{@walk_raport.device_id}", notice: 'Walk raport was successfully destroyed.', errors: @errors }
     end
   end
 
@@ -113,7 +130,4 @@ class WalkRaportsController < ApplicationController
       params.require(:walk_raport).permit(:path, :device_id)
     end
 
-    def getHeader
-      return ""
-    end
 end

@@ -24,7 +24,7 @@ ActiveRecord::Schema.define(version: 20150320234542) do
     t.integer  "port"
     t.string   "login"
     t.string   "password"
-    t.integer  "mib_id"
+    t.integer  "ping_request"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -36,11 +36,15 @@ ActiveRecord::Schema.define(version: 20150320234542) do
   end
 
   create_table "oids", force: true do |t|
+    t.integer  "device_id",  null: false
     t.string   "oid"
     t.string   "translate"
+    t.boolean  "active",     null: false
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  add_index "oids", ["device_id"], name: "index_oids_on_device_id"
 
   create_table "reports", force: true do |t|
     t.integer  "device_id"

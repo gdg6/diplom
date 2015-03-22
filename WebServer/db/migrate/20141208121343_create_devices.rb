@@ -11,7 +11,7 @@ class CreateDevices < ActiveRecord::Migration
       t.integer :port, :nil => false
       t.string  :login, :nil => false
       t.string  :password, :nil => false
-      t.integer :mib_id, :nil => false
+      t.integer :ping_request, :nil => false      
 
       t.timestamps
     end

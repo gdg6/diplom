@@ -1,5 +1,4 @@
-%p#notice= notice
-/ =link_to_back
+
 %p
 .list-group-item{style: "white-spase: nowrap;"}
   .div{style: "float: left; margin-left: 0%;"}
@@ -15,8 +14,8 @@
     %label= "Порт"
     %h4= @device.port
   .div{style: "float: left; margin-left: 10%;"}
-    %label= "Миб" 
-    %h4= @device.mib_id
+    %label= "таймаут:" 
+    %h4= @device.ping_request
 
   .div{style: "margin-top: 10%;"}
     .div{style: "float: left; margin-left: 0%;"}
@@ -62,6 +61,8 @@
       .pull-right{style: "margin-top: -5%"}
         =link_to "/walk_raports/#{raport.id}", style: "width: 90px;", class: 'btn btn-info btn-sm', title: "Просмотр отчета" do
           =fa_icon 'eye'
+        =link_to raport, method: :delete, data: {confirm: "Вы уверены?"}, class: 'btn btn-danger btn-sm', title: "Удалить отчет" do
+          =fa_icon 'trash-o'
       .clearfix
 
 / =paginate @reports

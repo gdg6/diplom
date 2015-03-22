@@ -1,21 +1,16 @@
-%h1 Listing walk_requests
+%h1 Список oid's по которым можно собирать статистику
+%p
 
-%table
-  %thead
-    %tr
-      %th Request
-      %th
-      %th
-      %th
+.list-group
+  -@walk_requests.each do |request|
+    .list-group-item
+      .pull-right
+        =link_to edit_walk_request_path(request), class: 'btn btn-primary btn-sm' do
+          =fa_icon 'edit'
+        =link_to request, method: :delete, data: {confirm: "Вы уверены?"}, class: 'btn btn-danger btn-sm' do
+          =fa_icon 'trash-o'
+      %h4=request.request
+      .clearfix
       
-  %tbody
-    - @walk_requests.each do |walk_request|
-      %tr
-        %td= walk_request.request
-        %td= link_to 'Show', walk_request
-        %td= link_to 'Edit', edit_walk_request_path(walk_request)
-        %td= link_to 'Destroy', walk_request, :method => :delete, :data => { :confirm => 'Are you sure?' }
-
-%br
 
 = link_to 'New Wall request', new_walk_request_path

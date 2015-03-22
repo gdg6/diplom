@@ -1,6 +1,7 @@
 class OidsController < ApplicationController
   before_action :set_oid, only: [:show, :edit, :update, :destroy]
-
+  before_action :check_auth
+  
   # GET /oids
   # GET /oids.json
   def index
@@ -69,6 +70,6 @@ class OidsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def oid_params
-      params.require(:oid).permit(:oid, :translate)
+      params.require(:oid).permit(:oid, :translate, :device_id, :active)
     end
 end
