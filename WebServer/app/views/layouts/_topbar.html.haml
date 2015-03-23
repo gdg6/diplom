@@ -1,9 +1,7 @@
 .navbar.navbar-default
   .container
     %ul.nav.navbar-nav
-      %li{class: ('active' if controller_name=='statistics')}=link_to "Просмотр статистики", :search_statistic
       %li{class: ('active' if controller_name=='devices')}=link_to "Устройства", devices_path
-      %li{class: ('active' if controller_name=='oids')}=link_to "Словарь комманд", oids_path
       %li{class: ('active' if controller_name=='users')}=link_to "Пользователи", users_path
       %li{class: ('active' if controller_name=='walk_requests')}=link_to "Тип статистики", walk_requests_path
       

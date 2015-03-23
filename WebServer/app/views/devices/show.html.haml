@@ -35,15 +35,23 @@
       %label= "Мак"
       %h4= @device.mac
   .clearfix
-  .pull-right{style: "margin-top: 5%;"}
-    =link_to "/snmpget_request/?device_id=#{@device.id}", style: "width: 90px;", class: 'btn btn-info btn-sm', title: "Отправка разового запроса" do
-      =fa_icon 'filter'
-    =link_to "/walk_raports/new?device_id=#{@device.id}", style: "width: 90px;", class: 'btn btn-success btn-sm', title: "Генерация отчета" do
-      =fa_icon 'print'
-    =link_to edit_device_path(@device), class: 'btn btn-primary btn-sm', title: "Редактировать устройство" do
-      =fa_icon 'edit'
-    =link_to @device, method: :delete, data: {confirm: "Вы уверены?"}, class: 'btn btn-danger btn-sm', title: "Удалить устройство" do
-      =fa_icon 'trash-o'
+  .div{style: "display: inline-block; width: 100%;margin-top: 5%;"}
+    .pull-left
+      =link_to "/oids/?device_id=#{@device.id}", style: "width: 90px; background-color: yellow; ", class: 'btn btn-warrning btn-sm', :title => "Просмотр списка обрабатываемых комманд" do 
+        =fa_icon 'list'
+      =link_to "/search_statistic?device_id=1", style: "width: 90px; margin-left: 3px;", class: 'btn btn-success btn-sm', title: "Просмотр полученной статистики" do
+        =fa_icon 'eye'
+        =fa_icon 'signal'
+
+    .pull-right
+      =link_to "/snmpget_request/?device_id=#{@device.id}", style: "width: 90px;", class: 'btn btn-info btn-sm', title: "Отправка разового запроса" do
+        =fa_icon 'filter'
+      =link_to "/walk_raports/new?device_id=#{@device.id}", style: "width: 90px;", class: 'btn btn-success btn-sm', title: "Генерация отчета" do
+        =fa_icon 'print'
+      =link_to edit_device_path(@device), class: 'btn btn-primary btn-sm', title: "Редактировать устройство" do
+        =fa_icon 'edit'
+      =link_to @device, method: :delete, data: {confirm: "Вы уверены?"}, class: 'btn btn-danger btn-sm', title: "Удалить устройство" do
+        =fa_icon 'trash-o'
 
   .clearfix
 

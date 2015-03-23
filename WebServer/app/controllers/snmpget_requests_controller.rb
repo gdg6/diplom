@@ -16,8 +16,18 @@ class SnmpgetRequestsController < ApplicationController
     device = Device.find(@device_id) if @device_id > 0
 
   	if(device != nil)
-		  session = Net::SNMP::Session.open(:peername => device.peername, :version => '3', :security_level => Net::SNMP::Constants::SNMP_SEC_LEVEL_AUTHPRIV,
-		    :auth_protocol => :md5, :priv_protocol => :des, :username => device.login, :auth_password => device.password, :priv_password => device.password) do |session|
+      @snmp_request = "snmpget -v 3 -a md5 -A #{device.password} -x des -X #{device.password} -u #{device.login} -l priv #{device.peername}:#{device.port} #{oid}"
+
+		  session = Net::SNMP::Session.open(
+        :peername => device.peername,
+        :port => device.port.to_s,
+        :version => '3', 
+        :security_level => Net::SNMP::Constants::SNMP_SEC_LEVEL_AUTHPRIV,
+		    :auth_protocol => :md5, 
+        :priv_protocol => :des, 
+        :username => device.login, 
+        :auth_password => device.password, 
+        :priv_password => device.password) do |session|
 		  session.get([oid]) do |status, pdu|
 
 		      if status == :success

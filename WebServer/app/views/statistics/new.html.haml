@@ -3,17 +3,19 @@
     %h1
       %i
         %b Просмотр статистики
+  .form-group-item
+    %h4
+      %i
+        %b Название устройства
+    %h4= @device.name
+
   =form_tag search_path do 
-    .form-group
-      %h4
-        %i
-          %b Название устройства
-      =select_tag :device_id, options_for_select(search_select()),class: 'form-control'
+    %input{:type=>"hidden", :value=>@device_id, :name=>:device_id}
     .form-group
       %h4
         %i
           %b Тип запроса
-      = select_tag :type, options_for_select(type_select()),class: 'form-control'
+      = select_tag :type, options_for_select(listExecuteOidForDevice(@device)),class: 'form-control'
     .form-group
       %h4
         %i

@@ -9,7 +9,7 @@ class ApplicationController < ActionController::Base
   private
 
   def load_current_user
-    @current_user=User.where(id: session[:user_id]).take
+    @current_user = User.where(id: session[:user_id].to_i).take
   end
 
   def check_auth
@@ -17,7 +17,7 @@ class ApplicationController < ActionController::Base
   end
   
   def render_error(url,msg="Доступ запрещен")
-    flash[:danger]=msg
+    flash[:danger] = msg
     redirect_to url
   end
 end

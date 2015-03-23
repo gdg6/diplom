@@ -6,14 +6,18 @@
         - @oid.errors.full_messages.each do |msg|
           %li= msg
 
-  .field
+  .form-group
     = f.label :oid
-    = f.text_field :oid
-  .field
+    = f.text_field :oid, class: 'form-control'
+  .form-group
     = f.label :translate
-    = f.text_field :translate
-  .field
-    = f.label "Активная комманда" 
-    = f.check_box :active
+    = f.text_field :translate, class: 'form-control'
+  .form-group
+    = f.label "Активный" 
+    = f.check_box :active, class: 'form-group checkbox'
+  .form-group 
+    %input{:type=>"hidden", :value=>@device_id, :name=>:device_id}
+
   .actions
-    = f.submit 'Save'
+    = f.submit 'Добавить', class: "btn btn-primary btn-sm" do 
+      =fa_icon 'plus'

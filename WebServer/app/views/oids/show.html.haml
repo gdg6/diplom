@@ -1,4 +1,3 @@
-%p#notice= notice
 
 %p
   %b Oid:
@@ -6,7 +5,11 @@
 %p
   %b Translate:
   = @oid.translate
+%p
+  %b Active:
+  = @oid.active
+%p
+  %b device_id:
+  = @oid.device_id
 
 = link_to 'Edit', edit_oid_path(@oid)
-\|
-= link_to 'Back', oids_path

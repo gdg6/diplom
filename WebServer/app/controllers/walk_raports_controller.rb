@@ -42,16 +42,15 @@ class WalkRaportsController < ApplicationController
   end
 
   # POST /walk_raports
-  # POST /walk_raports.json
   def create
-
     @device_id = params[:device_id].to_i
     @device = Device.find(@device_id)
     @snmpwalk_type_request = params[:walk_request_id].nil? ? nil :  WalkRequest.find(params[:walk_request_id].to_i)
     @result = ""
-
-    if (device != nil && @snmpwalk_type_request != nil)
-      @result = "####\nsnmpwalk -v 3 -a md5 -A #{device.password} -x des -X #{device.password} -u #{device.login} -l priv #{device.peername}:#{@device.port} #{@snmpwalk_type_request.request}\n####\n"
+    user = User.find(session[:user_id].to_i)
+    t = Time.new
+    if (@device != nil && @snmpwalk_type_request != nil)
+      @result = "####\nCreate by #{user.login} #{t} \nsnmpwalk -v 3 -a md5 -A #{@device.password} -x des -X #{@device.password} -u #{@device.login} -l priv #{@device.peername}:#{@device.port} #{@snmpwalk_type_request.request}\n####\n"
       begin
         session = Net::SNMP::Session.open(
           :peername => @device.peername, 
@@ -72,16 +71,14 @@ class WalkRaportsController < ApplicationController
             end
           end
         end
-        # Net::SNMP::Dispatcher.select(false)  #Setting timeout to false causes dispatcher to block until data is ready
 
         session.close
         # must be create dir for save raports
-        t = Time.new
         file_path = "raports/#{@device.mac}_walk_#{@snmpwalk_type_request.request}_#{t.year.to_s}-#{t.month.to_s}-#{t.day.to_s}_#{t.hour.to_s}:#{t.min.to_s}:#{t.sec.to_s}";
         file = File.new(file_path, "w+")
         file.puts(@result)
         file.close
-        @walk_raport = WalkRaport.new({"path"=>file_path, "device_id"=>device.id})
+        @walk_raport = WalkRaport.new({"path"=>file_path, "device_id"=>@device.id})
         if @walk_raport.save
           return render :action=>:show, :device_id=>@device_id, :result=>@result
         end
@@ -107,12 +104,7 @@ class WalkRaportsController < ApplicationController
   end
 
   # DELETE /walk_raports/1
-  # DELETE /walk_raports/1.json
   def destroy
-    @errors = nil
-    if File.exist?(@walk_raport.path)
-      File.delete(@walk_raport.path)
-    end
     @walk_raport.destroy
     respond_to do |format|
       format.html { redirect_to "/devices/#{@walk_raport.device_id}", notice: 'Walk raport was successfully destroyed.', errors: @errors }

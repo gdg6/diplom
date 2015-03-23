@@ -1,5 +1,11 @@
 module StatisticsHelper
 
+  def listExecuteOidForDevice(device)
+  	result = []
+  	device.oids.each{|x| result << ["#{x.oid} (#{x.translate})" , x.id]}
+  	return result
+  end
+
   def search_select()
 	res = []
 	Device.all.each{|d| res << [d.name, d.id]}	
