@@ -2,7 +2,7 @@
   %h1 Устройства
 .list-group
   -@devices.each do |device|
-    .list-group-item
+    .list-group-item{style: "margin-top: 5px;"}
       .pull-right
         =link_to device, class: 'btn btn-primary btn-sm' do
           =fa_icon 'eye'
@@ -11,7 +11,6 @@
         =link_to device, method: :delete, data: {confirm: "Вы уверены?"}, class: 'btn btn-danger btn-sm' do
           =fa_icon 'trash-o'
       %h4=device.name
-      / .text-muted=user.login
       .clearfix
 
-=link_to 'New device', new_device_path
+=link_to '+ Добавить', new_device_path, :class=>"btn btn-primary btn-white-text"

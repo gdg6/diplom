@@ -36,3 +36,8 @@
     width: 930px;
     /*text-overflow: clip;*/
 }
+
+
+.btn-white-text {
+  color: white !important;
+}

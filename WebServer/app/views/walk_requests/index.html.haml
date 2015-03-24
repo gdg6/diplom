@@ -3,7 +3,7 @@
 
 .list-group
   -@walk_requests.each do |request|
-    .list-group-item
+    .list-group-item{:style => "margin-top: 5px;"}
       .pull-right
         =link_to edit_walk_request_path(request), class: 'btn btn-primary btn-sm' do
           =fa_icon 'edit'
@@ -13,4 +13,4 @@
       .clearfix
       
 
-= link_to 'New Wall request', new_walk_request_path
+= link_to '+ Добавить', new_walk_request_path, :class => "btn btn-primary btn-white-text"

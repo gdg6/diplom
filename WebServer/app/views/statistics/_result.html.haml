@@ -1,6 +1,7 @@
 - if @results.nil?
   =label_tag "Записей нет"
 - else
+
   - if @view_id.to_i == 1
     .list-group-item
       =label_tag "результат поиска(#{@results.size})"
@@ -11,7 +12,7 @@
           .list-group-item{class: 'point'}
             %input{name: "value", value: "#{point.context.split("INTEGER: ")[1].to_i}"}
             %input{name: "date", value: "#{point.created_at.to_i}"}
-  - elsif @view_id.to_i == 2
+  - else
     .list-group
       - @results.each do |p|
         .list-group-item
@@ -21,7 +22,7 @@
           %p
           %i
             %b Время:
-          %i= p.updated_at 
+          %i= p.created_at 
           %p
           %i
             %b Содержание:

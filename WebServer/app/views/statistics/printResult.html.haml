@@ -2,7 +2,7 @@
   .page-header
     %h1
       %i
-        %b Просмотр статистики
+        %b Просмотр статистики 
   .form-group-item
     %h4
       %i
@@ -10,7 +10,6 @@
     %h4= @device.name
 
   =form_tag search_path do 
-    %input{:type=>"hidden", :value=>@device_id, :name=>'device_id'}
     .form-group
       %h4
         %i
@@ -37,6 +36,7 @@
         %i
           %b Способ отображения
       =select_tag :view_id, options_for_select(  [["График", 1],[ "Список",2]]),class: 'form-control'
+      %input{:type=>"hidden", :value=>@device.id, :name=>'device_id'}
       
     .clearfix
     .form-actions

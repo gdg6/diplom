@@ -1,21 +1,10 @@
 class StatisticsController < ApplicationController
   before_action :check_auth
-  #~ before_action :check_edit
   attr_reader :page, :results
-  # before_action :load_search_object
   attr_reader :device, :device_id
+  attr_reader :view_id
 
   def new
-	  # @device = nil
-   #  if(!params[:r_type].nil? )
-   #    if(!params[:device_id].nil?)
-   #        @view_id = params[:view_id].to_i # if nil then 0
-   #        @device = Device.where(:id=>params[:device_id].to_i).first
-   #        @results = [] if @view_id.nil?
-   #        @results = Report.where("device_id = ? AND r_type = ?", params[:device_id].to_i, params[:r_type].to_s).load if @view_id.to_i == 1
-   #        @results = Report.where("device_id = ? AND r_type = ?", params[:device_id].to_i, params[:r_type].to_s).page(params[:page]).load if @view_id.to_i == 2
-   #    end
-   #  end
     @device_id = params[:device_id].to_i
     if (!(@device = Device.find(@device_id)).nil?)
       return
@@ -23,23 +12,25 @@ class StatisticsController < ApplicationController
       redirect_to devices_path
   end
 
-  # я не дообрабатывал все исключения
   def create
-      id = 0
-      r_type = "" 
-      raise params.to_s
-  	if((id = params[:device_id]).to_i <= 0 || (@device = Device.where(:id=>id).load).nil?) 
-  		page = nil
-  		@results = []
-  		redirect_to statistic_path, notice: 'Нет такого устройства'
-  	end
-  	
-  	r_type = params[:type]
-  	if(r_type.nil? )
-  		redirect_to statistic_path, notice: 'Не задан тип ответа'
-  	end
+    if ( !(@device = Device.find(params[:device_id].to_i)).nil? ) 
+        r_type  = Oid.where(:id => params[:r_type].to_i, :device_id => @device.id).first
+        start_date = Time.new(params[:start_year_time].to_i, params[:start_month_time].to_i, params[:start_day_time].to_i)
+        end_date = Time.new(params[:end_year_time].to_i, params[:end_month_time].to_i, params[:end_day_time].to_i, 23, 59, 59)
 
-    redirect_to  :action=>'new',  device_id: id, r_type: r_type, view_id: params[:view_id]
+        if (@view_id = params[:view_id].to_i) == 1
+          @results = Report.select(:context, :created_at).where("device_id =? AND r_type = ? AND created_at > ? AND created_at < ?", @device.id, r_type.oid, start_date, end_date).load
+        else
+          @results = Report.select(:r_type, :context, :created_at).where("device_id =? AND r_type = ? AND created_at > ? AND created_at < ?", @device.id, r_type.oid, start_date, end_date).page(params[:page]).load
+        end
+        render action: :printResult,  :results=>@results, :view_id => @view_id, :device => @device, :device_id => @device.id
+        return
+    end
+    redirect_to :action => :new, :device_id => @device.id
+  end
+
+  def printResult
+    @device_id = params[:device_id]
   end
 
   # DELETE /devices/1

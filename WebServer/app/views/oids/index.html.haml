@@ -2,7 +2,7 @@
   %h1 Список Oids
 .list-form
   - @oids.each do |oid|
-    .list-group-item{:style=>"white-space: nowrap;"}
+    .list-group-item{:style=>"white-space: nowrap; margin-top: 5px;"}
       .div
         .div{:style => "float:left;"}
           %b Описание:
@@ -18,7 +18,6 @@
           =fa_icon 'edit'
         =link_to oid, method: :delete, data: {confirm: "Вы уверены?"}, class: 'btn btn-danger btn-sm' do
           =fa_icon 'trash-o'
-
       .clearfix
 -if !@device_id.nil?
-  = link_to 'New Oid', new_oid_path+"/?device_id=#{@device_id.to_i}"
+  = link_to '+ Добавить ', new_oid_path+"/?device_id=#{@device_id.to_i}", :class => "btn btn-primary btn-white-text", style: "margin-top:5px;"
