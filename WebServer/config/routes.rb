@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  resources :logs
+
   resources :walk_raports
 
   resources :walk_requests

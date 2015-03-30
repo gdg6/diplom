@@ -10,7 +10,9 @@ class DeviceService
 {
 private:
 	DeviceORM deviceORM;
+
 public:
+	
 	DeviceService(sqlite3 * db) : deviceORM(db)
 	{
 	}

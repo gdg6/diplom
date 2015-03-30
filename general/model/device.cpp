@@ -19,7 +19,7 @@ private:
 	std::string login;
 	std::string password;
 	// mib
-	int mib_id;
+	int pind_request;
 	
 	//helper for deamon
 	int status;
@@ -141,14 +141,14 @@ public:
 		this -> password = password;
 	}
 	
-	int getMibPk()
+	int getPingRequest()
 	{
-		return mib_id;
+		return pind_request;
 	}
 
-	void setMibPk(int mib_id)
+	void setPingRequest(int pind_request)
 	{
-		this->mib_id = mib_id;
+		this -> pind_request = pind_request;
 	}
 
 	int getStatus()

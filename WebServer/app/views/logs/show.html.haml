@@ -1,0 +1,12 @@
+%p#notice= notice
+
+%p
+  %b L type:
+  = @log.l_type
+%p
+  %b Context:
+  = @log.context
+
+= link_to 'Edit', edit_log_path(@log)
+\|
+= link_to 'Back', logs_path
