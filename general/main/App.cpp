@@ -10,16 +10,15 @@
 #include "asyncSnmpManager.cpp"
 #include "serverThreadPool.cpp"
 
+#define APP_OK 0
+#define BAD_ALLOC -1
+
 class App {
 private:
 
 
 	sqlite3 * db;
-
-	int rc;
-	ReportService reportService;
-	DeviceService deviceService;
-	UserService userService;
+	std::shared_ptr<LogService> logService;
 
 	
 	std::shared_ptr<AsyncSnmpManager> asyncSnmpManager;
@@ -33,23 +32,22 @@ private:
 	
 	int initManager()
 	{
-		int r = 0;
 		try
 		{
 			asyncSnmpManager = std::shared_ptr<AsyncSnmpManager>(new AsyncSnmpManager(db));
 		}
 		catch (std::bad_alloc& ba)
 		{
-			r = -1;
-		}
-		
-		return r;
+			return BAD_ALLOC;
+		}		
+		return APP_OK;
 	}
 		
 	
 public:
-	App(sqlite3 * db) : db(db), reportService(db), deviceService(db), userService(db)
+	App(sqlite3 * db) : db(db)
 	{
+		logService = std::shared_ptr<LogService>(new LogService(db));
         initTables();
         if(initManager() != 0)
         {

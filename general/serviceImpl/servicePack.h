@@ -7,5 +7,6 @@
 #include "oidService.cpp"
 #include "logService.cpp"
 #include "walkRaportService.cpp"
+#include "walkRequestService.cpp"
 
 #endif

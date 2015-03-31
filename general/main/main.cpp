@@ -24,6 +24,7 @@ int main(int argc, char *argv[])
         if (pid < 0) {
            exit(EXIT_FAILURE);
         }
+        
         /* If we got a good PID, then
            we can exit the parent process. */
         if (pid > 0) {
@@ -42,8 +43,6 @@ int main(int argc, char *argv[])
                 exit(EXIT_FAILURE);
         }
         
-
-        
         /* Change the current working directory */
         if ((chdir("./")) < 0) {
                 /* Log the failure */
@@ -57,7 +56,7 @@ int main(int argc, char *argv[])
 #endif
 
 	sqlite3 * db;
-	std::cout << "open_db: " << sqlite3_open("../snmp_db", &db) << std::endl;
+	sqlite3_open("../snmp_db", &db);
 	App app(db);
 	app.Run();
 	

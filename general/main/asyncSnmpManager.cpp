@@ -34,6 +34,7 @@ public:
 class AsyncSnmpManager {
 
 	std::shared_ptr<ReportService> reportService;
+	std::shared_ptr<LogService> logService;
 	std::shared_ptr<SqlReportBuffer> sqlReportBuffer;
 	std::mutex mt;
 	DeviceService deviceService;
@@ -75,6 +76,7 @@ class AsyncSnmpManager {
 
 	void initSessions()
 	{
+	   std::string command;
 	   std::unique_lock<std::mutex> lock(mt);
 	   std::shared_ptr<Device> device;
 	   std::shared_ptr<std::vector<std::shared_ptr<Device>>> list = deviceService.getAll();
@@ -91,8 +93,9 @@ class AsyncSnmpManager {
 		  sessSnmpDev -> id = device -> getId();
 
 		  sessSnmpDev -> sqlReportBuffer =  sqlReportBuffer.get();
-		  sessSnmpDev -> command = "1.3.6.1.4.1.2021.4.11.0";
-		  //~ sessSnmpDev -> commandLen = strlen(".1.3.6.1.2.1.1.3.0");
+		  command = device -> getNextCommand();
+		  sessSnmpDev -> command = command.c_str();
+		  // sessSnmpDev -> commandLen = command.length();
 					 
 		 /*
 		  * Initialize a "session" that defines who we're going to talk to
@@ -226,8 +229,15 @@ class AsyncSnmpManager {
 
 public:
 
-	AsyncSnmpManager(sqlite3 * db) : deviceService(db), active_hosts(0)	{
+	AsyncSnmpManager(sqlite3 * db, std::shared_ptr<LogService> logService) : deviceService(db), active_hosts(0)	
+	{
 		reportService = std::shared_ptr<ReportService>(new ReportService(db));
+		this -> logService = logService;
+	}
+
+
+	AsyncSnmpManager(sqlite3 * db) : AsyncSnmpManager(db, std::shared_ptr<LogService>(new LogService(db)))
+	{
 	}
 	
 	void Run() {
