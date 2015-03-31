@@ -11,6 +11,7 @@ private:
 	LogORM logORM;
 	
 public:
+
 	LogService(sqlite3 * db) : logORM(db)
 	{
 

@@ -3,9 +3,11 @@
 
 #include "ORM.cpp"
 #include "../model/oid.cpp"
-
 #include <iostream>
 #include <string>
+
+#define ALL_ACTIVE 1
+#define ALL 0
 
 class OidORM : public ORM
 {
@@ -41,10 +43,10 @@ public:
 		while((rc = sqlite3_step(stmt) !=  SQLITE_DONE)) { 
 			oid = std::shared_ptr<Oid>(new Oid);
 			oid -> setId(atoi((const char *)sqlite3_column_text(stmt, 0)));
-			oid -> setDeviceId( (atoi( (const char *)sqlite3_column_text(stmt, 1)) ));
-			oid -> setOid( std::string((const char *)sqlite3_column_text(stmt, 2)));
-			oid -> setTranslate( std::string((const char *)sqlite3_column_text(stmt, 3)));
-			oid -> setActive( (atoi((const char *)sqlite3_column_text(stmt, 4)) == 0 ? false : true ));
+			oid -> setDeviceId(atoi( (const char *)sqlite3_column_text(stmt, 1)));
+			oid -> setOid(std::string((const char *)sqlite3_column_text(stmt, 2)));
+			oid -> setTranslate(std::string((const char *)sqlite3_column_text(stmt, 3)));
+			oid -> setActive((*(const char *)sqlite3_column_text(stmt, 4) == 't' ) ? true : false );
 			list->push_back(oid);
 		}
 
@@ -54,8 +56,7 @@ public:
 	}
 	
 
-	//FIXME  не подгружает первый элемент из списка. Скорее всего баг в библеотеке
-	std::shared_ptr<std::vector<std::shared_ptr<Oid>>> getListByDeviceId(int device_id)
+	std::shared_ptr<std::vector<std::shared_ptr<Oid>>> getListByDeviceId(int device_id, int must_be_active)
 	{
 
 		std::shared_ptr<std::vector<std::shared_ptr<Oid>>> list(new std::vector<std::shared_ptr<Oid>>());
@@ -68,25 +69,37 @@ public:
 			return list;
 		}
 
-		rc = sqlite3_bind_int(stmt, 1, device_id);    // Using parameters ("?") is not
-		if (rc != SQLITE_OK) {                 // really necessary, but recommended
-			sqlite3_finalize(stmt);            // formatting problems and SQL
+		rc = sqlite3_bind_int(stmt, 1, device_id);
+		if (rc != SQLITE_OK) {
+			sqlite3_finalize(stmt);
 			return list;           
 		}
 
 		std::shared_ptr<Oid> oid;
-		while((rc = sqlite3_step(stmt) !=  SQLITE_DONE)) { // до тех пор пока запрос возращяет результат
+		while((rc = sqlite3_step(stmt) !=  SQLITE_DONE)) {
 			oid = std::shared_ptr<Oid>(new Oid);
 			oid -> setId(atoi((const char *)sqlite3_column_text(stmt, 0)));
-			oid -> setDeviceId( (atoi( (const char *)sqlite3_column_text(stmt, 1)) ));
-			oid -> setOid( std::string((const char *)sqlite3_column_text(stmt, 2)));
-			oid -> setTranslate( std::string((const char *)sqlite3_column_text(stmt, 3)));
-			oid -> setActive( (atoi((const char *)sqlite3_column_text(stmt, 4))) == 0 ? false : true );
-			list -> push_back(oid);
+			oid -> setDeviceId(atoi( (const char *)sqlite3_column_text(stmt, 1)));
+			oid -> setOid(std::string((const char *)sqlite3_column_text(stmt, 2)));
+			oid -> setTranslate(std::string((const char *)sqlite3_column_text(stmt, 3)));
+			oid -> setActive((*(const char *)sqlite3_column_text(stmt, 4) == 't' ) ? true : false );
+			if(must_be_active) {
+				if(oid -> getActive()) {
+					list -> push_back(oid);				
+				}
+			} else {
+				list -> push_back(oid);				
+			}
 		}
 
 		sqlite3_finalize(stmt);
 		return list;
+	}
+
+
+	std::shared_ptr<std::vector<std::shared_ptr<Oid>>> getActiveOidsByDeviceId(int device_id)
+	{
+		return getListByDeviceId(device_id, ALL_ACTIVE);
 	}
 
 
@@ -110,7 +123,6 @@ public:
 		rc |= sqlite3_bind_text(stmt, 5, time.c_str(), time.length(), SQLITE_STATIC); 
 		rc |= sqlite3_bind_text(stmt, 6, time.c_str(), time.length(), SQLITE_STATIC);
 
-
 		if (rc != SQLITE_OK) 
 		{                 
 			sqlite3_finalize(stmt);            // formatting problems and SQL
@@ -122,11 +134,12 @@ public:
 		return rc;
 	}
 
+
 	std::shared_ptr<Oid> getByPK(int id)
 	{
-
 		std::shared_ptr<Oid> oid = std::shared_ptr<Oid>(new Oid);
 		sqlite3_stmt *stmt;
+	
 		int rc = sqlite3_prepare_v2(db, sql_select_by_id.c_str(), -1, &stmt, NULL);
 		if (rc != SQLITE_OK){
 			oid->setStatus(oid ->INIT_BAD);
@@ -146,6 +159,7 @@ public:
 			oid->setStatus(oid ->INIT_BAD);
 			return oid;
 		}
+
 		if (rc == SQLITE_DONE) {
 			sqlite3_finalize(stmt);
 		    oid->setStatus(oid ->INIT_BAD);
@@ -158,7 +172,7 @@ public:
 			oid -> setDeviceId( (atoi( (const char *)sqlite3_column_text(stmt, 1)) ));
 			oid -> setOid( std::string((const char *)sqlite3_column_text(stmt, 2)));
 			oid -> setTranslate( std::string((const char *)sqlite3_column_text(stmt, 3)));
-			oid -> setActive( (atoi((const char *)sqlite3_column_text(stmt, 4)) == 0 ? false : true ));
+			oid -> setActive( (*(const char *)sqlite3_column_text(stmt, 4) == 't' )? true : false );
 		}
 
 		sqlite3_finalize(stmt);
@@ -171,4 +185,3 @@ public:
 };
 
 #endif
-

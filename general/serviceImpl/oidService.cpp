@@ -20,9 +20,14 @@ public:
 		return oidORM.getByPK(id);
 	}
 	
-	std::shared_ptr<std::vector<std::shared_ptr<Oid>>> getByDeviceId(int device_id)
+	std::shared_ptr<std::vector<std::shared_ptr<Oid>>> getOidsByDeviceId(int device_id)
 	{
-		return oidORM.getListByDeviceId(device_id);
+		return oidORM.getListByDeviceId(device_id, ALL);
+	}
+
+	std::shared_ptr<std::vector<std::shared_ptr<Oid>>> getActiveOidsByDeviceId(int device_id)
+	{
+		return oidORM.getListByDeviceId(device_id, ALL_ACTIVE);
 	}
 
 	int save(Oid oid)

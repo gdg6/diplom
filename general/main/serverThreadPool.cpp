@@ -14,6 +14,9 @@
 #include <climits>
 #include <functional>
 #include <condition_variable>
+#include <sys/types.h>
+#include <signal.h>
+
 
 #include "threadPool.cpp"
 #include <arpa/inet.h> 	// for inet_ntop function
@@ -100,7 +103,7 @@ class ThreadPoolServer
 	
 	void poweroffSystem()
 	{
-		
+		kill(0, 9); // SIGKILL self app
 	}
 	
 	void processMsg(std::string msg, int fd)

@@ -6,6 +6,7 @@
 #include <string>
 #include <thread>
 #include "../serviceImpl/servicePack.h"
+#include "../lib/liblog.h"
 #include "../utils/schema.cpp"
 #include "asyncSnmpManager.cpp"
 #include "serverThreadPool.cpp"
@@ -19,22 +20,20 @@ private:
 
 	sqlite3 * db;
 	std::shared_ptr<LogService> logService;
-
-	
 	std::shared_ptr<AsyncSnmpManager> asyncSnmpManager;
-
 
 	
 	void initTables()
 	{
 		delete (new Schema(db));
 	}
+
 	
 	int initManager()
 	{
 		try
 		{
-			asyncSnmpManager = std::shared_ptr<AsyncSnmpManager>(new AsyncSnmpManager(db));
+			asyncSnmpManager = std::shared_ptr<AsyncSnmpManager>(new AsyncSnmpManager(db, logService));
 		}
 		catch (std::bad_alloc& ba)
 		{
@@ -45,17 +44,20 @@ private:
 		
 	
 public:
+
+
 	App(sqlite3 * db) : db(db)
 	{
 		logService = std::shared_ptr<LogService>(new LogService(db));
         initTables();
         if(initManager() != 0)
         {
-			//~ std::cerr << "Can't be run SNMP manager!!!" << std::endl;
+			logService -> save(BAD_ALLOC_LOG, "can't malloc snmp manager");
 			exit(1);
 		}
 	}
 
+	
 	void Run()
 	{
 		pthread_t t1;
@@ -63,10 +65,13 @@ public:
 
 		pthread_create(&t1, NULL, starterThreadPoolServer, (void*)db);
 		pthread_create(&t2, NULL, starterAsyncSnmpManager, (void*)db);
+
 		pthread_join(t1, NULL);
 		pthread_join(t2, NULL);
 		
 	}
+
+
 	~App()
 	{
 		sqlite3_close(db);

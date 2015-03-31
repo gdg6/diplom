@@ -27,8 +27,6 @@ private:
 	//helper for deamon
 	int status;
 
-	// list oids for execute deamon
-	std::shared_ptr<std::vector<std::shared_ptr<Oid>>> command; 
 	int i; // iterator for command as at(i) 
 
 public: 
@@ -166,30 +164,6 @@ public:
 	void setStatus(int status)
 	{
 		this -> status = status;
-	}
-	
-	void setCommamd(std::shared_ptr<std::vector<std::shared_ptr<Oid>>> listCommand)
-	{
-		this -> command = listCommand;
-	}
-
-	std::shared_ptr<std::vector<std::shared_ptr<Oid>>> getCommand()
-	{
-		return command;
-	}
-
-	// FIXME must be use iterator
-	std::string getNextCommand()
-	{
-		if (command != NULL && command -> size() != 0)
-		{
-			if(i >= command -> size())
-			{
-				i = 0;
-			}
-			return (command -> at(i++)) -> getOid();
-		}
-		return "empty";
 	}
 
 };
