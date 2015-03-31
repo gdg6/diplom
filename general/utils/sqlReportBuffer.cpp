@@ -12,7 +12,7 @@ private:
 	SqlBuffer sqlBuffer;
 	std::mutex mt;
 
-	const char  * valid_chars  = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM:1234567890- ";
+	const char  * valid_chars  = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM:1234567890-=(). ";
 	const std::set<char> set_pattern ;
 
 	bool ValidateContext(std::string context)
@@ -66,9 +66,9 @@ public:
 			return;
 		}
 		
-		if(! ValidateContext(context) ) {
-			return;
-		}
+		// if(! ValidateContext(context) ) {
+		// 	return;
+		// }
 		
 		if(!sqlBuffer.getCountSql()) {
 			currentSql = "INSERT INTO reports (\'device_id\', \'r_type\', \'context\', \'created_at\', \'updated_at\') VALUES ";

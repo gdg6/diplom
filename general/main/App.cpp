@@ -17,7 +17,6 @@
 class App {
 private:
 
-
 	sqlite3 * db;
 	std::shared_ptr<LogService> logService;
 	std::shared_ptr<AsyncSnmpManager> asyncSnmpManager;

@@ -49,7 +49,6 @@ public:
 	{
 		sqlite3_stmt *stmt;
 		int rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, NULL);
-		
 		if (rc != SQLITE_OK)
 		{
 			sqlite3_finalize(stmt);

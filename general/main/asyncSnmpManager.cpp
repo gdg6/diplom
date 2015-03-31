@@ -4,7 +4,6 @@
 #include "../serviceImpl/servicePack.h"
 #include "../lib/libSnmpCommand.h"
 #include "../utils/sqlReportBuffer.cpp"
-
 #include <net-snmp/net-snmp-config.h>
 #include <net-snmp/net-snmp-includes.h>
 #include <net-snmp/library/transform_oids.h>
@@ -13,44 +12,13 @@
 #include <thread>
 #include <time.h>
 #include <unistd.h>
+#include "sessSnmpDev.cpp"
 
 #define MSG_TIMEOUT "Timeout"
 #define MSG_SEND "snmp_send"
 #define MSG_RECV "snmp_recv"
 #define MSG_ERR "snmp_err"
 
-
-class SessSnmpDev {
-public:
-    int id;
-	struct snmp_session session, *ss;
-    struct snmp_pdu *pdu;
-    // const char * command;  //oid
-    std::string currentOid;
-	std::shared_ptr<std::vector<std::shared_ptr<Oid>>> commands; // list oids
-    oid anOID[MAX_OID_LEN];
-    size_t  anOID_len = MAX_OID_LEN;
-    SqlReportBuffer * sqlReportBuffer;
-    int i;
-    SessSnmpDev() : i(0)
-    {
-    	commands = NULL;
-    }
-
-	// FIXME must be use iterator
-	std::string getNextCommand()
-	{
-		if (commands != NULL && commands -> size() != 0)
-		{
-			if(i >= commands -> size())
-			{
-				i = 0;
-			}
-			return (commands -> at(i++)) -> getOid();
-		}
-		return "";
-	}
-};
 
 class AsyncSnmpManager {
 
@@ -61,30 +29,22 @@ class AsyncSnmpManager {
 	std::mutex mt;
 	DeviceService deviceService;
 	time_t global_timer;
-
 	std::shared_ptr<std::vector<std::shared_ptr<SessSnmpDev>>> hosts;
 	int active_hosts;
 
-   /*
-	* response handler
-	*/
-	static int asynch_response(int operation, struct snmp_session *sp, int reqid,
-			struct snmp_pdu *pdu, void *magic)
+	void requestByTimer()
 	{
-		SessSnmpDev * host = (SessSnmpDev*)magic;
 		struct snmp_pdu *req;
-
-		if (operation == NETSNMP_CALLBACK_OP_RECEIVED_MESSAGE) {
-			if (print_result(STAT_SUCCESS, host->ss, pdu, host->sqlReportBuffer, host->id, host->currentOid)) {
-			  	/* send next GET (if any) */
-				host -> currentOid = host -> getNextCommand();
-				if ( host -> currentOid.length() > 0 ) {
+		for(int i = 0; i < hosts -> size(); i++) {
+			if((time(NULL) - (hosts -> at(i) -> last_request)) > (hosts -> at(i)) -> ping_request )	{
+				/* send next GET (if any) */
+				hosts -> at(i) -> currentOid = hosts -> at(i) -> getNextCommand();
+				if ( (hosts -> at(i)) -> currentOid.length() > 0 ) {
 					req = snmp_pdu_create(SNMP_MSG_GET);
-		 			read_objid(host -> currentOid.c_str(), host->anOID, &(host -> anOID_len ));
-					snmp_add_null_var(req, host -> anOID, host -> anOID_len);
-					// в случае успеха отсылаем следующий oid
-					if (snmp_send(host -> ss, req)) {
-						return 1;
+		 			read_objid((	hosts -> at(i)) -> currentOid.c_str(), (hosts -> at(i)) ->anOID, &((hosts -> at(i)) -> anOID_len ));
+					snmp_add_null_var(req, (hosts -> at(i)) -> anOID, (hosts -> at(i))-> anOID_len);
+					if (snmp_send((hosts -> at(i)) -> ss, req)) {
+						(hosts -> at(i)) -> last_request = time(NULL);
 					}
 					else {
 						snmp_perror("snmp_send");
@@ -92,6 +52,26 @@ class AsyncSnmpManager {
 					}
 				}
 			}
+		}
+	}
+
+
+	static void * checkHosts(void * object)
+	{
+		for(;;) {
+			((AsyncSnmpManager *) object) -> requestByTimer(); 
+			sleep(1);
+		}
+	}
+
+ 	static int asynch_response(int operation, struct snmp_session *sp, int reqid,
+			struct snmp_pdu *pdu, void *magic)
+	{
+		SessSnmpDev * host = (SessSnmpDev*)magic;
+		struct snmp_pdu *req;
+
+		if (operation == NETSNMP_CALLBACK_OP_RECEIVED_MESSAGE) {
+			print_result(STAT_SUCCESS, host->ss, pdu, host->sqlReportBuffer, host->id, host->currentOid);
 		}
 		else {
 			print_result(STAT_TIMEOUT, host -> ss, pdu, host -> sqlReportBuffer, host -> id, host -> currentOid);
@@ -102,15 +82,12 @@ class AsyncSnmpManager {
 
 	void initSessions()
 	{
-	   std::string command;
 	   std::unique_lock<std::mutex> lock(mt);
 	   std::shared_ptr<Device> device;
 	   std::shared_ptr<std::vector<std::shared_ptr<Device>>> list = deviceService.getAll();
 	   hosts = std::shared_ptr<std::vector<std::shared_ptr<SessSnmpDev>>>(new std::vector<std::shared_ptr<SessSnmpDev>>());
 	   sqlReportBuffer = std::shared_ptr<SqlReportBuffer>(new SqlReportBuffer());
-		/*
-		 * Initialize the SNMP library
-		 */
+
 	   init_snmp("snmpapp");
 	   for(unsigned int i = 0; i < list->size(); i++) {
 		 
@@ -118,21 +95,18 @@ class AsyncSnmpManager {
 		  std::shared_ptr<Device> device = list -> at(i);
 
 		  sessSnmpDev -> id = device -> getId();
+		  sessSnmpDev -> ping_request = device -> getPingRequest();
 		  sessSnmpDev -> commands = oidService -> getActiveOidsByDeviceId(sessSnmpDev -> id);
 		  sessSnmpDev -> sqlReportBuffer =  sqlReportBuffer.get();
 		  sessSnmpDev -> currentOid = sessSnmpDev -> getNextCommand();
-		  logService -> save("oids", "device " + std::to_string(device -> getId()) + " have " + std::to_string(sessSnmpDev -> commands -> size()));
 					 
 		 /*
 		  * Initialize a "session" that defines who we're going to talk to
 		  */
 		  snmp_sess_init( &(sessSnmpDev->session) );                   /* set up defaults */
 		  sessSnmpDev -> session.peername = (char*)(device -> getPeername()).c_str();
-
-		 /* set the SNMP version number */
+		  sessSnmpDev -> session.remote_port = (u_short)device -> getPortNumber();
 		  sessSnmpDev -> session.version = SNMP_VERSION_3;
-
-		 /* set the SNMPv3 user name */
 		  sessSnmpDev -> session.securityName = strdup(device->getLogin().c_str());
 		  sessSnmpDev -> session.securityNameLen = device->getLogin().length();
 		  sessSnmpDev -> session.callback = asynch_response;		/* default callback */
@@ -154,15 +128,12 @@ class AsyncSnmpManager {
 						   (u_char *) device -> getPassword().c_str(),device -> getPassword().length(),
 						   sessSnmpDev -> session.securityAuthKey,
 						   &(sessSnmpDev -> session.securityAuthKeyLen) ) != SNMPERR_SUCCESS) {
-			   // snmp_log(LOG_ERR, "Error generating Ku from authentication pass phrase. \n");
 				logService -> save(SNMP_LOG, "Error generating Ku from authentication pass phra");
-			   continue; // no crash all programm
+			    continue; 
 		   }
 		  
 		  sessSnmpDev -> ss = snmp_open(&(sessSnmpDev->session));
 		  if (!(sessSnmpDev -> ss) ) {
-			// snmp_perror("ack");
-			// snmp_log(LOG_ERR, "something horrible happened!!!\n");
 			logService -> save(SNMP_ASK_LOG, "something horrible happened!!!");
 			continue;
 		  }
@@ -172,6 +143,7 @@ class AsyncSnmpManager {
 		  snmp_add_null_var(sessSnmpDev->pdu, sessSnmpDev->anOID, sessSnmpDev -> anOID_len);
 		  if (snmp_send(sessSnmpDev->ss, sessSnmpDev->pdu)) 
 		  {
+		  	sessSnmpDev -> last_request = time(NULL);
 		    hosts -> push_back(sessSnmpDev);
 		    active_hosts++;
 		  }
@@ -181,16 +153,17 @@ class AsyncSnmpManager {
 		  }
 	   }
 
-		/* windows32 specific initialization (is a noop on unix) */
 		SOCK_STARTUP;
     }
 
 	void selectRun()
 	{
-		global_timer = clock();
+		global_timer = time(NULL);
+		pthread_t t2;
+		pthread_create(&t2, NULL, AsyncSnmpManager::checkHosts, this);
 		while (active_hosts) 
 		{
-		  if(((float)clock() - global_timer) / CLOCKS_PER_SEC > 1 || sqlReportBuffer -> isMustBePush())
+		  if((time(NULL) - global_timer) > 1 || sqlReportBuffer -> isMustBePush())
 		  {
 			reportService->sqlExec(sqlReportBuffer->pushSql());
 			global_timer = clock();
@@ -213,15 +186,13 @@ class AsyncSnmpManager {
 		   }
 			else
 		  {
-		    snmp_timeout();
+		  	snmp_timeout();
 		  }
 	    }
+		pthread_join(t2, NULL);
 	}
 
-	/*
-	 * simple printing of returned data
-	 */
-	static int print_result (int status, struct snmp_session *sp, struct snmp_pdu *pdu, SqlReportBuffer * sqlReportBuffer, int id, std::string type) 
+	static void print_result (int status, struct snmp_session *sp, struct snmp_pdu *pdu, SqlReportBuffer * sqlReportBuffer, int id, std::string type) 
 	{
 	  char buf[1024];
 	  struct variable_list *vp;
@@ -232,27 +203,24 @@ class AsyncSnmpManager {
 				if (pdu->errstat == SNMP_ERR_NOERROR) {
 				  while (vp) {
 						snprint_variable(buf, sizeof(buf), vp->name, vp->name_length, vp);
-						sqlReportBuffer->addInsert(id, type, std::string(buf));      
-					//	fprintf(stdout, "%s: %s\n", sp->peername, buf);
+						sqlReportBuffer -> addInsert(id, type, std::string(buf));     
+						// fprintf(stdout, "%s: %s\n", sp->peername, buf);
 						vp = vp->next_variable;
 				  }
 				}
 				else {
-				  for (int ix = 1; vp && ix != pdu->errindex; vp = vp->next_variable, ix++);
-				  if (vp) snprint_objid(buf, sizeof(buf), vp->name, vp->name_length);
-				  else strcpy(buf, "(none)");
-					sqlReportBuffer->addInsert(id, MSG_ERR, snmp_errstring(pdu->errstat));
+				    for (int ix = 1; vp && ix != pdu->errindex; vp = vp->next_variable, ix++);
+				    if (vp) snprint_objid(buf, sizeof(buf), vp->name, vp->name_length);
+				    else strcpy(buf, "(none)");
+				    sqlReportBuffer->addInsert(id, MSG_ERR, snmp_errstring(pdu->errstat));
 				}
-				return 1;
+				break;
 		  case STAT_TIMEOUT:
 				sqlReportBuffer->addInsert(id, MSG_RECV, "Timeout");
-				return 0;
+				break;
 		  case STAT_ERROR:
-				sqlReportBuffer->addInsert(id, MSG_ERR, "Timeout");
-				snmp_perror(sp->peername);
-				return 0;
+				sqlReportBuffer->addInsert(id, MSG_ERR, "Error");
 	  }
-	  return 0;
 	}
 
 public:
@@ -264,10 +232,7 @@ public:
 		this -> logService = logService;
 	}
 
-
-	AsyncSnmpManager(sqlite3 * db) : AsyncSnmpManager(db, std::shared_ptr<LogService>(new LogService(db)))
-	{
-	}
+	AsyncSnmpManager(sqlite3 * db) : AsyncSnmpManager(db, std::shared_ptr<LogService>(new LogService(db))){}
 	
 	void Run() {
 		initSessions();
@@ -281,12 +246,11 @@ public:
 		initSessions();
 		logService -> save(SNMP_MANAGER_RESTART, "active hosts: " + std::to_string(active_hosts) + " devices.");
 		selectRun();
-
 	}
 
 	void Stop()
 	{
-		//std::shared_ptr must auto free objects
+		std::unique_lock<std::mutex> lock(mt);
 		active_hosts = 0;
 		for(unsigned int i = 0; i < hosts->size(); i++)
 		{
@@ -299,10 +263,6 @@ public:
 		std::unique_lock<std::mutex> lock(mt);
 		return active_hosts;
 	}
-	~AsyncSnmpManager()
-	{
-		
-	}
 
 };
 
@@ -310,7 +270,6 @@ void * starterAsyncSnmpManager(void * db)
 {
 	AsyncSnmpManager manager((sqlite3 *)db);
 	manager.Run();
-	return NULL;
 }
 
 #endif
