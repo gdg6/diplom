@@ -1,18 +1,18 @@
-#ifndef __SQL_REPORT_BUFFER__
-#define  __SQL_REPORT_BUFFER__
+#ifndef __SQL_LOG_BUFFER__
+#define __SQL_LOG_BUFFER__
 
 #include "SqlBuffer.cpp"
 #include <sqlite3.h>
 #include <mutex>
-//~ PRAGMA journal_mode=WAL - for async SQLITE
 
-class SqlReportBuffer {
+class SqlLogBuffer {
 private: 
 	std::string currentSql;
 	SqlBuffer sqlBuffer;
 	std::mutex mt;
 
-	const char  * valid_chars  = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM:1234567890-=(). ";
+
+	const char  * valid_chars  = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM:1234567890- ";
 	const std::set<char> set_pattern ;
 
 	bool ValidateContext(std::string context)
@@ -42,14 +42,13 @@ private:
 		strftime(buf, sizeof(buf), "%Y-%m-%d %X", &tstruct);
 		return buf;
 	}
-	
+
 public:
-	
-	SqlReportBuffer() : set_pattern (valid_chars,  valid_chars + sizeof(valid_chars) - 1)
+	SqlLogBuffer(): set_pattern (valid_chars,  valid_chars + sizeof(valid_chars) - 1)
 	{
 
 	}
-	
+
 	void addInsert(int  id, std::string  type, std::string  context)
 	{
 		std::unique_lock<std::mutex> lock(mt);
@@ -66,23 +65,23 @@ public:
 			return;
 		}
 		
-		// if(! ValidateContext(context) ) {
-		// 	return;
-		// }
+		if(! ValidateContext(context) ) {
+			return;
+		}
 		
 		if(!sqlBuffer.getCountSql()) {
-			currentSql = "INSERT INTO reports (\'device_id\', \'r_type\', \'context\', \'created_at\', \'updated_at\') VALUES ";
+			currentSql = "INSERT INTO logs (\'type\', \'context\', \'created_at\', \'updated_at\') VALUES ";
 			currentSql += "(";
 		} else {
 			currentSql += ", (";
 		}
 		
 		std::string c_t = currentDateTime();
-		currentSql += std::to_string(id) + ",\'" + type + "\', \'" + context + "\', \'" + c_t + "\', \'" + c_t +"\' )";
+		currentSql += "\'" + type + "\', \'" + context + "\', \'" + c_t + "\', \'" + c_t +"\' )";
 		
 		sqlBuffer.addSql(currentSql);
 	}
-	
+
 	std::string  & getSql()
 	{
 		std::unique_lock<std::mutex> lock(mt);
@@ -112,46 +111,7 @@ public:
 		std::unique_lock<std::mutex> lock(mt);
 		return sqlBuffer.getLengthBuffer();
 	}
-	
-	~SqlReportBuffer()
-	{
-		currentSql.clear();
-	}
+
 };
 
 #endif
-
-//~ int main()
-//~ {
-//~ }
-
-//~ #include <iostream>
-
-//~ #include <time.h>
-//~ 
-//~ int  main()
-//~ {
-	//~ SqlReportBuffer sqlReportBuffer;
-	//~ time_t t = clock();
-	//~ sqlite3 * db;
-	//~ sqlite3_open("../snmp_db", &db);
-	//~ ReportORM reportORM(db);
-	//~ 
-	//~ int count_sql = 0, i = 0;
-	//~ 
-	//~ while(((float)(clock() - t))/CLOCKS_PER_SEC < 1 ) {
-		//~ if(sqlReportBuffer.isMustBePush())
-		//~ {
-			//~ std::cout << sqlReportBuffer.getLengthBuffer() << std::endl;
-			//~ count_sql += sqlReportBuffer.getCountSql();
-			//~ std::cout << (reportORM.sqlExec(sqlReportBuffer.pushSql()) == 101 ? "Ok" : "Fail") << std::endl; 
-			//~ i++;
-		//~ }
-		//~ sqlReportBuffer.addInsert(1, "type", "context");		
-	//~ }
-	//~ count_sql += sqlReportBuffer.getCountSql();
-	//~ std::cout << (reportORM.sqlExec(sqlReportBuffer.pushSql()) == 101 ? "Ok" : "Fail") << std::endl; 
-	//~ std::cout << "Total insert: " << i << std::endl;
-	//~ sqlite3_close(db);
-	//~ return 0;
-//~ }

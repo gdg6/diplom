@@ -6,69 +6,57 @@
 #include <string>
 #include <thread>
 #include "../serviceImpl/servicePack.h"
+#include "../lib/liblog.h"
+#include "../utils/schema.cpp"
 #include "asyncSnmpManager.cpp"
 #include "serverThreadPool.cpp"
+
+#define APP_OK 0
+#define BAD_ALLOC -1
 
 class App {
 private:
 
-
 	sqlite3 * db;
-
-	int rc;
-	ReportService reportService;
-	DeviceService deviceService;
-	UserService userService;
-
-	
+	std::shared_ptr<LogService> logService;
 	std::shared_ptr<AsyncSnmpManager> asyncSnmpManager;
-
 
 	
 	void initTables()
 	{
-		//~ //create users table
-		//~ sqlService -> sqlExec(sql_user_create_table);
-		//~ 
-		//~ //create devices table
-		//~ sqlService -> sqlExec(sql_devices_create_table); 
-		//~ 
-		//~ //create reports table
-		//~ sqlService -> sqlExec(sql_reports_create_table);
-		//~ 
-		//~ //create mibs table
-		//~ sqlService -> sqlExec(sql_mib_create_table);
-		//~ 
-		//~ std::cout << "initTalbe: ok" << std::endl;
+		delete (new Schema(db));
 	}
+
 	
 	int initManager()
 	{
-		int r = 0;
 		try
 		{
-			asyncSnmpManager = std::shared_ptr<AsyncSnmpManager>(new AsyncSnmpManager(db));
+			asyncSnmpManager = std::shared_ptr<AsyncSnmpManager>(new AsyncSnmpManager(db, logService));
 		}
 		catch (std::bad_alloc& ba)
 		{
-			r = -1;
-		}
-		
-		return r;
+			return BAD_ALLOC;
+		}		
+		return APP_OK;
 	}
 		
 	
 public:
-	App(sqlite3 * db) : db(db), reportService(db), deviceService(db), userService(db)
+
+
+	App(sqlite3 * db) : db(db)
 	{
+		logService = std::shared_ptr<LogService>(new LogService(db));
         initTables();
         if(initManager() != 0)
         {
-			//~ std::cerr << "Can't be run SNMP manager!!!" << std::endl;
+			logService -> save(BAD_ALLOC_LOG, "can't malloc snmp manager");
 			exit(1);
 		}
 	}
 
+	
 	void Run()
 	{
 		pthread_t t1;
@@ -76,10 +64,13 @@ public:
 
 		pthread_create(&t1, NULL, starterThreadPoolServer, (void*)db);
 		pthread_create(&t2, NULL, starterAsyncSnmpManager, (void*)db);
+
 		pthread_join(t1, NULL);
 		pthread_join(t2, NULL);
 		
 	}
+
+
 	~App()
 	{
 		sqlite3_close(db);
@@ -88,4 +79,3 @@ public:
 };
 
 #endif
-

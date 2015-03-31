@@ -7,7 +7,7 @@ class ReportService
 {
 private:
 	ReportORM reportORM;
-	
+
 public:	
 	ReportService(sqlite3 * db) : reportORM(db)
 	{

@@ -2,17 +2,22 @@
 #define __SQL_BUFFER__
 
 #include <string>
+#include <set>
 #define MAX_SQL_LENGTH 31000
 
 class SqlBuffer {
+private:
 	std::string buffer;
 	int count_sql;
 	std::string rez;
+
 public: 
+
 	SqlBuffer() : buffer(""), count_sql(0)
 	{
 	}
 
+	//Fixme - sql must be validate
 	void addSql(std::string sql) {
 		buffer += sql; 
 		count_sql++;
