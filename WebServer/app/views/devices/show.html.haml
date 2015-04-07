@@ -4,36 +4,36 @@
   .div{style: "float: left; margin-left: 0%;"}
     %label= "Серийный номер"
     %h4= @device.serial_number
+    
   .div{style: "float: left; margin-left: 10%;"}
     %label= "Модель"
     %h4= @device.model
+
   .div{style: "float: left; margin-left: 10%;"}
     %label= "IP"
     %h4= @device.peername
+
   .div{style: "float: left; margin-left: 10%;"}
     %label= "Порт"
     %h4= @device.port
+
   .div{style: "float: left; margin-left: 10%;"}
-    %label= "таймаут:" 
-    %h4= @device.ping_request
+    %label= "Имя"
+    %h4= @device.name
 
   .div{style: "margin-top: 10%;"}
     .div{style: "float: left; margin-left: 0%;"}
-
-      %label= "Имя"
-      %h4= @device.name
-    .div{style: "float: left; margin-left: 10%;"}
-
       %label= "Описание"
       %h4= @device.description
 
     .div{style: "float: left; margin-left: 10%;"}
       %label= "Комната"
       %h4= @device.room
-    .div{style: "float: left; margin-left: 10%;"}
 
+    .div{style: "float: left; margin-left: 10%;"}
       %label= "Мак"
       %h4= @device.mac
+
   .clearfix
   .div{style: "display: inline-block; width: 100%;margin-top: 5%;"}
     .pull-left

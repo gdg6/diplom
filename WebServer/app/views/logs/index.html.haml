@@ -1,23 +1,16 @@
-%h1 Listing logs
-
-%table
-  %thead
-    %tr
-      %th L type
-      %th Context
-      %th
-      %th
-      %th
-      
-  %tbody
-    - @logs.each do |log|
-      %tr
-        %td= log.l_type
-        %td= log.context
-        %td= link_to 'Show', log
-        %td= link_to 'Edit', edit_log_path(log)
-        %td= link_to 'Destroy', log, :method => :delete, :data => { :confirm => 'Are you sure?' }
-
-%br
-
-= link_to 'New Log', new_log_path
+.page-header
+  %h1 Журнал событий
+.list-group
+  -@logs.each do |log|
+    .list-group-item{:style=>"margin-top:5px;"}
+      .div
+        .h4.b
+          Тип
+        .br
+        = log.l_type
+      .div
+        .h4.b
+          Содержание
+        .br
+        = log.context      
+      .clearfix

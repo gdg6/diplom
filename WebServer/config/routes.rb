@@ -27,6 +27,5 @@ Rails.application.routes.draw do
 
   get 'snmpget_request' => 'snmpget_requests#new', as: :snmp_get
   post 'snmpget_request' => 'snmpget_requests#create'
-
   
 end

@@ -41,3 +41,8 @@
 .btn-white-text {
   color: white !important;
 }
+
+.navbar-default .navbar-nav > .active-btn-topbar > a {
+  color: #E8E8EF;
+  background-color: rgba(97, 97, 103, 0.58);
+}

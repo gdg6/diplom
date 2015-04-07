@@ -10,5 +10,4 @@ class Device < ActiveRecord::Base
   validates :port, :presence => true
   validates :login, :presence => true
   validates :password, :presence => true
-  validates :ping_request, :presence => true
 end

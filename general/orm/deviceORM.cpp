@@ -7,9 +7,9 @@
 
 class DeviceORM  : public ORM
 {
-	std::string sql_select_by_id = "SELECT name, description, room, mac, serial_number, model,  peername, port, login, password, ping_request FROM devices WHERE Id = ?";
+	std::string sql_select_by_id = "SELECT name, description, room, mac, serial_number, model,  peername, port, login, password FROM devices WHERE Id = ?";
 	std::string sql_select_all = "SELECT * FROM devices;";
-	std::string sql_insert = "INSERT INTO \'devices\' (\'name\', \'description\', \'room\', \'mac\', \'serial_number\', \'model\', \'peername\', \'port\', \'login\', \'password\', \'ping_request\', \'created_at\', \'updated_at\') VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+	std::string sql_insert = "INSERT INTO \'devices\' (\'name\', \'description\', \'room\', \'mac\', \'serial_number\', \'model\', \'peername\', \'port\', \'login\', \'password\', \'created_at\', \'updated_at\') VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 	int rc; //status for db;
 	sqlite3 * db;
@@ -42,7 +42,6 @@ public:
 		rc |= sqlite3_bind_int(stmt, 8, device.getPortNumber()); 
 		rc |= sqlite3_bind_text(stmt, 9, device.getLogin().c_str(), device.getLogin().length(), SQLITE_STATIC); 
 		rc |= sqlite3_bind_text(stmt, 10, device.getPassword().c_str(), device.getPassword().length(), SQLITE_STATIC); 
-		rc |= sqlite3_bind_int(stmt, 11, device.getPingRequest()); 
 		rc |= sqlite3_bind_text(stmt, 12, time.c_str(), time.length(), SQLITE_STATIC); 
 		rc |= sqlite3_bind_text(stmt, 13, time.c_str(), time.length(), SQLITE_STATIC); 
 
@@ -82,7 +81,6 @@ public:
 			device -> setPortNumber( atoi((const char *)sqlite3_column_text(stmt, 8)));
 			device -> setLogin( std::string((const char *)sqlite3_column_text(stmt, 9)));
 			device -> setPassword( std::string((const char *)sqlite3_column_text(stmt, 10)));
-			device -> setPingRequest( atoi((const char *)sqlite3_column_text(stmt, 11)));
 			list->push_back(device);
 		}
 
@@ -135,7 +133,6 @@ public:
 			device -> setPortNumber( atoi((const char *)sqlite3_column_text(stmt, 7)));
 			device -> setLogin( std::string((const char *)sqlite3_column_text(stmt, 8)));
 			device -> setPassword( std::string((const char *)sqlite3_column_text(stmt, 9)));
-			device -> setPingRequest( atoi((const char *)sqlite3_column_text(stmt, 11)));
 		}
 
 		sqlite3_finalize(stmt);

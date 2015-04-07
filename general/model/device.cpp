@@ -21,8 +21,6 @@ private:
 	//authorization
 	std::string login;
 	std::string password;
-	// mib
-	int pind_request;
 	
 	//helper for deamon
 	int status;
@@ -146,16 +144,6 @@ public:
 		this -> password = password;
 	}
 	
-	int getPingRequest()
-	{
-		return pind_request;
-	}
-
-	void setPingRequest(int pind_request)
-	{
-		this -> pind_request = pind_request;
-	}
-
 	int getStatus()
 	{
 		return status;

@@ -39,8 +39,9 @@ class OidsController < ApplicationController
       @oid = Oid.new
       @oid.oid = params[:oid][:oid].to_s
       @oid.translate = params[:oid][:translate].to_s
-      @oid.active = params[:oid][:active] == true ? true : false
+      @oid.active = params[:oid][:active].to_i == 1 ? true : false
       @oid.device_id = device.id
+      @oid.ping_request = params[:oid][:ping_request].to_i
       respond_to do |format|
         if @oid.save
           format.html { redirect_to @oid, notice: 'Oid was successfully created.' }
@@ -87,6 +88,7 @@ class OidsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def oid_params
-      params.require(:oid).permit(:oid, :translate, :active, :device_id)
+
+      params.require(:oid).permit(:oid, :translate, :ping_request, :active, :device_id)
     end
 end

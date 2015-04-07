@@ -43,10 +43,11 @@ ActiveRecord::Schema.define(version: 20150325092651) do
   end
 
   create_table "oids", force: true do |t|
-    t.integer  "device_id",  null: false
+    t.integer  "device_id",    null: false
     t.string   "oid"
     t.string   "translate"
-    t.boolean  "active",     null: false
+    t.integer  "ping_request", null: false
+    t.boolean  "active",       null: false
     t.datetime "created_at"
     t.datetime "updated_at"
   end

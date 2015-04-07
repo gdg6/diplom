@@ -9,15 +9,22 @@
   .form-group
     = f.label :oid
     = f.text_field :oid, class: 'form-control'
+  
   .form-group
     = f.label :translate
     = f.text_field :translate, class: 'form-control'
+  
   .form-group
+    = f.label "Таймаут запроса"
+    = f.number_field :ping_request, :min=>'1', :class => 'form-control'
+
+  .form-group.pull-left
     = f.label "Активный" 
-    = f.check_box :active, class: 'form-group checkbox'
+    = f.check_box :active, class: 'form-control checkbox'
   .form-group 
     %input{:type=>"hidden", :value=>@device_id, :name=>:device_id}
-
+  
+  .clearfix
   .actions
     = f.submit 'Добавить', class: "btn btn-primary btn-sm" do 
       =fa_icon 'plus'
