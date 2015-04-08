@@ -69,6 +69,6 @@ class WalkRequestsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def walk_request_params
-      params.require(:walk_request).permit(:request)
+      params.require(:walk_request).permit(:request, :description)
     end
 end

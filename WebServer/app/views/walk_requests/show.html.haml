@@ -1,8 +1,11 @@
-%p#notice= notice
 
 %p
   %b Request:
   = @walk_request.request
+
+%p
+  %b Описание:
+  = @walk_request.description
 
 = link_to 'Edit', edit_walk_request_path(@walk_request)
 \|

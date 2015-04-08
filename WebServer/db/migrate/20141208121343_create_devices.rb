@@ -11,6 +11,7 @@ class CreateDevices < ActiveRecord::Migration
       t.integer :port, :nil => false
       t.string  :login, :nil => false
       t.string  :password, :nil => false
+      t.string  :priv_password, :limit => 1024
       t.integer :ping_request, :nil => false      
 
       t.timestamps

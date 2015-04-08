@@ -24,6 +24,7 @@ ActiveRecord::Schema.define(version: 20150325092651) do
     t.integer  "port"
     t.string   "login"
     t.string   "password"
+    t.string   "priv_password", limit: 1024
     t.integer  "ping_request"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -81,6 +82,7 @@ ActiveRecord::Schema.define(version: 20150325092651) do
 
   create_table "walk_requests", force: true do |t|
     t.string   "request"
+    t.string   "description"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

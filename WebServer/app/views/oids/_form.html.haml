@@ -11,11 +11,11 @@
     = f.text_field :oid, class: 'form-control'
   
   .form-group
-    = f.label :translate
+    = f.label "Значение"
     = f.text_field :translate, class: 'form-control'
   
   .form-group
-    = f.label "Таймаут запроса"
+    = f.label "Таймаут запроса (в секундах)"
     = f.number_field :ping_request, :min=>'1', :class => 'form-control'
 
   .form-group.pull-left
@@ -26,5 +26,4 @@
   
   .clearfix
   .actions
-    = f.submit 'Добавить', class: "btn btn-primary btn-sm" do 
-      =fa_icon 'plus'
+    = f.submit 'Сохранить', class: "btn btn-primary btn-sm" 

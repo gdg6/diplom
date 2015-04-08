@@ -21,6 +21,7 @@ private:
 	//authorization
 	std::string login;
 	std::string password;
+	std::string priv_password;
 	
 	//helper for deamon
 	int status;
@@ -144,6 +145,16 @@ public:
 		this -> password = password;
 	}
 	
+	void setPrivPassword(std::string priv_password) 
+	{
+		this -> priv_password = priv_password;
+	}
+
+	std::string getPrivPassword()
+	{
+		return priv_password;
+	}
+
 	int getStatus()
 	{
 		return status;

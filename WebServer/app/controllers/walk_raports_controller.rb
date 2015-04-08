@@ -61,7 +61,7 @@ class WalkRaportsController < ApplicationController
           :priv_protocol => :des, 
           :username => @device.login, 
           :auth_password => @device.password, 
-          :priv_password => @device.password) do |session|  
+          :priv_password => @device.priv_password) do |session|  
           session.walk(@snmpwalk_type_request.request.to_s) do |status, pdu|
 
             if !status.nil?

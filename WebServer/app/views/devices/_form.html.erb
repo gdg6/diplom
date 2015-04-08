@@ -12,47 +12,53 @@
   <% end %>
 
   <div class="field">
-    <%= f.label :name %><br>
-    <%= f.text_field :name %>
+    <%= f.label "Название устройства" %><br>
+    <%= f.text_field :name , :class=>"form-control", :style=>"width: 500px;" %>
   </div> 
   <div class="td" style="width: 500px;" >
-    <%= f.label :description %><br>
-    <%= f.text_area :description %>
+    <%= f.label "Краткое описание" %><br>
+    <%= f.text_area :description, :class=>"form-control", :style=>"width: 500px;"  %>
   </div>
   <div class="field">
-    <%= f.label :room %><br>
-    <%= f.text_field :room %>
+    <%= f.label "Комната" %><br>
+    <%= f.text_field :room, :class=>"form-control", :style=>"width: 500px;"  %>
   </div>
   <div class="field">
     <%= f.label :mac %><br>
-    <%= f.text_field :mac %>
+    <%= f.text_field :mac, :class=>"form-control", :style=>"width: 500px;"   %>
   </div>
   <div class="field">
     <%= f.label :serial_number %><br>
-    <%= f.text_field :serial_number %>
+    <%= f.text_field :serial_number, :class=>"form-control", :style=>"width: 500px;"  %>
   </div>
   <div class="field">
     <%= f.label :model %><br>
-    <%= f.text_field :model %>
+    <%= f.text_field :model, :class=>"form-control", :style=>"width: 500px;"  %>
   </div>
   <div class="field">
     <%= f.label :peername %><br>
-    <%= f.text_field :peername %>
+    <%= f.text_field :peername, :class=>"form-control", :style=>"width: 500px;"  %>
   </div>
   <div class="field">
     <%= f.label :port %><br>
-    <%= f.number_field :port %>
+    <%= f.number_field :port, :class=>"form-control", :style=>"width: 500px;"  %>
   </div>
   <div class="field">
     <%= f.label :login %><br>
-    <%= f.text_field :login %>
+    <%= f.text_field :login, :class=>"form-control", :style=>"width: 500px;"  %>
   </div>
   <div class="field">
-    <%= f.label :password %><br>
-    <%= f.text_field :password %>
+    <%= f.label "password" %><br>
+    <%= f.text_field :password, :class=>"form-control", :style=>"width: 500px;"  %>
+  </div>
+  <div class="field">
+    <%= f.label "Private password" %><br>
+    <%= f.text_field :priv_password, :class=>"form-control", :style=>"width: 500px;"  %>
   </div>
 
+
+
   <div class="actions">
-    <%= f.submit %>
+    <%= f.submit 'Сохранить', :class=>"btn btn-primary btn-sm"%>  
   </div>
 <% end %>

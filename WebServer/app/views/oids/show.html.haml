@@ -1,15 +1,18 @@
-
+	
 %p
   %b Oid:
   = @oid.oid
 %p
-  %b Translate:
+  %b Описание:
   = @oid.translate
 %p
-  %b Active:
-  = @oid.active
+  %b Активен:
+  = @oid.active ? "Да" : "НЕ 	"
 %p
-  %b device_id:
+  %b Id устройства:
   = @oid.device_id
+%p
+  %b  Задержка запроса:
+  = @oid.ping_request
 
 = link_to 'Edit', edit_oid_path(@oid)

@@ -3,15 +3,19 @@ ru:
     device: Устройство
     mib: Миб
     user: Пользователь
+    oid: Oid
   activerecord:
     models:
       user: Пользователь
+      oid: oid
     attributes:
       mib:
         file_name_mib: Название файла
     statistic:
       name: Название устройства
       type: Тип запроса
+    oids:
+      name: "Название устройства"
   views:
     pagination:
       first: ⇤

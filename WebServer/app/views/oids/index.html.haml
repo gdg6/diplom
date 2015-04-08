@@ -13,6 +13,9 @@
         .div{style: "float: left; margin-left: 10%;"}
           %b Active:
           %h4 #{oid.active == true ? "Активен" : "Неактивен"}
+        .div{style: "float: left; margin-left: 10%;"}
+          %b Отправлять каждые:
+          %h4 #{oid.ping_request} секунд
       .pull-right
         =link_to edit_oid_path(oid), class: 'btn btn-primary btn-sm' do
           =fa_icon 'edit'

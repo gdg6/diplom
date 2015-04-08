@@ -8,6 +8,10 @@
 
   .field
     = f.label "oid: "
-    = f.text_field :request
+    = f.text_field :request, class: "form-control", style: "width: 500px;"
+  
+  .field
+    = f.label "Краткое описание: "
+    = f.text_field :description, class: "form-control", style: "width: 500px;"
   .actions
-    = f.submit 'Save'
+    = f.submit 'Сохранить', class: "btn btn-primary"
