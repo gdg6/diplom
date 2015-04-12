@@ -5,12 +5,15 @@
     .list-group-item{:style=>"margin-top:5px;"}
       .div
         .h4.b
-          Тип
+          = "Тип"
+        .pull-right{:style=>"margin-top:-30px;"}
+          = log.updated_at
         .br
-        = log.l_type
+        = log.l_type 
       .div
         .h4.b
           Содержание
         .br
         = log.context      
       .clearfix
+= paginate @logs

@@ -76,7 +76,7 @@ public:
 
 	void setLastTimeRequest(time_t last_time_request)
 	{
-		this -> last_time_request;
+		this -> last_time_request = last_time_request;
 	}
 
 	time_t getLastTimeRequest()

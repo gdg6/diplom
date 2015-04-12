@@ -11,8 +11,7 @@
 #include "asyncSnmpManager.cpp"
 #include "serverThreadPool.cpp"
 
-#define APP_OK 0
-#define BAD_ALLOC -1
+
 
 class App {
 private:
@@ -67,7 +66,6 @@ public:
 
 		pthread_join(t1, NULL);
 		pthread_join(t2, NULL);
-		
 	}
 
 

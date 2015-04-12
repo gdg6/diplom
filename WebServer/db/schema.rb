@@ -30,7 +30,7 @@ ActiveRecord::Schema.define(version: 20150325092651) do
   end
 
   create_table "logs", force: true do |t|
-    t.integer  "l_type"
+    t.string   "l_type"
     t.text     "context"
     t.datetime "created_at"
     t.datetime "updated_at"

@@ -1,11 +1,13 @@
 class LogsController < ApplicationController
   # before_action :set_log, only: [:show, :edit, :update, :destroy]
   before_action :check_auth
+  attr_reader :page
+
 
   # GET /logs
   # GET /logs.json
   def index
-    @logs = Log.all
+    @logs = Log.order(created_at: :desc).page(params[:page]).per(8).load
   end
 
   # GET /logs/1

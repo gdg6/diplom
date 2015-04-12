@@ -31,6 +31,11 @@ public:
 		}
 		return NULL;
 	}
+
+	int getIndexCurrentCommand()
+	{
+		return (i == 0 ? 0 : (i - 1));
+	}
 };
 
 #endif

@@ -23,8 +23,6 @@ module ApplicationHelper
     end
     res
   end
-
-
   
   def link_to_back
 	 link_to(fa_icon("angle-left")+' Назад',:back, class: 'btn btn-default')

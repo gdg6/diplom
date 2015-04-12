@@ -44,7 +44,7 @@ class AsyncSnmpManager {
 				std::shared_ptr<Oid> currentOid = host -> getNextCommand();
 				if(currentOid != NULL) 
 				{
-					if( (time(NULL) -  currentOid -> getLastTimeRequest() > (currentOid -> getPingRequest())) && (currentOid -> getOid().length()) > 0 )
+					if( (time(NULL) -  (currentOid -> getLastTimeRequest()) > (currentOid -> getPingRequest())) && (currentOid -> getOid().length()) > 0 )
 					{
 						host -> currentOid = currentOid -> getOid();
 						req = snmp_pdu_create(SNMP_MSG_GET);
@@ -53,6 +53,7 @@ class AsyncSnmpManager {
 
 						if (snmp_send(host -> ss, req)) {
 							currentOid -> setLastTimeRequest(time(NULL));
+							std::cout << "отослал: " << currentOid -> getLastTimeRequest() << std::endl;
 							break;
 						}
 						else {
@@ -69,7 +70,11 @@ class AsyncSnmpManager {
 	static void * checkHosts(void * object)
 	{
 		for(;;) {
-			((AsyncSnmpManager *) object) -> requestByTimer(); 
+			if(((AsyncSnmpManager *) object) -> getActiveHosts() == 0)
+			{
+				return NULL;
+			}
+			((AsyncSnmpManager *) object) -> requestByTimer();
 			sleep(1);
 		}
 	}
@@ -108,7 +113,6 @@ class AsyncSnmpManager {
 		  // sessSnmpDev -> ping_request = device -> getPingRequest();
 		  sessSnmpDev -> commands = oidService -> getActiveOidsByDeviceId(sessSnmpDev -> id);
 		  sessSnmpDev -> sqlReportBuffer =  sqlReportBuffer.get();
-		 std::cout << "qqq" << std::endl;
 					 
 		 /*
 		  * Initialize a "session" that defines who we're going to talk to
@@ -212,7 +216,7 @@ class AsyncSnmpManager {
 		  snmp_add_null_var(sessSnmpDev->pdu, sessSnmpDev->anOID, sessSnmpDev -> anOID_len);
 		  if (snmp_send(sessSnmpDev->ss, sessSnmpDev->pdu)) 
 		  {
-		  	oid -> setLastTimeRequest(time(NULL));
+		  	(sessSnmpDev -> commands) -> at(sessSnmpDev -> getIndexCurrentCommand()) -> setLastTimeRequest(time(NULL));
 		    hosts -> push_back(sessSnmpDev);
 		    active_hosts++;
 		  }
@@ -331,6 +335,19 @@ public:
 	int getActiveHosts() {
 		std::unique_lock<std::mutex> lock(mt);
 		return active_hosts;
+	}
+
+	~AsyncSnmpManager()
+	{
+		if(active_hosts != 0)
+		{
+			for(unsigned int i = 0; i < hosts->size(); i++)
+			{
+				snmp_close((hosts->at(i)) -> ss);
+			}
+			logService -> save(SNMP_MANAGER_STOP, "async manager is stoped!");
+		}
+		active_hosts = 0;
 	}
 
 };

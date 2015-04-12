@@ -81,7 +81,7 @@ private:
 	
 	const std::string table_logs = "CREATE TABLE \'logs\' (\
 		\'id\' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, \
-		\'l_type\' integer, \
+		\'l_type\' varchar(255), \
 		\'context\' text, \
 		\'created_at\' datetime, \
 		\'updated_at\' datetime);"

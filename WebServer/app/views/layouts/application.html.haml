@@ -10,7 +10,9 @@
   %body
     -if  !@current_user.nil?
       =render 'layouts/topbar'
+      .div{:style => "margin-left: 50px;margin-top: 50px;"}
+        = link_to_back
 
-    .container.main
+    .container.main{style: "margin-top: -60px;"}
       =render 'layouts/flash_messages'
       =yield
