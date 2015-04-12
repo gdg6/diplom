@@ -32,33 +32,39 @@ class AsyncSnmpManager {
 	std::shared_ptr<std::vector<std::shared_ptr<SessSnmpDev>>> hosts;
 	int active_hosts;
 
-//FIXME - Надо опрашивать по таймауту каждой комманды
+	//FIXME - Надо опрашивать по таймауту каждой комманды
 	void requestByTimer()
 	{
 		struct snmp_pdu *req;
+		
 		for(int i = 0; i < hosts -> size(); i++) {
+			std::shared_ptr<SessSnmpDev> host = hosts -> at(i);
+			for(int j = 0; j < ((host -> commands) -> size()); j++) 
+			{
+				std::shared_ptr<Oid> currentOid = host -> getNextCommand();
+				if(currentOid != NULL) 
+				{
+					if( (time(NULL) -  currentOid -> getLastTimeRequest() > (currentOid -> getPingRequest())) && (currentOid -> getOid().length()) > 0 )
+					{
+						host -> currentOid = currentOid -> getOid();
+						req = snmp_pdu_create(SNMP_MSG_GET);
+						read_objid(currentOid -> getOid().c_str(), host ->anOID, &(host -> anOID_len) );
+						snmp_add_null_var(req, host -> anOID, host-> anOID_len);
 
-			if((time(NULL) - (hosts -> at(i) -> last_request)) > (hosts -> at(i)) -> ping_request )	{
-
-
-				/* send next GET (if any) */
-				hosts -> at(i) -> currentOid = hosts -> at(i) -> getNextCommand();
-				if ( (hosts -> at(i)) -> currentOid.length() > 0 ) {
-					req = snmp_pdu_create(SNMP_MSG_GET);
-		 			read_objid((	hosts -> at(i)) -> currentOid.c_str(), (hosts -> at(i)) ->anOID, &((hosts -> at(i)) -> anOID_len ));
-					snmp_add_null_var(req, (hosts -> at(i)) -> anOID, (hosts -> at(i))-> anOID_len);
-					if (snmp_send((hosts -> at(i)) -> ss, req)) {
-						(hosts -> at(i)) -> last_request = time(NULL);
-					}
-					else {
-						snmp_perror("snmp_send");
-						snmp_free_pdu(req);
-					}
+						if (snmp_send(host -> ss, req)) {
+							currentOid -> setLastTimeRequest(time(NULL));
+							break;
+						}
+						else {
+							snmp_perror("snmp_send");
+							snmp_free_pdu(req);
+							break;
+						}
+					}	
 				}
 			}
 		}
 	}
-
 
 	static void * checkHosts(void * object)
 	{
@@ -94,19 +100,20 @@ class AsyncSnmpManager {
 
 	   init_snmp("snmpapp");
 	   for(unsigned int i = 0; i < list->size(); i++) {
-		 
 		  std::shared_ptr<SessSnmpDev> sessSnmpDev(new SessSnmpDev);
 		  std::shared_ptr<Device> device = list -> at(i);
 
 		  sessSnmpDev -> id = device -> getId();
-		  sessSnmpDev -> ping_request = device -> getPingRequest();
+		  
+		  // sessSnmpDev -> ping_request = device -> getPingRequest();
 		  sessSnmpDev -> commands = oidService -> getActiveOidsByDeviceId(sessSnmpDev -> id);
 		  sessSnmpDev -> sqlReportBuffer =  sqlReportBuffer.get();
-		  sessSnmpDev -> currentOid = sessSnmpDev -> getNextCommand();
+		 std::cout << "qqq" << std::endl;
 					 
 		 /*
 		  * Initialize a "session" that defines who we're going to talk to
 		  */
+
 		  snmp_sess_init( &(sessSnmpDev->session) );                   /* set up defaults */
 		  sessSnmpDev -> session.peername = (char*)(device -> getPeername()).c_str();
 		  sessSnmpDev -> session.remote_port = (u_short)device -> getPortNumber();
@@ -137,7 +144,6 @@ class AsyncSnmpManager {
 				logService -> save(SNMP_LOG, "Error generating Ku from authentication pass phra");
 			    continue; 
 		   }
-
 
 
 		   // Надо собрать блок для USM_PRIV_KU_LEN
@@ -187,6 +193,11 @@ class AsyncSnmpManager {
 			//     continue; 
 		 //   }
 
+
+		  // Незачем хранить устройства, с которыми нечего делать. Очисткой займуться умные указатели
+		  if((sessSnmpDev -> commands) -> size() == 0) {
+		  	continue;
+		  }
 		  
 		  sessSnmpDev -> ss = snmp_open(&(sessSnmpDev->session));
 		  if (!(sessSnmpDev -> ss) ) {
@@ -194,12 +205,14 @@ class AsyncSnmpManager {
 			continue;
 		  }
 
+		  std::shared_ptr<Oid>  oid = sessSnmpDev -> getNextCommand();
+		  sessSnmpDev -> currentOid = oid -> getOid();
 		  sessSnmpDev -> pdu = snmp_pdu_create(SNMP_MSG_GET);	/* send the first GET */
-		  read_objid(sessSnmpDev->currentOid.c_str(), sessSnmpDev->anOID, &(sessSnmpDev ->  anOID_len ));
+		  read_objid(oid -> getOid().c_str(), sessSnmpDev->anOID, &(sessSnmpDev ->  anOID_len ));
 		  snmp_add_null_var(sessSnmpDev->pdu, sessSnmpDev->anOID, sessSnmpDev -> anOID_len);
 		  if (snmp_send(sessSnmpDev->ss, sessSnmpDev->pdu)) 
 		  {
-		  	sessSnmpDev -> last_request = time(NULL);
+		  	oid -> setLastTimeRequest(time(NULL));
 		    hosts -> push_back(sessSnmpDev);
 		    active_hosts++;
 		  }

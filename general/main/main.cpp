@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
 #endif
 
 	sqlite3 * db;
-	sqlite3_open("../snmp_db", &db);
+	sqlite3_open("../../WebServer/snmp_db", &db);
 	App app(db);
 	app.Run();
 	

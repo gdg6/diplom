@@ -9,7 +9,7 @@ class DeviceORM  : public ORM
 {
 	std::string sql_select_by_id = "SELECT name, description, room, mac, serial_number, model,  peername, port, login, password, priv_password FROM devices WHERE Id = ?";
 	std::string sql_select_all = "SELECT * FROM devices;";
-	std::string sql_insert = "INSERT INTO \'devices\' (\'name\', \'description\', \'room\', \'mac\', \'serial_number\', \'model\', \'peername\', \'port\', \'login\', \'password\', \'priv_password\' \'created_at\', \'updated_at\') VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+	std::string sql_insert = "INSERT INTO \'devices\' (\'name\', \'description\', \'room\', \'mac\', \'serial_number\', \'model\', \'peername\', \'port\', \'login\', \'password\', \'priv_password\', \'created_at\', \'updated_at\') VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 	int rc; //status for db;
 	sqlite3 * db;
@@ -25,13 +25,12 @@ public:
 		sqlite3_stmt * stmt;
 		std::string time  = currentDateTime();
 		int rc = sqlite3_prepare_v2(db, sql_insert.c_str(), -1, &stmt, NULL);
-		
+
 		if (rc != SQLITE_OK)
 		{
 			sqlite3_finalize(stmt);
 			return rc;
 		}
-
 		rc |= sqlite3_bind_text(stmt, 1, device.getName().c_str(), device.getName().length(), SQLITE_STATIC);    
 		rc |= sqlite3_bind_text(stmt, 2, device.getDescription().c_str(), device.getDescription().length(), SQLITE_STATIC); 
 		rc |= sqlite3_bind_text(stmt, 3, device.getRoom().c_str(), device.getRoom().length(), SQLITE_STATIC); 
@@ -43,8 +42,10 @@ public:
 		rc |= sqlite3_bind_text(stmt, 9, device.getLogin().c_str(), device.getLogin().length(), SQLITE_STATIC); 
 		rc |= sqlite3_bind_text(stmt, 10, device.getPassword().c_str(), device.getPassword().length(), SQLITE_STATIC); 
 		rc |= sqlite3_bind_text(stmt, 11, device.getPrivPassword().c_str(), device.getPassword().length(), SQLITE_STATIC); 
+		rc |= sqlite3_bind_text(stmt, 12, time.c_str(), time.length(), SQLITE_STATIC); 
 		rc |= sqlite3_bind_text(stmt, 13, time.c_str(), time.length(), SQLITE_STATIC); 
-		rc |= sqlite3_bind_text(stmt, 14, time.c_str(), time.length(), SQLITE_STATIC); 
+
+		std::cout << rc << std::endl;
 
 		if (rc != SQLITE_OK) 
 		{                 
@@ -136,7 +137,7 @@ public:
 			device -> setPortNumber( atoi((const char *)sqlite3_column_text(stmt, 7)));
 			device -> setLogin( std::string((const char *)sqlite3_column_text(stmt, 8)));
 			device -> setPassword( std::string((const char *)sqlite3_column_text(stmt, 9)));
-			device -> setPrivPassword( std::string((const char *)sqlite3_column_text(stmt, 11)));
+			device -> setPrivPassword( std::string((const char *)sqlite3_column_text(stmt, 10)));
 
 		}
 
@@ -166,13 +167,16 @@ public:
 // 	device . setDescrition("description");
 // 	device . setSerialNumber("serial");
 // 	device . setRoom("room");
-// 	device . setMibPk(0);
+// 	device . setPrivPassword("password");
 
+	
 
 // 	sqlite3 * db;
-// 	sqlite3_open("../../WebServer/snmp_db", &db);
+// 	sqlite3_open("../snmp_db", &db);
 // 	DeviceORM *  deviceORM = new DeviceORM(db);
 // 	deviceORM -> insertDevice(device);
+
+// 	std::cout << (deviceORM -> getAll()) -> size();
 // 	sqlite3_close(db);
 // 	delete deviceORM;
 // 	return 0;

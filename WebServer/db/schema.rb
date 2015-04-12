@@ -25,7 +25,6 @@ ActiveRecord::Schema.define(version: 20150325092651) do
     t.string   "login"
     t.string   "password"
     t.string   "priv_password", limit: 1024
-    t.integer  "ping_request"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -33,12 +32,6 @@ ActiveRecord::Schema.define(version: 20150325092651) do
   create_table "logs", force: true do |t|
     t.integer  "l_type"
     t.text     "context"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "mibs", force: true do |t|
-    t.string   "file_name_mib"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

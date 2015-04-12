@@ -12,10 +12,10 @@
 class OidORM : public ORM
 {
 private:
-	std::string sql_select_by_id = "select Id, Device_id, Oid, Translate, Active FROM oids WHERE Id = ?";
-	std::string sql_select_all_by_device_id = "SELECT Id, Device_id, Oid, Translate, Active FROM oids WHERE device_id = ?";
+	std::string sql_select_by_id = "select Id, Device_id, Oid, Translate, ping_request, Active FROM oids WHERE Id = ?";
+	std::string sql_select_all_by_device_id = "SELECT Id, Device_id, Oid, Translate, ping_request, Active FROM oids WHERE device_id = ?";
 	std::string sql_select_all  = "SELECT * FROM oids;";
-	std::string sql_insert = "INSERT INTO \'oids\' (\'device_id\', \'oid\', \'translate\', \'active\', \'created_at\', \'updated_at\') VALUES (?, ?, ?, ?, ?, ?)";
+	std::string sql_insert = "INSERT INTO \'oids\' (\'device_id\', \'oid\', \'translate\', \'ping_request\' \'active\', \'created_at\', \'updated_at\') VALUES (?, ?, ?, ?, ?, ?, ?)";
 
 	int rc; //status for db;
 	sqlite3 * db;
@@ -46,7 +46,8 @@ public:
 			oid -> setDeviceId(atoi( (const char *)sqlite3_column_text(stmt, 1)));
 			oid -> setOid(std::string((const char *)sqlite3_column_text(stmt, 2)));
 			oid -> setTranslate(std::string((const char *)sqlite3_column_text(stmt, 3)));
-			oid -> setActive((*(const char *)sqlite3_column_text(stmt, 4) == 't' ) ? true : false );
+			oid -> setPingRequest(atoi((const char *)sqlite3_column_text(stmt, 4)));
+			oid -> setActive((*(const char *)sqlite3_column_text(stmt, 5) == 't' ) ? true : false );
 			list->push_back(oid);
 		}
 
@@ -82,7 +83,8 @@ public:
 			oid -> setDeviceId(atoi( (const char *)sqlite3_column_text(stmt, 1)));
 			oid -> setOid(std::string((const char *)sqlite3_column_text(stmt, 2)));
 			oid -> setTranslate(std::string((const char *)sqlite3_column_text(stmt, 3)));
-			oid -> setActive((*(const char *)sqlite3_column_text(stmt, 4) == 't' ) ? true : false );
+			oid -> setPingRequest(atoi((const char *)sqlite3_column_text(stmt, 4)));
+			oid -> setActive((*(const char *)sqlite3_column_text(stmt, 5) == 't' ) ? true : false );
 			if(must_be_active) {
 				if(oid -> getActive()) {
 					list -> push_back(oid);				
@@ -118,10 +120,11 @@ public:
 		// (\'device_id\', \'oid\', \'translate\', \'active\', \'created_at\', \'updated_at\')
 		rc |= sqlite3_bind_int(stmt, 1, oid.getDeviceId()); 
 		rc |= sqlite3_bind_text(stmt, 2, oid.getOid().c_str(), oid.getOid().length(), SQLITE_STATIC);    
-		rc |= sqlite3_bind_text(stmt, 3, oid.getTranslate().c_str(), oid.getTranslate().length(), SQLITE_STATIC);    
-		rc |= sqlite3_bind_text(stmt, 4, oid.getActive() ? "t" : "f", 1, SQLITE_STATIC); 
-		rc |= sqlite3_bind_text(stmt, 5, time.c_str(), time.length(), SQLITE_STATIC); 
-		rc |= sqlite3_bind_text(stmt, 6, time.c_str(), time.length(), SQLITE_STATIC);
+		rc |= sqlite3_bind_text(stmt, 3, oid.getTranslate().c_str(), oid.getTranslate().length(), SQLITE_STATIC); 
+		rc |= sqlite3_bind_int(stmt, 4, oid.getPingRequest());
+		rc |= sqlite3_bind_text(stmt, 5, oid.getActive() ? "t" : "f", 1, SQLITE_STATIC); 
+		rc |= sqlite3_bind_text(stmt, 6, time.c_str(), time.length(), SQLITE_STATIC); 
+		rc |= sqlite3_bind_text(stmt, 7, time.c_str(), time.length(), SQLITE_STATIC);
 
 		if (rc != SQLITE_OK) 
 		{                 
@@ -172,7 +175,8 @@ public:
 			oid -> setDeviceId( (atoi( (const char *)sqlite3_column_text(stmt, 1)) ));
 			oid -> setOid( std::string((const char *)sqlite3_column_text(stmt, 2)));
 			oid -> setTranslate( std::string((const char *)sqlite3_column_text(stmt, 3)));
-			oid -> setActive( (*(const char *)sqlite3_column_text(stmt, 4) == 't' )? true : false );
+			oid -> setPingRequest(atoi((const char *)sqlite3_column_text(stmt, 4)));
+			oid -> setActive( (*(const char *)sqlite3_column_text(stmt, 5) == 't' )? true : false );
 		}
 
 		sqlite3_finalize(stmt);

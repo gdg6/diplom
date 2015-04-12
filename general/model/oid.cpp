@@ -9,14 +9,16 @@ private:
 	int id;
 	std::string oid;
 	std::string translate;
+	int ping_request;
 	int device_id;
 	bool active; // can be send to device ? 
+	time_t last_time_request;
 	int status;  // for init db 
 
 public:
 	enum {INIT_BAD, INIT_SUCCESS};
 	
-	Oid() : status(INIT_SUCCESS)
+	Oid() : last_time_request(0), status(INIT_SUCCESS) 
 	{
 
 	}
@@ -45,6 +47,16 @@ public:
 		return translate;
 	}
 
+	void setPingRequest(int ping_request)
+	{
+		this -> ping_request = ping_request;
+	}
+
+	int getPingRequest()
+	{
+		return ping_request;
+	}
+
 	void setDeviceId(int device_id){
 		this -> device_id = device_id;
 	}
@@ -60,6 +72,16 @@ public:
 
 	bool getActive() {
 		return active;
+	}
+
+	void setLastTimeRequest(time_t last_time_request)
+	{
+		this -> last_time_request;
+	}
+
+	time_t getLastTimeRequest()
+	{
+		return last_time_request;
 	}
 
 	void setStatus(int status) {

@@ -13,15 +13,13 @@ public:
     SqlReportBuffer * sqlReportBuffer;
     int i;
     
-    time_t last_request;
-
     SessSnmpDev() : i(0)
     {
     	commands = NULL;
     }
 
 	// FIXME must be use iterator
-	std::string getNextCommand()
+	std::shared_ptr<Oid> getNextCommand()
 	{
 		if (commands != NULL && commands -> size() != 0)
 		{
@@ -29,9 +27,9 @@ public:
 			{
 				i = 0;
 			}
-			return (commands -> at(i++)) -> getOid();
+			return (commands -> at(i++));
 		}
-		return "";
+		return NULL;
 	}
 };
 

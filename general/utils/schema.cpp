@@ -32,7 +32,7 @@ private:
     	\'port\' integer, \
     	\'login\' varchar(255), \
     	\'password\' varchar(255), \
-    	\'ping_request\' integer, \
+    	\'priv_password\' varchar(1024), \
     	\'created_at\' datetime, \
     	\'updated_at\' datetime);"
 	;
@@ -43,6 +43,7 @@ private:
 		\'device_id\' integer NOT NULL, \
 		\'oid\' varchar(255), \
 		\'translate\' varchar(255), \
+		\'ping_request\' integer NOT NULL, \
 		\'active\' boolean NOT NULL, \
 		\'created_at\' datetime, \
 		\'updated_at\' datetime);"
@@ -73,6 +74,7 @@ private:
 	const std::string table_walk_request = "CREATE TABLE \'walk_requests\' (\
 		\'id\' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, \
 		\'request\' varchar(255), \
+		\'translate\' varchar(255), \
 		\'created_at\' datetime, \
 		\'updated_at\' datetime);"
 	;	
@@ -239,7 +241,7 @@ private:
 	}
 public:
 
-	Schema(sqlite3 * db) : status(0){
+	Schema(sqlite3 * db) : status(0) {
 		this -> db = db;
 		configure();
 		initTables();

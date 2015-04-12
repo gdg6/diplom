@@ -26,8 +26,6 @@ private:
 	//helper for deamon
 	int status;
 
-	int i; // iterator for command as at(i) 
-
 public: 
 	enum {INIT_BAD, INIT_SUCCESS};
 	
