@@ -36,7 +36,7 @@ module StatisticsHelper
 
   def year_select()
   	res = []
-    	for i in 1992..Time.now.year
+    	for i in (Time.now.year - 10) ..Time.now.year
     		res << [i, i]
     	end	
   	return res

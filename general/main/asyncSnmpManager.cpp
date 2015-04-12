@@ -53,7 +53,7 @@ class AsyncSnmpManager {
 
 						if (snmp_send(host -> ss, req)) {
 							currentOid -> setLastTimeRequest(time(NULL));
-							std::cout << "отослал: " << currentOid -> getLastTimeRequest() << std::endl;
+							std::cout << "отослал: " << currentOid -> getOid() << std::endl;
 							break;
 						}
 						else {

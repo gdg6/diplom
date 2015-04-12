@@ -10,7 +10,7 @@
     %h4= @device.name
 
   =form_tag search_path do 
-    %input{:type=>"hidden", :value=>@device_id, :name=>'device_id'}
+    %input{:type=>"hidden", :value=>@device.id, :name=>'device_id'}
     .form-group
       %h4
         %i
@@ -23,14 +23,14 @@
       .col-sm-12
         .pull-left
           = label_tag "С"
-          = select_tag :start_day_time, options_for_select(day_select),class: 'btn btn-default'
-          = select_tag :start_month_time, options_for_select(month_select),class: 'btn btn-default'
-          = select_tag :start_year_time, options_for_select(year_select),class: 'btn btn-default'
+          = select_tag :start_day_time, options_for_select(day_select, [@start_date.day]), class: 'btn btn-default'
+          = select_tag :start_month_time, options_for_select(month_select, [@start_date.month]), class: 'btn btn-default'
+          = select_tag :start_year_time, options_for_select(year_select, [@start_date.year]), class: 'btn btn-default'
         .pull-right
           = label_tag "По"
-          = select_tag :end_day_time, options_for_select(day_select),class: 'btn btn-default'
-          = select_tag :end_month_time, options_for_select(month_select),class: 'btn btn-default'
-          = select_tag :end_year_time, options_for_select(year_select.reverse!),class: 'btn btn-default'
+          = select_tag :end_day_time, options_for_select(day_select, [@end_date.day]), class: 'btn btn-default'
+          = select_tag :end_month_time, options_for_select(month_select, [@end_date.month]), class: 'btn btn-default'
+          = select_tag :end_year_time, options_for_select(year_select.reverse!, [@end_date.year]), class: 'btn btn-default'
 
     .form-group{style: "margin-top: 10%;"}
       %h4

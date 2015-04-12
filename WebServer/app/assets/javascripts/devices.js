@@ -10,14 +10,10 @@
 		
 		for(var i = 0; i < points_list.length; ++i) {
 			var point = [0,0];
+			point[0] = parseInt(points_list.eq(i).find('input[name=date]').val()) * 1000;
 			point[1] = points_list.eq(i).find('input[name=value]').val();
-			point[0] = points_list.eq(i).find('input[name=date]').val();
 			d.push(point);
 		}
-		
-		// for (var i = 0; i < d.length; ++i) {
-			// d[i][0] += 60 * 60 * 1000;
-		// }
 
 		// helper for returning the weekends in a period
 
@@ -109,4 +105,5 @@
 		// Add the Flot version string to the footer
 
 		$("#footer").prepend("Flot " + $.plot.version + " &ndash; ");
+
 	});

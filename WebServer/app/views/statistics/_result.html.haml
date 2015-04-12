@@ -3,7 +3,7 @@
 - else
 
   - if @view_id.to_i == 1
-    .list-group-item
+    .list-group-item{:style => "margin-left: -150px; margin-right: -150px;;"}
       =label_tag "результат поиска(#{@results.size})"
       .draw-shapes{id: 'placeholder', class: 'table-form'}
       .draw-shapes{id: 'overview', class: 'table-form '}
