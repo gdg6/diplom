@@ -32,10 +32,9 @@ class AsyncSnmpManager {
 	std::shared_ptr<std::vector<std::shared_ptr<SessSnmpDev>>> hosts;
 	int active_hosts;
 
-	//FIXME - Надо опрашивать по таймауту каждой комманды
 	void requestByTimer()
 	{
-		struct snmp_pdu *req;
+		struct snmp_pdu * req ;
 		
 		for(int i = 0; i < hosts -> size(); i++) {
 			std::shared_ptr<SessSnmpDev> host = hosts -> at(i);
@@ -47,18 +46,17 @@ class AsyncSnmpManager {
 					if( (time(NULL) -  (currentOid -> getLastTimeRequest()) > (currentOid -> getPingRequest())) && (currentOid -> getOid().length()) > 0 )
 					{
 						host -> currentOid = currentOid -> getOid();
-						req = snmp_pdu_create(SNMP_MSG_GET);
+						host -> pdu = snmp_pdu_create(SNMP_MSG_GET);
 						read_objid(currentOid -> getOid().c_str(), host ->anOID, &(host -> anOID_len) );
-						snmp_add_null_var(req, host -> anOID, host-> anOID_len);
+						snmp_add_null_var(host -> pdu, host -> anOID, host-> anOID_len);
 
-						if (snmp_send(host -> ss, req)) {
+						if (snmp_send(host -> ss, host -> pdu)) {
 							currentOid -> setLastTimeRequest(time(NULL));
-							std::cout << "отослал: " << currentOid -> getOid() << std::endl;
 							break;
 						}
 						else {
 							snmp_perror("snmp_send");
-							snmp_free_pdu(req);
+							snmp_free_pdu(host -> pdu);
 							break;
 						}
 					}	
@@ -128,7 +126,9 @@ class AsyncSnmpManager {
 		  sessSnmpDev -> session.callback_magic = sessSnmpDev.get();
 
 		  /* set the security level to authenticated, but not encrypted */
-		  sessSnmpDev -> session.securityLevel = SNMP_SEC_LEVEL_AUTHNOPRIV; // надо заменить на SNMP_SEC_LEVEL_AUTHPRIV
+		  // sessSnmpDev -> session.securityLevel = SNMP_SEC_LEVEL_AUTHNOPRIV; // надо заменить на SNMP_SEC_LEVEL_AUTHPRIV
+		  sessSnmpDev -> session.securityLevel = SNMP_SEC_LEVEL_AUTHPRIV; 
+
 
 		  /* set the authentication method to MD5 */
 		  sessSnmpDev -> session.securityAuthProto = usmHMACMD5AuthProtocol;
@@ -149,53 +149,15 @@ class AsyncSnmpManager {
 			    continue; 
 		   }
 
-
-		   // Надо собрать блок для USM_PRIV_KU_LEN
-		   // Пример взять отсюда 
-		   //      # Do not generate_Ku, unless we're Auth or AuthPriv
-           // unless @sess.securityLevel == Constants::SNMP_SEC_LEVEL_NOAUTH
-          //   options[:auth_password] ||= options[:password]  # backward compatability
-          //   if options[:username].nil? or options[:auth_password].nil?
-          //     raise Net::SNMP::Error.new "SecurityLevel requires username and password"
-          //   end
-          //   if options[:username]
-          //     @sess.securityName = FFI::MemoryPointer.from_string(options[:username])
-          //     @sess.securityNameLen = options[:username].length
-          //   end
-
-          //   auth_len_ptr = FFI::MemoryPointer.new(:size_t)
-          //   auth_len_ptr.write_int(Constants::USM_AUTH_KU_LEN)
-          //   auth_key_result = Wrapper.generate_Ku(@sess.securityAuthProto,
-          //                                    @sess.securityAuthProtoLen,
-          //                                    options[:auth_password],
-          //                                    options[:auth_password].length,
-          //                                    @sess.securityAuthKey,
-          //                                    auth_len_ptr)
-          //   @sess.securityAuthKeyLen = auth_len_ptr.read_int
-
-          //   if @sess.securityLevel == Constants::SNMP_SEC_LEVEL_AUTHPRIV
-          //     priv_len_ptr = FFI::MemoryPointer.new(:size_t)
-          //     priv_len_ptr.write_int(Constants::USM_PRIV_KU_LEN)
-
-          //     # NOTE I know this is handing off the AuthProto, but generates a proper
-          //     # key for encryption, and using PrivProto does not.
-          //     priv_key_result = Wrapper.generate_Ku(@sess.securityAuthProto,
-          //                                      @sess.securityAuthProtoLen,
-          //                                      options[:priv_password],
-          //                                      options[:priv_password].length,
-          //                                      @sess.securityPrivKey,
-          //                                      priv_len_ptr)
-          //     @sess.securityPrivKeyLen = priv_len_ptr.read_int
-          //   end
-
-			// if (generate_Ku(sessSnmpDev -> session.securityAuthProto,
-			// 			   sessSnmpDev -> session.securityAuthProtoLen,
-			// 			   (u_char *) device -> getPassword().c_str(),device -> getPassword().length(),
-			// 			   sessSnmpDev -> session.securityAuthKey,
-			// 			   &(sessSnmpDev -> session.securityAuthKeyLen) ) != SNMPERR_SUCCESS) {
-			// 	logService -> save(SNMP_LOG, "Error generating Ku from authentication pass phra");
-			//     continue; 
-		 //   }
+			sessSnmpDev -> session.securityPrivKeyLen = USM_PRIV_KU_LEN;
+			if (generate_Ku(sessSnmpDev -> session.securityAuthProto,
+						   sessSnmpDev -> session.securityAuthProtoLen,
+						   (u_char *) device -> getPrivPassword().c_str(),device -> getPrivPassword().length(),
+						   sessSnmpDev -> session.securityPrivKey,
+						   &(sessSnmpDev -> session.securityPrivKeyLen) ) != SNMPERR_SUCCESS) {
+				logService -> save(SNMP_LOG, "Error generating Ku from priv authentication pass phra");
+			    continue; 
+		   }
 
 
 		  // Незачем хранить устройства, с которыми нечего делать. Очисткой займуться умные указатели

@@ -39,7 +39,7 @@
     .pull-left
       =link_to "/oids/?device_id=#{@device.id}", style: "width: 90px; background-color: yellow; ", class: 'btn btn-warrning btn-sm', :title => "Просмотр списка обрабатываемых комманд" do 
         =fa_icon 'list'
-      =link_to "/search_statistic?device_id=1", style: "width: 90px; margin-left: 3px;", class: 'btn btn-success btn-sm', title: "Просмотр полученной статистики" do
+      =link_to "/search_statistic?device_id=#{@device.id}", style: "width: 90px; margin-left: 3px;", class: 'btn btn-success btn-sm', title: "Просмотр полученной статистики" do
         =fa_icon 'eye'
         =fa_icon 'signal'
 

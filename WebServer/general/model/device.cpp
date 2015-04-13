@@ -21,13 +21,10 @@ private:
 	//authorization
 	std::string login;
 	std::string password;
-	// mib
-	int pind_request;
+	std::string priv_password;
 	
 	//helper for deamon
 	int status;
-
-	int i; // iterator for command as at(i) 
 
 public: 
 	enum {INIT_BAD, INIT_SUCCESS};
@@ -146,14 +143,14 @@ public:
 		this -> password = password;
 	}
 	
-	int getPingRequest()
+	void setPrivPassword(std::string priv_password) 
 	{
-		return pind_request;
+		this -> priv_password = priv_password;
 	}
 
-	void setPingRequest(int pind_request)
+	std::string getPrivPassword()
 	{
-		this -> pind_request = pind_request;
+		return priv_password;
 	}
 
 	int getStatus()

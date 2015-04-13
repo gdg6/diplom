@@ -1,4 +1,4 @@
-#ifndef __SERVER_THREAD_POOL__
+ #ifndef __SERVER_THREAD_POOL__
 #define __SERVER_THREAD_POOL__
 
 #define _XOPEN_SOURCE 700
@@ -195,7 +195,7 @@ class ThreadPoolServer
 			} else {
 				if(count_connection < max_connect)
 				{
-					pool -> runAsync(&ThreadPoolServer::initClient,this, fd);
+					pool -> runAsync(&ThreadPoolServer::initClient, this, fd);
 					count_connection++;
 				}
 				 else
@@ -224,7 +224,7 @@ public:
 		max_connect = sysconf(_SC_NPROCESSORS_ONLN);
 		if(max_connect  < 2) max_connect  = 2;
 		try{
-			pool = std::move(std::shared_ptr<ThreadPool>(new ThreadPool(max_connect )));
+			pool = std::move(std::shared_ptr<ThreadPool>(new ThreadPool(max_connect)));
 		}
 		 catch(std::bad_alloc& ba)
 		{
@@ -251,10 +251,11 @@ public:
    {
 	if(close(sock) == -1)
 	{
-		std::cout << "close fd" << std::endl;
+			//write log
+		// std::cout << "close fd" << std::endl;
 	}
 	
-	std::cout << "I do it!" << std::endl;
+	// std::cout << "I do it!" << std::endl;
    }
 
 };

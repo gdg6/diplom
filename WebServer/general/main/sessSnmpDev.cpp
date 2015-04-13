@@ -6,22 +6,20 @@ public:
     int id;
 	struct snmp_session session, *ss;
     struct snmp_pdu *pdu;
-    // const char * command;  //oid
     std::string currentOid;
 	std::shared_ptr<std::vector<std::shared_ptr<Oid>>> commands; // list oids
     oid anOID[MAX_OID_LEN];
     size_t  anOID_len = MAX_OID_LEN;
     SqlReportBuffer * sqlReportBuffer;
     int i;
-    int ping_request;
-    time_t last_request;
+    
     SessSnmpDev() : i(0)
     {
     	commands = NULL;
     }
 
 	// FIXME must be use iterator
-	std::string getNextCommand()
+	std::shared_ptr<Oid> getNextCommand()
 	{
 		if (commands != NULL && commands -> size() != 0)
 		{
@@ -29,9 +27,14 @@ public:
 			{
 				i = 0;
 			}
-			return (commands -> at(i++)) -> getOid();
+			return (commands -> at(i++));
 		}
-		return "";
+		return NULL;
+	}
+
+	int getIndexCurrentCommand()
+	{
+		return (i == 0 ? 0 : (i - 1));
 	}
 };
 

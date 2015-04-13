@@ -8,6 +8,7 @@ class WalkRequest{
 private: 
 	int id;
 	std::string request;
+	std::string description;
 public:
 
 	void setId(int id)
@@ -28,6 +29,16 @@ public:
 	std::string getRequest()
 	{
 		return request;
+	}
+
+	void setDescription(std::string description)
+	{
+		this -> description = description;
+	}
+
+	std::string getDescription()
+	{
+		return description;
 	}
 
 };

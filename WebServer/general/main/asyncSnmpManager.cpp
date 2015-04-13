@@ -34,32 +34,45 @@ class AsyncSnmpManager {
 
 	void requestByTimer()
 	{
-		struct snmp_pdu *req;
+		struct snmp_pdu * req ;
+		
 		for(int i = 0; i < hosts -> size(); i++) {
-			if((time(NULL) - (hosts -> at(i) -> last_request)) > (hosts -> at(i)) -> ping_request )	{
-				/* send next GET (if any) */
-				hosts -> at(i) -> currentOid = hosts -> at(i) -> getNextCommand();
-				if ( (hosts -> at(i)) -> currentOid.length() > 0 ) {
-					req = snmp_pdu_create(SNMP_MSG_GET);
-		 			read_objid((	hosts -> at(i)) -> currentOid.c_str(), (hosts -> at(i)) ->anOID, &((hosts -> at(i)) -> anOID_len ));
-					snmp_add_null_var(req, (hosts -> at(i)) -> anOID, (hosts -> at(i))-> anOID_len);
-					if (snmp_send((hosts -> at(i)) -> ss, req)) {
-						(hosts -> at(i)) -> last_request = time(NULL);
-					}
-					else {
-						snmp_perror("snmp_send");
-						snmp_free_pdu(req);
-					}
+			std::shared_ptr<SessSnmpDev> host = hosts -> at(i);
+			for(int j = 0; j < ((host -> commands) -> size()); j++) 
+			{
+				std::shared_ptr<Oid> currentOid = host -> getNextCommand();
+				if(currentOid != NULL) 
+				{
+					if( (time(NULL) -  (currentOid -> getLastTimeRequest()) > (currentOid -> getPingRequest())) && (currentOid -> getOid().length()) > 0 )
+					{
+						host -> currentOid = currentOid -> getOid();
+						host -> pdu = snmp_pdu_create(SNMP_MSG_GET);
+						read_objid(currentOid -> getOid().c_str(), host ->anOID, &(host -> anOID_len) );
+						snmp_add_null_var(host -> pdu, host -> anOID, host-> anOID_len);
+
+						if (snmp_send(host -> ss, host -> pdu)) {
+							currentOid -> setLastTimeRequest(time(NULL));
+							break;
+						}
+						else {
+							snmp_perror("snmp_send");
+							snmp_free_pdu(host -> pdu);
+							break;
+						}
+					}	
 				}
 			}
 		}
 	}
 
-
 	static void * checkHosts(void * object)
 	{
 		for(;;) {
-			((AsyncSnmpManager *) object) -> requestByTimer(); 
+			if(((AsyncSnmpManager *) object) -> getActiveHosts() == 0)
+			{
+				return NULL;
+			}
+			((AsyncSnmpManager *) object) -> requestByTimer();
 			sleep(1);
 		}
 	}
@@ -90,19 +103,19 @@ class AsyncSnmpManager {
 
 	   init_snmp("snmpapp");
 	   for(unsigned int i = 0; i < list->size(); i++) {
-		 
 		  std::shared_ptr<SessSnmpDev> sessSnmpDev(new SessSnmpDev);
 		  std::shared_ptr<Device> device = list -> at(i);
 
 		  sessSnmpDev -> id = device -> getId();
-		  sessSnmpDev -> ping_request = device -> getPingRequest();
+		  
+		  // sessSnmpDev -> ping_request = device -> getPingRequest();
 		  sessSnmpDev -> commands = oidService -> getActiveOidsByDeviceId(sessSnmpDev -> id);
 		  sessSnmpDev -> sqlReportBuffer =  sqlReportBuffer.get();
-		  sessSnmpDev -> currentOid = sessSnmpDev -> getNextCommand();
 					 
 		 /*
 		  * Initialize a "session" that defines who we're going to talk to
 		  */
+
 		  snmp_sess_init( &(sessSnmpDev->session) );                   /* set up defaults */
 		  sessSnmpDev -> session.peername = (char*)(device -> getPeername()).c_str();
 		  sessSnmpDev -> session.remote_port = (u_short)device -> getPortNumber();
@@ -113,12 +126,16 @@ class AsyncSnmpManager {
 		  sessSnmpDev -> session.callback_magic = sessSnmpDev.get();
 
 		  /* set the security level to authenticated, but not encrypted */
-		  sessSnmpDev -> session.securityLevel = SNMP_SEC_LEVEL_AUTHNOPRIV;
+		  // sessSnmpDev -> session.securityLevel = SNMP_SEC_LEVEL_AUTHNOPRIV; // надо заменить на SNMP_SEC_LEVEL_AUTHPRIV
+		  sessSnmpDev -> session.securityLevel = SNMP_SEC_LEVEL_AUTHPRIV; 
+
 
 		  /* set the authentication method to MD5 */
 		  sessSnmpDev -> session.securityAuthProto = usmHMACMD5AuthProtocol;
 		  sessSnmpDev -> session.securityAuthProtoLen = sizeof(usmHMACMD5AuthProtocol)/sizeof(oid);
+		  
 		  sessSnmpDev -> session.securityAuthKeyLen = USM_AUTH_KU_LEN;
+
 
 		  /* set the authentication key to a MD5 hashed version of our
 		  passphrase "The Net-SNMP Demo Password" (which must be at least 8
@@ -131,6 +148,22 @@ class AsyncSnmpManager {
 				logService -> save(SNMP_LOG, "Error generating Ku from authentication pass phra");
 			    continue; 
 		   }
+
+			sessSnmpDev -> session.securityPrivKeyLen = USM_PRIV_KU_LEN;
+			if (generate_Ku(sessSnmpDev -> session.securityAuthProto,
+						   sessSnmpDev -> session.securityAuthProtoLen,
+						   (u_char *) device -> getPrivPassword().c_str(),device -> getPrivPassword().length(),
+						   sessSnmpDev -> session.securityPrivKey,
+						   &(sessSnmpDev -> session.securityPrivKeyLen) ) != SNMPERR_SUCCESS) {
+				logService -> save(SNMP_LOG, "Error generating Ku from priv authentication pass phra");
+			    continue; 
+		   }
+
+
+		  // Незачем хранить устройства, с которыми нечего делать. Очисткой займуться умные указатели
+		  if((sessSnmpDev -> commands) -> size() == 0) {
+		  	continue;
+		  }
 		  
 		  sessSnmpDev -> ss = snmp_open(&(sessSnmpDev->session));
 		  if (!(sessSnmpDev -> ss) ) {
@@ -138,12 +171,14 @@ class AsyncSnmpManager {
 			continue;
 		  }
 
+		  std::shared_ptr<Oid>  oid = sessSnmpDev -> getNextCommand();
+		  sessSnmpDev -> currentOid = oid -> getOid();
 		  sessSnmpDev -> pdu = snmp_pdu_create(SNMP_MSG_GET);	/* send the first GET */
-		  read_objid(sessSnmpDev->currentOid.c_str(), sessSnmpDev->anOID, &(sessSnmpDev ->  anOID_len ));
+		  read_objid(oid -> getOid().c_str(), sessSnmpDev->anOID, &(sessSnmpDev ->  anOID_len ));
 		  snmp_add_null_var(sessSnmpDev->pdu, sessSnmpDev->anOID, sessSnmpDev -> anOID_len);
 		  if (snmp_send(sessSnmpDev->ss, sessSnmpDev->pdu)) 
 		  {
-		  	sessSnmpDev -> last_request = time(NULL);
+		  	(sessSnmpDev -> commands) -> at(sessSnmpDev -> getIndexCurrentCommand()) -> setLastTimeRequest(time(NULL));
 		    hosts -> push_back(sessSnmpDev);
 		    active_hosts++;
 		  }
@@ -262,6 +297,19 @@ public:
 	int getActiveHosts() {
 		std::unique_lock<std::mutex> lock(mt);
 		return active_hosts;
+	}
+
+	~AsyncSnmpManager()
+	{
+		if(active_hosts != 0)
+		{
+			for(unsigned int i = 0; i < hosts->size(); i++)
+			{
+				snmp_close((hosts->at(i)) -> ss);
+			}
+			logService -> save(SNMP_MANAGER_STOP, "async manager is stoped!");
+		}
+		active_hosts = 0;
 	}
 
 };

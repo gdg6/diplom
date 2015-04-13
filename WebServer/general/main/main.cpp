@@ -10,7 +10,7 @@
 #include "App.cpp"
 
 //~ PRAGMA journal_mode=WAL - for async SQLITE
-//g++ -std=gnu++11 main.cpp ../utils/bcrypt/bcrypt.a -lnetsnmp -lsqlite3 -lpthread
+//g++ -std=gnu++11 main.cpp ../utils/bcrypt/bcrypt.a -lnetsnmp -lsqlite3 -lpthread -O3 -pipe
 #define __NO_PRODUCTION__
 
 int main(int argc, char *argv[])
@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
 #endif
 
 	sqlite3 * db;
-	sqlite3_open("../snmp_db", &db);
+	sqlite3_open("../../snmp_db", &db);
 	App app(db);
 	app.Run();
 	

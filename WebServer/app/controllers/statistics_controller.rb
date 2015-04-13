@@ -22,7 +22,7 @@ class StatisticsController < ApplicationController
         if (@view_id = params[:view_id].to_i) == 1
           @results = Report.select(:context, :created_at).where("device_id =? AND r_type = ? AND created_at > ? AND created_at < ?", @device.id, r_type.oid, @start_date, @end_date).load
         else
-          @results = Report.select(:r_type, :context, :created_at).where("device_id =? AND r_type = ? AND created_at > ? AND created_at < ?", @device.id, r_type.oid, @start_date, @end_date).page(params[:page]).per(10).load
+          @results = Report.select(:r_type, :context, :created_at).where("device_id =? AND r_type = ? AND created_at > ? AND created_at < ?", @device.id, r_type.oid, @start_date, @end_date).page(params[:page]).order(:id => :desc).per(10).load
         end
         render action: :printResult,  :results=>@results, :view_id => @view_id, :device => @device, :device_id => @device.id
         return
