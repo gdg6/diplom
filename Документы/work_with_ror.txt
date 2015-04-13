@@ -1,5 +1,0 @@
-rails d scaffold User
-
-rails g scaffold User login:string crypted_password:string salt:string
-
-bundle exec rake db:migrate
