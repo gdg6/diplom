@@ -8,10 +8,40 @@
       .draw-shapes{id: 'placeholder', class: 'table-form'}
       .draw-shapes{id: 'overview', class: 'table-form '}
       .list-group{style: 'display:none', id: 'data-result-search'}
-        - @results.each do |point|
-          .list-group-item{class: 'point'}
-            %input{name: "value", value: "#{point.context.split("INTEGER: ")[1].to_i}"}
-            %input{name: "date", value: "#{point.created_at.to_i}"}
+        - if @results.size > 0 && @results[1].context.split("INTEGER: ").size > 1
+          - @results.each do |point|
+            .list-group-item{class: 'point'}
+              %input{name: "value", value: "#{point.context.split("INTEGER: ")[1].to_i}"}
+              %input{name: "date", value: "#{point.created_at.to_i}"}
+        - if @results.size > 0 && @results[1].context.split("COUNTER32: ").size > 1
+          - @results.each do |point|
+            .list-group-item{class: 'point'}
+              %input{name: "value", value: "#{point.context.split("COUNTER32: ")[1].to_i}"}
+              %input{name: "date", value: "#{point.created_at.to_i}"}
+        - if @results.size > 0 && @results[1].context.split("GAUGE32: ").size > 1
+          - @results.each do |point|
+            .list-group-item{class: 'point'}
+              %input{name: "value", value: "#{point.context.split("GAUGE32: ")[1].to_i}"}
+              %input{name: "date", value: "#{point.created_at.to_i}"}
+        - if @results.size > 0 && @results[1].context.split("UNSIGNED32: ").size > 1
+          - @results.each do |point|
+            .list-group-item{class: 'point'}
+              %input{name: "value", value: "#{point.context.split("UNSIGNED32: ")[1].to_i}"}
+              %input{name: "date", value: "#{point.created_at.to_i}"}
+        - if @results.size > 0 && @results[1].context.split("Timeticks: (").size > 1
+          - @results.each do |point|
+            .list-group-item{class: 'point'}
+              %input{name: "value", value: "#{point.context.split("Timeticks: (")[1].to_i}"}
+              %input{name: "date", value: "#{point.created_at.to_i}"}
+        - if @results.size > 0 && @results[1].context.split("Counter64: ").size > 1
+          - @results.each do |point|
+            .list-group-item{class: 'point'}
+              %input{name: "value", value: "#{point.context.split("Counter64: ")[1].to_i}"}
+              %input{name: "date", value: "#{point.created_at.to_i}"}
+
+             
+            
+
   - else
     .list-group
       - @results.each do |p|

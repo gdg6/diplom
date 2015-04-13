@@ -12,6 +12,7 @@
 #include <thread>
 #include <time.h>
 #include <unistd.h>
+#include <limits.h>
 #include "sessSnmpDev.cpp"
 
 #define MSG_TIMEOUT "Timeout"
@@ -26,7 +27,10 @@ class AsyncSnmpManager {
 	std::shared_ptr<LogService> logService;
 	std::shared_ptr<OidService> oidService;
 	std::shared_ptr<SqlReportBuffer> sqlReportBuffer;
+
+	pthread_t thread;
 	std::mutex mt;
+
 	DeviceService deviceService;
 	time_t global_timer;
 	std::shared_ptr<std::vector<std::shared_ptr<SessSnmpDev>>> hosts;
@@ -36,7 +40,7 @@ class AsyncSnmpManager {
 	{
 		struct snmp_pdu * req ;
 		
-		for(int i = 0; i < hosts -> size(); i++) {
+		for(int i = 0; i < active_hosts; i++) {
 			std::shared_ptr<SessSnmpDev> host = hosts -> at(i);
 			for(int j = 0; j < ((host -> commands) -> size()); j++) 
 			{
@@ -47,18 +51,17 @@ class AsyncSnmpManager {
 					{
 						host -> currentOid = currentOid -> getOid();
 						host -> pdu = snmp_pdu_create(SNMP_MSG_GET);
-						read_objid(currentOid -> getOid().c_str(), host ->anOID, &(host -> anOID_len) );
+						read_objid(currentOid -> getOid().c_str(), host -> anOID, &(host -> anOID_len) );
 						snmp_add_null_var(host -> pdu, host -> anOID, host-> anOID_len);
 
 						if (snmp_send(host -> ss, host -> pdu)) {
-							currentOid -> setLastTimeRequest(time(NULL));
-							break;
 						}
 						else {
 							snmp_perror("snmp_send");
 							snmp_free_pdu(host -> pdu);
-							break;
 						}
+						currentOid -> setLastTimeRequest(time(NULL));
+						break;
 					}	
 				}
 			}
@@ -67,11 +70,7 @@ class AsyncSnmpManager {
 
 	static void * checkHosts(void * object)
 	{
-		for(;;) {
-			if(((AsyncSnmpManager *) object) -> getActiveHosts() == 0)
-			{
-				return NULL;
-			}
+		while(((AsyncSnmpManager *) object) -> getActiveHosts() !=  0) {
 			((AsyncSnmpManager *) object) -> requestByTimer();
 			sleep(1);
 		}
@@ -108,7 +107,6 @@ class AsyncSnmpManager {
 
 		  sessSnmpDev -> id = device -> getId();
 		  
-		  // sessSnmpDev -> ping_request = device -> getPingRequest();
 		  sessSnmpDev -> commands = oidService -> getActiveOidsByDeviceId(sessSnmpDev -> id);
 		  sessSnmpDev -> sqlReportBuffer =  sqlReportBuffer.get();
 					 
@@ -129,7 +127,6 @@ class AsyncSnmpManager {
 		  // sessSnmpDev -> session.securityLevel = SNMP_SEC_LEVEL_AUTHNOPRIV; // надо заменить на SNMP_SEC_LEVEL_AUTHPRIV
 		  sessSnmpDev -> session.securityLevel = SNMP_SEC_LEVEL_AUTHPRIV; 
 
-
 		  /* set the authentication method to MD5 */
 		  sessSnmpDev -> session.securityAuthProto = usmHMACMD5AuthProtocol;
 		  sessSnmpDev -> session.securityAuthProtoLen = sizeof(usmHMACMD5AuthProtocol)/sizeof(oid);
@@ -137,9 +134,9 @@ class AsyncSnmpManager {
 		  sessSnmpDev -> session.securityAuthKeyLen = USM_AUTH_KU_LEN;
 
 
-		  /* set the authentication key to a MD5 hashed version of our
-		  passphrase "The Net-SNMP Demo Password" (which must be at least 8
-		  characters long) */
+		  /* set the authentication key to a MD5 hashed version
+		   *  (which must be at least 8  characters long)
+		   */
 		  if (generate_Ku(sessSnmpDev -> session.securityAuthProto,
 						   sessSnmpDev -> session.securityAuthProtoLen,
 						   (u_char *) device -> getPassword().c_str(),device -> getPassword().length(),
@@ -194,8 +191,7 @@ class AsyncSnmpManager {
 	void selectRun()
 	{
 		global_timer = time(NULL);
-		pthread_t t2;
-		pthread_create(&t2, NULL, AsyncSnmpManager::checkHosts, this);
+		pthread_create(&thread, NULL, AsyncSnmpManager::checkHosts, this);
 		while (active_hosts) 
 		{
 		  if((time(NULL) - global_timer) > 1 || sqlReportBuffer -> isMustBePush())
@@ -206,7 +202,7 @@ class AsyncSnmpManager {
 		   int fds = 0, block = 1;
 		   fd_set fdset;
 		   struct timeval timeout;
-		   timeout.tv_sec = 15;
+		   timeout.tv_sec = INT_MAX;
 		   timeout.tv_usec = 0;
 		   FD_ZERO(&fdset);
 		   snmp_select_info(&fds, &fdset, &timeout, &block);
@@ -224,7 +220,6 @@ class AsyncSnmpManager {
 		  	snmp_timeout();
 		  }
 	    }
-		pthread_join(t2, NULL);
 	}
 
 	static void print_result (int status, struct snmp_session *sp, struct snmp_pdu *pdu, SqlReportBuffer * sqlReportBuffer, int id, std::string type) 
@@ -237,24 +232,24 @@ class AsyncSnmpManager {
 				vp = pdu->variables;
 				if (pdu->errstat == SNMP_ERR_NOERROR) {
 				  while (vp) {
-						snprint_variable(buf, sizeof(buf), vp->name, vp->name_length, vp);
+						snprint_variable(buf, sizeof(buf), vp -> name, vp -> name_length, vp);
 						sqlReportBuffer -> addInsert(id, type, std::string(buf));     
 						// fprintf(stdout, "%s: %s\n", sp->peername, buf);
-						vp = vp->next_variable;
+						vp = vp -> next_variable;
 				  }
 				}
 				else {
-				    for (int ix = 1; vp && ix != pdu->errindex; vp = vp->next_variable, ix++);
-				    if (vp) snprint_objid(buf, sizeof(buf), vp->name, vp->name_length);
+				    for (int ix = 1; vp && ix != pdu->errindex; vp = vp -> next_variable, ix++);
+				    if (vp) snprint_objid(buf, sizeof(buf), vp -> name, vp -> name_length);
 				    else strcpy(buf, "(none)");
-				    sqlReportBuffer->addInsert(id, MSG_ERR, snmp_errstring(pdu->errstat));
+				    sqlReportBuffer->addInsert(id, MSG_ERR, snmp_errstring(pdu -> errstat));
 				}
 				break;
 		  case STAT_TIMEOUT:
-				sqlReportBuffer->addInsert(id, MSG_RECV, "Timeout");
+				sqlReportBuffer -> addInsert(id, MSG_RECV, "Timeout");
 				break;
 		  case STAT_ERROR:
-				sqlReportBuffer->addInsert(id, MSG_ERR, "Error");
+				sqlReportBuffer -> addInsert(id, MSG_ERR, "Error");
 	  }
 	}
 
@@ -291,6 +286,7 @@ public:
 		{
 			snmp_close((hosts->at(i)) -> ss);
 		}
+		pthread_join(thread, NULL);
 		logService -> save(SNMP_MANAGER_STOP, "async manager is stoped!");
 	}
 	
@@ -310,6 +306,7 @@ public:
 			logService -> save(SNMP_MANAGER_STOP, "async manager is stoped!");
 		}
 		active_hosts = 0;
+		pthread_join(thread, NULL);
 	}
 
 };

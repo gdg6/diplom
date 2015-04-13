@@ -1,6 +1,5 @@
 require 'net-snmp'
 
-
 class WalkRaportsController < ApplicationController
   before_action :set_walk_raport, only: [:show, :edit, :update, :destroy]
   before_action :check_auth
@@ -21,19 +20,17 @@ class WalkRaportsController < ApplicationController
     if (!params[:id].nil?)
       @walk_raport = WalkRaport.find(params[:id].to_i)
       @result = File.read(@walk_raport.path)
-
     end
   end
 
   # GET /walk_raports/new
   def new
-    @device_id = params[:device_id]
+    @device_id = params[:device_id].to_i
     @device = nil
-    if(@device_id != nil)
-        device = Device.find(device_id.to_i)
-        if(device != nil) 
-          @device = device
-        end
+    begin
+      device = Device.find(@device_id).take
+    rescue
+
     end
   end
 

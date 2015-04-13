@@ -11,7 +11,7 @@
 
 //~ PRAGMA journal_mode=WAL - for async SQLITE
 //g++ -std=gnu++11 main.cpp ../utils/bcrypt/bcrypt.a -lnetsnmp -lsqlite3 -lpthread -O3 -pipe
-#define __NO_PRODUCTION__
+// #define __NO_PRODUCTION__
 
 int main(int argc, char *argv[])
 {
@@ -56,8 +56,13 @@ int main(int argc, char *argv[])
 #endif
 
 	sqlite3 * db;
-	sqlite3_open("../../WebServer/snmp_db", &db);
-	App app(db);
+#ifdef __NO_PRODUCTION__
+	std::cout << "open db: " << sqlite3_open("../../WebServer/snmp_db", &db) << std::endl;
+#else
+    sqlite3_open("../../WebServer/snmp_db", &db);
+#endif
+
+    App app(db);
 	app.Run();
 	
 	return 0;

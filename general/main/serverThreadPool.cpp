@@ -7,7 +7,6 @@
 #include <mutex>
 #include <algorithm>
 #include <unistd.h>
-#include <GL/glut.h> 
 #include <vector>
 #include <string>
 #include <queue>
