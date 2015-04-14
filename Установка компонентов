@@ -1,0 +1,57 @@
+В ситсеме  для веб приложения должен быть ruby. >= 2.1.0, rvm, rails >= 4.1.7, прочитать об этом можно: 
+	1) https://www.brightbox.com/blog/2015/01/05/ruby-2-2-0-packages-for-ubuntu/ 
+	2) https://rvm.io/rvm/install
+	3) http://railsapps.github.io/installrubyonrails-ubuntu.html
+	4) После установки всех необходимых компоненов необходимо установить gem-ы. Для этого необходимо перейти в папку WebServer и набрать комманду bundle install (перед этим возможно может потребоваться tsocks ).  bundle install --local не пройдет потому что не все gem-ы установлены локально. 
+	5) После установки всех гемов необходимо набрать в консоли: rails s
+
+Перед запуском демона необходимо заполнить базу данных данными, такими как: 
+	1) Пользователь. Нужен хотя бы один пользователь с правами админа, это необходимо для авторизации по tcp/ip с демоном.
+	2) Устройства. Необходимо же что то обрабатывать)
+	3) Для каждого устройства привести набор oids по которым будет устраиваться опрос демоном. 
+
+Для сборки демона и его запуска необходимо: 
+	1) gcc (g++) >=4.8.2
+	2) net-snmp >= 5.7.2.1
+		# выкачиваем последнюю версию net-snmp
+
+		wget http://sourceforge.net/projects/net-snmp/files/net-snmp/5.7.2.1/net-snmp-5.7.2.1.tar.gz
+
+		# распаковываем архив
+
+		tar -xzvf net-snmp-5.7.2.1.tar.gz
+
+		cd net-snmp-5.7.2.1/
+
+		# конфигурируем сборку (можно ответить на все вопросы по умолчанию)
+
+		./configure
+
+		# /var/log/snmpd.log
+
+		# /var/net-snmp
+
+		# компилируем библиотеку и утилиты
+
+		make
+
+		# устанавливаем в систему 
+
+		sudo install
+
+		# указываем пути от куда подгружать библиотеки
+
+		LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
+
+		export LD_LIBRARY_PATH
+
+		# можно дописать это в .bashrc
+
+	3) При установке в новую систему нужно пересобрать bcrypt находящийся в general_*/utils/bcrypt/. Достаточно в терминале запустить make. 
+	   Последнюю версию можно скачать: https://github.com/rg3/bcrypt.git
+
+	4) sqlite3 >= 3.8.2
+
+	5) В general_*/main/main.cpp g++ -std=gnu++11 main.cpp ../utils/bcrypt/bcrypt.a -lnetsnmp -lsqlite3 -lpthread -O3 -pipe
+
+	6) Запустить скомпилированный файл: ./a.out
