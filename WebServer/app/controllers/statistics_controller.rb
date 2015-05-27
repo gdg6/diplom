@@ -12,16 +12,20 @@ class StatisticsController < ApplicationController
       redirect_to devices_path
     end
   end
+  #
+  # def get_array_points
+  #   results =  Report.select(:context, :created_at).where("device_id =? AND r_type = ? AND created_at > ? AND created_at < ?", @device.id, r_type.oid, @start_date, @end_date).load
+  #
+  # end
 
   def create
-    if ( !(@device = Device.find(params[:device_id].to_i)).nil? ) 
-        r_type  = Oid.where(:id => params[:r_type].to_i, :device_id => @device.id).first
-        @start_date = Time.new(params[:start_year_time].to_i, params[:start_month_time].to_i, params[:start_day_time].to_i)
-        @end_date = Time.new(params[:end_year_time].to_i, params[:end_month_time].to_i, params[:end_day_time].to_i, 23, 59, 59)
+    if (@device = Device.where(params[:device_id]).take)
+        r_type  = Oid.where(:id => params[:r_type], :device_id => @device.id).first
+        @start_date = Time.new(params[:start_year_time], params[:start_month_time], params[:start_day_time])
+        @end_date = Time.new(params[:end_year_time], params[:end_month_time], params[:end_day_time], 23, 59, 59)
 
         if (@view_id = params[:view_id].to_i) == 1
           @results = Report.select(:context, :created_at).where("device_id =? AND r_type = ? AND created_at > ? AND created_at < ?", @device.id, r_type.oid, @start_date, @end_date).load
-          
         else
           @results = Report.select(:r_type, :context, :created_at).where("device_id =? AND r_type = ? AND created_at > ? AND created_at < ?", @device.id, r_type.oid, @start_date, @end_date).page(params[:page]).order(:id => :desc).per(10).load
         end

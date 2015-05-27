@@ -23,7 +23,7 @@
 #include <sys/socket.h>
 #include <stdlib.h>
 #include <string.h>
-#include <fstream>  
+#include <fstream>
 #include "../serviceImpl/servicePack.h"
 
 #define DEBUG 1
@@ -41,7 +41,6 @@
 
 class ThreadPoolServer
 {
-	
 	std::shared_ptr<ThreadPool> pool;
 	UserService & userService;
 	struct addrinfo hint, *rez;
@@ -49,40 +48,40 @@ class ThreadPoolServer
 	int status;
 	int count_connection;
 	int max_connect;
-	
+
 	inline void FreeStruct(int x)
 	{
 	  if(x < BUG_SOCK )close(sock);
-	  if(x < BUG_GET) freeaddrinfo(rez);	
-	}		
-	
+	  if(x < BUG_GET) freeaddrinfo(rez);
+	}
+
 	int serverStartListen(std::string & ip, std::string & port)
 	{
 		memset(&hint, 0, sizeof(hint));
 		hint.ai_family = AF_INET;
 		hint.ai_socktype = SOCK_STREAM;
 		hint.ai_flags = 0;
-		
+
 		if((status = getaddrinfo(ip.c_str(), port.c_str(), &hint, &rez)) != 0) {
 			freeaddrinfo(rez);
 			return BUG_GET;
 		}
-		
-		if((sock = socket(rez->ai_family, rez->ai_socktype, rez->ai_protocol)) == -1 ) { 
+
+		if((sock = socket(rez->ai_family, rez->ai_socktype, rez->ai_protocol)) == -1 ) {
 			return BUG_SOCK;
 		}
-	
+
 		if(bind(sock, rez->ai_addr, rez->ai_addrlen) == -1) {
 			return BUG_BIND;
 		}
-		
+
 		if(listen(sock, 7) != SUCCESS) {
 		    return BUG_LISTEN;
 		}
-		
+
 		return SUCCESS;
 	}
-	
+
 	static void sendManual(int fd)
 	{
 		std::fstream fs;
@@ -98,20 +97,20 @@ class ThreadPoolServer
 		  }
 		}
 		fs.close();
-	} 
-	
+	}
+
 	void poweroffSystem()
 	{
 		kill(0, 9); // SIGKILL self app
 	}
-	
+
 	void processMsg(std::string msg, int fd)
 	{
 		if(msg.find("HELP") == 0) sendManual(fd);
 		if(msg.find("POWEROFF") == 0)poweroffSystem();
 		return;
 	}
-	
+
 	//step by step execute command
 	// if user send very big message, is not good user
 	int ClientRW(int fd)
@@ -126,7 +125,7 @@ class ThreadPoolServer
 		{
 			link_buf = r_buf;
 			len = SIZE;
-			
+
 			memset(r_buf, 0, SIZE);
 			if(write(fd, "\n>", 2))
 			{
@@ -141,7 +140,7 @@ class ThreadPoolServer
 					std::cout << msg;
 					processMsg(msg, fd);
 					break;
-				} 
+				}
 				std::cout << tmp_len << std::endl;
 				link_buf += tmp_len;
 				len -= tmp_len;
@@ -149,7 +148,7 @@ class ThreadPoolServer
 		}
 		return 0;
 	}
-	
+
 	int initClient(int fd)
 	{
 		char incorrect[]  = "Incorrect login or password\n";
@@ -161,14 +160,14 @@ class ThreadPoolServer
 			if(user -> isActive())
 			{
 				// call function
-				ClientRW(fd); 
+				ClientRW(fd);
 				break;
-			} else 
+			} else
 			{
 				if(write(fd, incorrect, lenInc) < 0)
 				{
 					// log error
-				}	
+				}
 				continue;
 			}
 		}
@@ -176,7 +175,7 @@ class ThreadPoolServer
 		close(fd);
 		return SUCCESS;
 	}
-	
+
 	int receiving()
 	{
 		char msgMaxConnect[] = "the server is full, try again later";
@@ -189,8 +188,8 @@ class ThreadPoolServer
 		for(;;)
 		{
 			if((fd = accept(sock, rez->ai_addr, &(rez->ai_addrlen))) == -1){
-				//log write 
-				continue; // no return 
+				//log write
+				continue; // no return
 			} else {
 				if(count_connection < max_connect)
 				{
@@ -201,20 +200,20 @@ class ThreadPoolServer
 				{
 					if(write(fd, msgMaxConnect, lenMsgMaxConnect) < 0)
 					{
-						
+
 					}
 					close(fd);
 				}
 		    }
 		}
-		
+
 		return 0;
 	}
-	
+
 public:
 	ThreadPoolServer(UserService & userService) : userService(userService), status(0), count_connection(0)
 	{
-		
+
 	}
 
 	int Run(std::string ip, std::string port)
@@ -230,7 +229,7 @@ public:
 			//write log
 			pthread_exit(NULL);
 		}
-		
+
 		if((status = serverStartListen(ip, port)) != SUCCESS)
 		{
 			FreeStruct(status);
@@ -253,7 +252,7 @@ public:
 			//write log
 		// std::cout << "close fd" << std::endl;
 	}
-	
+
 	// std::cout << "I do it!" << std::endl;
    }
 
@@ -264,7 +263,7 @@ void * starterThreadPoolServer(void * db)
 	UserService userService((sqlite3 *)db);
 	ThreadPoolServer threadPoolServer(userService);
 	if(threadPoolServer.getStatus() == 0)
-	{	
+	{
 		threadPoolServer.Run("localhost", "3001");
 	}
 	return NULL;

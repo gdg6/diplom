@@ -1,6 +1,9 @@
 class SessionsController < ApplicationController
 
+  skip_filter :load_current_user
+
   def new
+    return redirect_to devices_path unless session[:user_id].nil?
   end
 
   def create

@@ -43,6 +43,70 @@
 }
 
 .navbar-default .navbar-nav > .active-btn-topbar > a {
-  color: #E8E8EF;
-  background-color: rgba(97, 97, 103, 0.58);
+    color: #E8E8EF;
+    background-color: rgba(97, 97, 103, 0.58);
+    /*background-color: rgba(97, 97, 103, 0.58);*/
+}
+
+
+.navbar-default .navbar-nav > .active-btn-topbar >  a:visited {
+    /*color: white !important;*/
+}
+
+.navbar-default .navbar-nav > li >  a:hover {
+    color:white !important;
+}
+
+
+.table-form.general-view {
+    width: 100%;
+    height: 250px;
+}
+
+.table-form.help-view {
+    width: 30%;
+    height: 100px;
+}
+
+
+.search-menu{
+    background-color: #000000;
+    padding-bottom: 20px;
+    padding-left: 20px;
+    padding-right: 20px;
+    border-radius: 15px;
+    border-color:#d2d2d2;
+    border-width: 5px;
+    color: white;
+    box-shadow:0 1px 0 #cfcfcf;
+}
+
+
+.error-alert {
+    position: absolute;
+    width: 600px;
+    margin-top: 5%;
+}
+
+.page-down-block {
+    width: 100%;
+    height: 20px;
+    margin-bottom: 0;
+}
+
+.btn-data-border {
+    border-radius: 10px !important;
+    border-color:black !important;
+    border-width: 1px !important;
+}
+
+.pad-search {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.back-margin {
+    position: absolute;
+    float: left;
+    margin-left: -100px;
 }

@@ -15,7 +15,7 @@ Rails.application.routes.draw do
 
   resources :users
 
-  root :to => "devices#index"
+  root :to => "sessions#new"
   
   get 'login'=>'sessions#new', as: :login
   post 'login'=>'sessions#create'

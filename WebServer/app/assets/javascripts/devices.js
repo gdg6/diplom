@@ -43,13 +43,24 @@
 		}
 
 		var options = {
+            series: {
+                color: 'rgb(170, 130, 130)',
+                lines: {
+                    show: true,
+                    lineWidth: 2
+                },
+                shadowSize: 0
+            },
+            color: 'rgb(255, 0, 0)',
 			xaxis: {
 				mode: "time",
 				tickLength: 5
 			},
 			selection: {
+                color: 'rgb(0,255,0)',
 				mode: "x"
 			},
+
 			grid: {
 				markings: weekendAreas
 			}
@@ -59,9 +70,10 @@
 
 		var overview = $.plot("#overview", [d], {
 			series: {
-				lines: {
+                color: 'rgb(130, 130, 130)',
+                lines: {
 					show: true,
-					lineWidth: 1
+					lineWidth: 2
 				},
 				shadowSize: 0
 			},
@@ -74,7 +86,9 @@
 				min: 0,
 				autoscaleMargin: 0.1
 			},
+
 			selection: {
+                color: 'rgb(0,255,0)',
 				mode: "x"
 			}
 		});

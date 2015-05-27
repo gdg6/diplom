@@ -1,2 +1,8 @@
--flash.each do |key,value|
-  .alert{class: "alert-#{key}"}=value
+-if controller_name == 'sessions'
+  .narrow
+    .error-alert
+      -flash.each do |key,value|
+        .alert{class: "alert-#{key}"}=value
+- else
+  -flash.each do |key,value|
+    .alert{class: "alert-#{key}"}=value

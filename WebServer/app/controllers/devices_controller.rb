@@ -6,15 +6,15 @@ class DevicesController < ApplicationController
   # GET /devices
   # GET /devices.json
   def index
-    @devices = Device.all
+    @devices = Device.page(params[:page]).per(15).load
   end
 
   # GET /devices/1
   # GET /devices/1.json
   def show
     # @reports = Report.where(:device_id=>params[:id]).page(params[:page]).load
-    @walk_raports = WalkRaport.where(:device_id=>@device.id)
-    @count = Report.where(:device_id=>params[:id]).count
+    @walk_raports = WalkRaport.where(:device_id => @device.id)
+    @count = Report.where(:device_id => params[:id]).count
   end
 
   # GET /devices/new
@@ -67,16 +67,16 @@ class DevicesController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_device
-      @device = Device.find(params[:id])
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_device
+    @device = Device.find(params[:id])
+  end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def device_params
-      params.require(:device).permit(:name, :description, :room, :mac, :serial_number, :model, :peername, :port, :login, :password, :priv_password)
-    end
-    
+  # Never trust parameters from the scary internet, only allow the white list through.
+  def device_params
+    params.require(:device).permit(:name, :description, :room, :mac, :serial_number, :model, :peername, :port, :login, :password, :priv_password)
+  end
+
   def check_edit
     render_error(root_path) unless User.edit?(@current_user)
   end

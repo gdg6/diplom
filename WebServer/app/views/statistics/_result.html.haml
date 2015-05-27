@@ -5,8 +5,8 @@
   - if @view_id.to_i == 1
     .list-group-item{:style => "margin-left: -150px; margin-right: -150px;;"}
       =label_tag "результат поиска(#{@results.size})"
-      .draw-shapes{id: 'placeholder', class: 'table-form'}
-      .draw-shapes{id: 'overview', class: 'table-form '}
+      .draw-shapes{id: 'placeholder', class: 'table-form general-view'}
+      .draw-shapes{id: 'overview', class: 'table-form help-view'}
       .list-group{style: 'display:none', id: 'data-result-search'}
         - if @results.size > 0 && @results[1].context.split("INTEGER: ").size > 1
           - @results.each do |point|
@@ -39,8 +39,7 @@
               %input{name: "value", value: "#{point.context.split("Counter64: ")[1].to_i}"}
               %input{name: "date", value: "#{point.created_at.to_i}"}
 
-             
-            
+
 
   - else
     .list-group

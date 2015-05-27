@@ -1,47 +1,41 @@
+.div{:style => "margin-top: 30px;"}
+  = link_to_back
+.clearfix
 .narrow
-  .page-header
-    %h1
-      %i
-        %b Просмотр статистики 
-  .form-group-item
-    %h4
-      %i
-        %b Название устройства
-    %h4= @device.name
+  .div{:class=> 'search-menu'}
+    .form-group-item{:style=>"text-align:center"}
+      %h2
+        %i
+          %b= @device.name
 
-  =form_tag search_path do 
-    .form-group
-      %h4
-        %i
-          %b Тип запроса
-      = select_tag :r_type, options_for_select(listExecuteOidForDevice(@device)),class: 'form-control'
-    .form-group
-      %h4
-        %i
-          %b Период отчетности 
-      .col-sm-12
+    =form_tag search_path do
+      %input{:type=>"hidden", :value=>@device.id, :name=>'device_id'}
+      .form-group
+        .col-sm-12
+          .pull-left
+            = label_tag 'Просмотр по:'
+            = select_tag :r_type, options_for_select(listExecuteOidForDevice(@device)),class: 'form-control'
+          .pull-right{:style=>"width:35%"}
+            = label_tag 'Способ отображения:'
+            =select_tag :view_id, options_for_select(  [["График", 1],[ "Список",2]]),class: 'form-control'
+      .col-sm-12{:class=>"pad-search"}
+        .pull{:style=>'text-align: center;'}
+          = label_tag 'Период отчетности'
+
         .pull-left
           = label_tag "С"
-          = select_tag :start_day_time, options_for_select(day_select, [@start_date.day]), class: 'btn btn-default'
-          = select_tag :start_month_time, options_for_select(month_select, [@start_date.month]), class: 'btn btn-default'
-          = select_tag :start_year_time, options_for_select(year_select, [@start_date.year]), class: 'btn btn-default'
+          = select_tag :start_day_time, options_for_select(day_select, [@start_date.day]), class: 'btn btn-default btn-data-border'
+          = select_tag :start_month_time, options_for_select(month_select, [@start_date.month]), class: 'btn btn-default btn-data-border'
+          = select_tag :start_year_time, options_for_select(year_select, [@start_date.year]), class: 'btn btn-default btn-data-border'
         .pull-right
           = label_tag "По"
-          = select_tag :end_day_time, options_for_select(day_select, [@end_date.day]), class: 'btn btn-default'
-          = select_tag :end_month_time, options_for_select(month_select, [@end_date.month]), class: 'btn btn-default'
-          = select_tag :end_year_time, options_for_select(year_select.reverse!, [@end_date.year]), class: 'btn btn-default'
-
-    .form-group{style: "margin-top: 10%;"}
-      %h4
-        %i
-          %b Способ отображения
-      =select_tag :view_id, options_for_select(  [["График", 1],[ "Список",2]]),class: 'form-control'
-      %input{:type=>"hidden", :value => @device.id, :name=>'device_id'}
-      
-    .clearfix
-    .form-actions
-      =submit_tag 'Найти', class: 'btn btn-primary btn-md'
-  %p    
-  %p    
+          = select_tag :end_day_time, options_for_select(day_select, [@end_date.day]), class: 'btn btn-default btn-data-border'
+          = select_tag :end_month_time, options_for_select(month_select, [@end_date.month]), class: 'btn btn-default btn-data-border'
+          = select_tag :end_year_time, options_for_select(year_select.reverse!, [@end_date.year]), class: 'btn btn-default btn-data-border'
+      .clearfix
+      .form-actions
+        =submit_tag 'Найти', class: 'btn btn-primary btn-md', style:'width:100%'
+  %p
+  %p
   -if !@device.nil?
     =render 'result'
