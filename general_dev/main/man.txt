@@ -1,4 +1,4 @@
-MAN - show this page.
+HELP - show this page.
 
 LIST [table] [options]  - show data from tables.
 

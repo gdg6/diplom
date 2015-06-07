@@ -28,12 +28,14 @@ class UserService
 		}
 
 		if (bcrypt_hashpw(cpassword, hashInDatabase, outTestHash) == 0){
-			if (strcmp(hashInDatabase, outTestHash) == 0) {
+			// write(fd, outTestHash, strlen(outTestHash));
+			if (strncmp(hashInDatabase, outTestHash, 9) == 0) {
 				// password matches
 				return true;
 			}
 			// password does not match
 		}
+
 		return false;
 	}
 

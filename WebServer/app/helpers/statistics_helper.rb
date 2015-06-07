@@ -1,8 +1,8 @@
 module StatisticsHelper
 
-  def listExecuteOidForDevice(device)
+  def listExecuteOidForDevice(device_id)
   	result = []
-  	device.oids.each{|x| result << ["#{x.oid} (#{x.translate})" , x.id]}
+		Oid.where(:device_id => device_id).each{|x| result << ["#{x.oid} (#{x.translate})" , x.id]}
   	return result
   end
 

@@ -12,9 +12,9 @@
       %input{:type=>"hidden", :value=>@device.id, :name=>'device_id'}
       .form-group
         .col-sm-12
-          .pull-left
+          .pull-left{:style=>'width:60%;'}
             = label_tag 'Просмотр по:'
-            = select_tag :r_type, options_for_select(listExecuteOidForDevice(@device)),class: 'form-control'
+            = select_tag :r_type, options_for_select(listExecuteOidForDevice(@device.id)),class: 'form-control'
           .pull-right{:style=>"width:35%"}
             = label_tag 'Способ отображения:'
             =select_tag :view_id, options_for_select(  [["График", 1],[ "Список",2]]),class: 'form-control'

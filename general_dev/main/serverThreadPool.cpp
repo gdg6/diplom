@@ -42,7 +42,9 @@
 class ThreadPoolServer
 {
 	std::shared_ptr<ThreadPool> pool;
-	UserService & userService;
+	UserService * userService;
+	DeviceService * deviceService;
+	// LogService logService;
 	struct addrinfo hint, *rez;
     int sock, fd;
 	int status;
@@ -108,6 +110,12 @@ class ThreadPoolServer
 	{
 		if(msg.find("HELP") == 0) sendManual(fd);
 		if(msg.find("POWEROFF") == 0)poweroffSystem();
+		if(msg.find("ADD") == 0) {
+			if(msg.find("device") == 0)
+			{
+
+			}
+		}
 		return;
 	}
 
@@ -156,7 +164,7 @@ class ThreadPoolServer
 		std::shared_ptr<User> user;
 		for(int i = 0; i < COUNT_ATTEMPTS; i++)
 		{
-			user = userService.AuthorizationUser(fd);
+			user = userService -> AuthorizationUser(fd);
 			if(user -> isActive())
 			{
 				// call function
@@ -211,9 +219,13 @@ class ThreadPoolServer
 	}
 
 public:
-	ThreadPoolServer(UserService & userService) : userService(userService), status(0), count_connection(0)
+	ThreadPoolServer(void * db) 
 	{
-
+			userService = new UserService((sqlite3*)db);
+			deviceService = new DeviceService((sqlite3*)db);
+			// logService = LogService((sqlite3*)db);
+			status = 0;
+			count_connection = 0;
 	}
 
 	int Run(std::string ip, std::string port)
@@ -252,7 +264,8 @@ public:
 			//write log
 		// std::cout << "close fd" << std::endl;
 	}
-
+	delete userService;
+	delete deviceService;
 	// std::cout << "I do it!" << std::endl;
    }
 
@@ -260,8 +273,8 @@ public:
 
 void * starterThreadPoolServer(void * db)
 {
-	UserService userService((sqlite3 *)db);
-	ThreadPoolServer threadPoolServer(userService);
+	// UserService userService((sqlite3 *)db);
+	ThreadPoolServer threadPoolServer(db);
 	if(threadPoolServer.getStatus() == 0)
 	{
 		threadPoolServer.Run("localhost", "3001");

@@ -6,11 +6,11 @@ class StatisticsController < ApplicationController
   attr_reader :view_id
 
   def new
-    begin 
-      @device = Device.find(params[:device_id].to_i)
-    rescue
-      redirect_to devices_path
-    end
+    # begin
+      @device = Device.where(id:params[:device_id].to_i).take
+    # rescue
+    #   redirect_to devices_path
+    # end
   end
   #
   # def get_array_points
@@ -19,9 +19,9 @@ class StatisticsController < ApplicationController
   # end
 
   def create
-    if (@device = Device.where(params[:device_id]).take)
+    if (@device = Device.where(id:params[:device_id]).take)
         r_type  = Oid.where(:id => params[:r_type], :device_id => @device.id).first
-        @start_date = Time.new(params[:start_year_time], params[:start_month_time], params[:start_day_time])
+          @start_date = Time.new(params[:start_year_time], params[:start_month_time], params[:start_day_time])
         @end_date = Time.new(params[:end_year_time], params[:end_month_time], params[:end_day_time], 23, 59, 59)
 
         if (@view_id = params[:view_id].to_i) == 1
